@@ -1,0 +1,48 @@
+# KiCad - local history and backups (DO NOT commit)
+.history/
+.history
+*-backups/
+fp-info-cache
+*_auto_save*
+*.kicad_prl
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*.bak
+*.bck
+*-cache.lib
+*.tmp
+*.net
+*.erc
+*.drl
+
+# KiCad autosave / lock
+~*
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.code-workspace
+*~
+
+# Python / Build artifacts (for future firmware/scripts)
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+*.o
+*.elf
+*.hex
+*.bin
