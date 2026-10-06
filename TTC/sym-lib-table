@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "TTC")(type "KiCad")(uri "${KIPRJMOD}/TTC.kicad_sym")(options "")(descr "TT&C custom symbols"))
+)
