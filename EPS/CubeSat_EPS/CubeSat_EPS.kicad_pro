@@ -64,18 +64,12 @@
           "min_island_area": 10.0,
           "min_thickness": 0.25,
           "pad_connection": 1,
-          "remove_islands": 0,
+          "remove_islands": 1,
           "thermal_relief_gap": 0.5,
-          "thermal_relief_spoke_width": 0.5
+          "thermal_relief_spoke_width": 0.8
         }
       },
-      "diff_pair_dimensions": [
-        {
-          "gap": 0.0,
-          "via_gap": 0.0,
-          "width": 0.0
-        }
-      ],
+      "diff_pair_dimensions": [],
       "drc_exclusions": [],
       "meta": {
         "version": 2
@@ -209,13 +203,7 @@
           "td_width_to_size_filter_ratio": 0.9
         }
       ],
-      "track_widths": [
-        0.0,
-        0.3,
-        0.5,
-        1.0,
-        1.5
-      ],
+      "track_widths": [],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
           "corner_radius_percentage": 80,
@@ -242,12 +230,7 @@
           "spacing": 0.6
         }
       },
-      "via_dimensions": [
-        {
-          "diameter": 0.0,
-          "drill": 0.0
-        }
-      ],
+      "via_dimensions": [],
       "zones_allow_external_fillets": false
     },
     "ipc2581": {
@@ -512,34 +495,22 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 1.0,
+        "clearance": 0.2,
+        "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
         "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
         "name": "Default",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.5,
+        "track_width": 0.2,
         "tuning_profile": "",
-        "via_diameter": 1.0,
-        "via_drill": 1.0,
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
         "wire_width": 6
-      },
-      {
-        "name": "POWER",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 1,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 1.0,
-        "tuning_profile": ""
-      },
-      {
-        "name": "POWER_HIGH",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 0,
-        "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 1.5,
-        "tuning_profile": ""
       }
     ],
     "meta": {
@@ -547,44 +518,7 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": [
-      {
-        "netclass": "POWER_HIGH",
-        "pattern": "MPPT_IN+"
-      },
-      {
-        "netclass": "POWER_HIGH",
-        "pattern": "VBUS"
-      },
-      {
-        "netclass": "POWER_HIGH",
-        "pattern": "VBUS_DIST"
-      },
-      {
-        "netclass": "POWER_HIGH",
-        "pattern": "BATT+"
-      },
-      {
-        "netclass": "POWER_HIGH",
-        "pattern": "BATT-"
-      },
-      {
-        "netclass": "POWER_HIGH",
-        "pattern": "+5V"
-      },
-      {
-        "netclass": "POWER",
-        "pattern": "+3V3"
-      },
-      {
-        "netclass": "POWER",
-        "pattern": "ADCS_5V"
-      },
-      {
-        "netclass": "POWER",
-        "pattern": "AUX_POWER_OUT"
-      }
-    ]
+    "netclass_patterns": []
   },
   "pcbnew": {
     "last_paths": {
@@ -727,7 +661,7 @@
         "uuid": "7b56325b-65de-4812-a6b3-b266f1ecb4d4"
       }
     ],
-    "used_designators": "#FLG1,R1-4,J1-12,TP1-4,F1-5,D1-2,#PWR1-23,Q1,C1-6",
+    "used_designators": "H1-4,#FLG1,F1-6,U1-3,TP1-4,R1-4,R10,R15,C1-6,Q1,Q3,D1-2,D6,D8,#PWR1-28,#PWR31,J1-13,J25",
     "variants": []
   },
   "sheets": [
