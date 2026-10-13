@@ -135,20 +135,22 @@
 		(property "Reference" "D1"
 			(at 0.08 -1.61 90)
 			(layer "F.SilkS")
-			(uuid "8f7eb4a7-cdf9-4447-809d-29f2f0202c32")
+			(uuid "3f757b53-cfc2-4ec3-b912-1d199d91bef0")
 			(effects
 				(font
-					(size 0.8 0.8)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "D_TVS"
 			(at -0.11 1.63 90)
 			(layer "F.SilkS")
-			(uuid "f62dd763-dbd3-4de2-a955-63dfbcdba906")
+			(uuid "befee623-c14a-46b9-a5b6-baa0e7217042")
 			(effects
 				(font
-					(size 0.8 0.8)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -157,11 +159,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "99650e1b-d244-42fb-9406-e139eb9eac67")
+			(uuid "55f353b4-39ce-4be0-820d-9635875e96ae")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -170,11 +172,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "84e17aa3-c143-4366-8d4f-ff3dea575372")
+			(uuid "7f310918-626b-4660-9b0d-fc10d622ba36")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -182,12 +184,6 @@
 		(path "/b9a483ac-b6fc-47a4-8e0e-504d11e58410")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -370,6 +366,17 @@
 			(layer "F.Fab")
 			(uuid "071abab5-e046-4732-837c-f09a029733a4")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 0 -2 90)
+			(layer "F.Fab")
+			(uuid "ba946e3a-e7af-429e-8262-7b3b446d483b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" smd roundrect
 			(at -1.65 0 90)
 			(size 0.9 1.2)
@@ -412,20 +419,22 @@
 		(property "Reference" "D6"
 			(at -0.005 -2.25 90)
 			(layer "F.SilkS")
-			(uuid "cf381f26-ecf9-446f-b7a4-343532b9e915")
+			(uuid "37637ac7-5ae3-40db-8c28-e9b99fa41903")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "D_Schottky"
 			(at -0.315 2.3 90)
 			(layer "F.SilkS")
-			(uuid "ad6c079b-fb11-41af-a693-b0f19760bf52")
+			(uuid "9154f9b4-06a8-470e-b4ed-d55002248c92")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -434,11 +443,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "0366c4ba-e9e7-4cc2-ac0c-d0c5abc1598d")
+			(uuid "2affaa86-fa94-4dec-9616-06885576e583")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -447,11 +456,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "de9f96d3-b882-4f3a-8d3a-6814f468dd58")
+			(uuid "f13046b7-d622-4543-a899-7e747b349258")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -459,12 +468,6 @@
 		(path "/b210ffc9-7d2d-4d85-9321-e05db7c98865")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -637,6 +640,17 @@
 			(layer "F.Fab")
 			(uuid "c47944b9-963e-4657-a4b8-03474d43ef44")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 0 -2.5 270)
+			(layer "F.Fab")
+			(uuid "8503fe0a-8210-4ec4-ac69-d038903752d6")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" smd roundrect
 			(at -2 0 270)
 			(size 2.5 1.8)
@@ -679,21 +693,22 @@
 		(property "Reference" "J9"
 			(at 2.15 4.09 90)
 			(layer "F.SilkS")
-			(uuid "7b2d1084-38ca-410c-a74c-68d41376f40a")
+			(uuid "8a04b280-be2f-4eb2-93cb-0fa95fefbc60")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "TTC_POWER"
 			(at 2.23 6.01 90)
 			(layer "F.SilkS")
-			(uuid "bd8455d4-1a8a-49c5-bc7b-a3af957f945f")
+			(uuid "0c21e962-db71-4748-9f79-69dd2c8d41db")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -701,10 +716,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "35e98774-c31e-4d94-8636-e773eb1fa3aa")
+			(uuid "84252f07-529c-4a44-beb9-26281dddc3e2")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -712,22 +728,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "ac1541a4-0d61-4428-bd30-93f12a47d61f")
+			(uuid "12e57c06-6838-4bf1-9873-852e4687b3f1")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "64281c45-ed78-48c5-b47a-0fe965a2eea0")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -735,12 +752,6 @@
 		(path "/e1be601c-656c-4f4f-8a02-76e5af6af42e")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -932,7 +943,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -981,20 +992,22 @@
 		(property "Reference" "J1"
 			(at 1.97 4.09 0)
 			(layer "F.SilkS")
-			(uuid "02b29a31-3aa7-4f55-a4f5-2125e30819fa")
+			(uuid "b1e453bb-9812-400a-9b6d-40863c4f399a")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "SOLAR_IN"
 			(at 2.09 2.3 0)
 			(layer "F.SilkS")
-			(uuid "32ce13cd-921a-4f14-8b0b-fa43611737e5")
+			(uuid "98bc948f-e389-44b2-9c4b-27bebef82f43")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1002,10 +1015,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "1253e54f-1830-47a1-8175-c37d18c54ecc")
+			(uuid "3ee811a9-9388-425e-821a-25e478bd22cb")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1013,22 +1027,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "552c3325-bc1e-4718-bab9-3b32c85fb2fb")
+			(uuid "26b72648-fb4f-451c-9e6d-3ae31fa6425b")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "41a6d256-f6e0-4cbd-9190-69b772677b9d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1036,12 +1051,6 @@
 		(path "/87105955-aab5-44e0-9dc0-f85a784dfd09")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1233,7 +1242,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1282,21 +1291,22 @@
 		(property "Reference" "J12"
 			(at 1.98 4.07 90)
 			(layer "F.SilkS")
-			(uuid "3cba6163-7bb5-4b06-b77b-08df808cb18a")
+			(uuid "505188e3-0915-48ed-9405-78e7fd3b2722")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "ADCS_5V_POWER"
 			(at 1.86 6.165 90)
 			(layer "F.SilkS")
-			(uuid "252f6862-05e6-4ac3-9aac-f1537f494f9b")
+			(uuid "1ae48127-81bd-4eed-9620-cee944a248c4")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1304,10 +1314,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "bf2700ca-926c-43a8-919a-afd85429a563")
+			(uuid "13a6e9af-2eeb-40aa-a77f-af41389a16fd")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1315,22 +1326,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "65868083-ed43-45bf-9878-94306c314a37")
+			(uuid "67284e34-eacd-43da-a7bc-06810dea70e3")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "85088fd6-93a0-43c5-b0a5-2d5d95271b11")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1338,12 +1350,6 @@
 		(path "/31b0aec1-2f1b-4070-b885-03a1ef504b26")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1535,7 +1541,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1584,20 +1590,22 @@
 		(property "Reference" "TP2"
 			(at -0.02 -2.455 0)
 			(layer "F.SilkS")
-			(uuid "00ff0686-2392-41e8-8d61-3a712875a617")
+			(uuid "e0cb5161-6459-460e-89c3-983ef7027e72")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "+5V_TEST"
 			(at 2.54 -0.015 90)
 			(layer "F.SilkS")
-			(uuid "66327a15-8d02-4593-84ba-8df0f3d81c80")
+			(uuid "03190d41-7ed0-48d2-af86-4943172da215")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1606,11 +1614,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "e2d41816-f9e6-44be-9878-536f10d1c15d")
+			(uuid "46e19654-9d94-49c3-bc0c-686acf2943b9")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1619,11 +1627,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "2546f6a5-9cba-487e-b565-b02602180bac")
+			(uuid "3fce1e49-4306-44a0-aeef-9c90067a0c06")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1631,12 +1639,6 @@
 		(path "/453cdcff-915d-4d79-a35b-eaa647b74b0e")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1")
-			)
-		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -1660,6 +1662,17 @@
 			(layer "F.CrtYd")
 			(uuid "fb2eb96d-b4b9-41be-8c33-8c5668b7ad1a")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 0 -2.5 0)
+			(layer "F.Fab")
+			(uuid "d703c5c3-ced2-45a0-b00d-57fde6cbd4be")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" thru_hole circle
 			(at 0 0)
 			(size 3 3)
@@ -1682,20 +1695,22 @@
 		(property "Reference" "F3"
 			(at -0.01 -1.63 0)
 			(layer "F.SilkS")
-			(uuid "1729156a-7905-40c7-97d8-238305fb1477")
+			(uuid "7266f6cd-b1bf-44fc-9592-4be3c79f4de3")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "2.5A"
 			(at 0.03 1.57 0)
 			(layer "F.SilkS")
-			(uuid "b698069e-0407-445a-8361-6a7d0eebd10f")
+			(uuid "91a3394f-351c-4c56-92e9-27c6d05b8c18")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1703,10 +1718,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "a7c3231d-6680-4c34-863a-0329f4af5d50")
+			(uuid "ddbd7390-5854-4d5b-bee3-066397e80a06")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1714,22 +1730,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "00329a19-350d-4eb4-b3ec-1d21d0d127e8")
+			(uuid "61aef781-e86e-427c-b753-d9ef716bafb3")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "0a8f617e-59f3-4f49-b2c8-4ddc3810f0ac")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1737,12 +1754,6 @@
 		(path "/4009d472-ae84-4235-b2ff-e85984d31f19")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -1793,8 +1804,8 @@
 			(uuid "7a094865-58e5-4a40-b9d7-ea7246e23cb9")
 			(effects
 				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1838,20 +1849,22 @@
 		(property "Reference" "D5"
 			(at -0.01 -2.23 270)
 			(layer "F.SilkS")
-			(uuid "eb712647-ddee-4a64-be77-90f3cb4f8aca")
+			(uuid "76c21182-01a7-428c-bdb6-f5d448cd0617")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "12V_ZENER"
 			(at -0.14 2.17 270)
 			(layer "F.SilkS")
-			(uuid "75cbe0bf-445c-4fcf-b898-62dea9ddd7b0")
+			(uuid "c543c878-cb27-4e17-a323-cb6ca9ff354a")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1860,11 +1873,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "240de6d7-cf09-4157-a9e7-ab01755508cd")
+			(uuid "8fe59969-3a72-4e78-8b48-3ab930e1e11a")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1873,11 +1886,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "48859903-94ed-43d9-88cb-910597b6d2af")
+			(uuid "875fd3e7-685c-42bb-9c6d-868439ce658f")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -1885,12 +1898,6 @@
 		(path "/f7d1775b-a238-4e7d-ae58-9ac47c7ce8d1")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2063,6 +2070,17 @@
 			(layer "F.Fab")
 			(uuid "7cca0529-b584-4b6f-af05-52eaf1d5630a")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 0 -2.5 270)
+			(layer "F.Fab")
+			(uuid "fe21bb59-e71c-4040-a11f-4ecd667f5342")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" smd roundrect
 			(at -2 0 270)
 			(size 2.5 1.8)
@@ -2105,22 +2123,22 @@
 		(property "Reference" "F2"
 			(at -3.26 0.97 0)
 			(layer "F.SilkS")
-			(uuid "a13efe2d-c7f9-4db8-b655-47028e1da83f")
+			(uuid "a25198e7-0fbd-44a7-8944-06f1dddf0181")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "5A"
 			(at 0 1.83 0)
 			(layer "F.Fab")
-			(uuid "9a8b5633-f261-4dc0-acd9-fb017b7aa44f")
+			(uuid "c0df7124-2e47-4501-b25a-22d071482f38")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2128,10 +2146,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "d64ce1aa-4e87-4149-b775-636d44e56d88")
+			(uuid "49c88a2c-c749-4059-942f-1b95bdf0b7b0")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2139,22 +2158,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9ef54f0a-51b5-47be-8fa9-825e11333eb0")
+			(uuid "237f136e-ccc4-410c-a9ec-8b1c457146ae")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "353e66bb-2e04-46e8-9135-31bc70c6d69a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2162,12 +2182,6 @@
 		(path "/32130bc1-2146-4fe9-8eea-28a7b0254705")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2218,8 +2232,8 @@
 			(uuid "f4a9e863-6114-4a02-80c0-379842abe945")
 			(effects
 				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2263,20 +2277,22 @@
 		(property "Reference" "F1"
 			(at -0.02 1.56 90)
 			(layer "F.SilkS")
-			(uuid "2bfb4878-9765-491d-a3c5-61401a4ca839")
+			(uuid "79af987a-d5dc-4186-880a-839f637dd698")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "Fuse"
 			(at 0.03 -1.48 90)
 			(layer "F.Fab")
-			(uuid "1ba464c0-ae68-49b5-9a3d-24bf394b2c46")
+			(uuid "02551cf8-bb37-474b-97f0-fbe397298751")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2284,10 +2300,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "1c8f61ca-9768-420a-b9b9-5fecd8a8e409")
+			(uuid "9cefe94e-574c-48eb-b3f2-1f9d4860e5f8")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2295,22 +2312,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "54fef2d4-4c65-499f-a145-7e599de94423")
+			(uuid "25c6d9a6-4d6a-4924-bff3-90ce1f3cd712")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "82731086-1b55-47f5-a585-426283fc82c2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2318,12 +2336,6 @@
 		(path "/9f9c6af8-0077-489d-9efd-d7e559d435ef")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2374,8 +2386,8 @@
 			(uuid "ea8fbcfa-01b1-4114-96ee-a39ba91ed667")
 			(effects
 				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2419,22 +2431,22 @@
 		(property "Reference" "C6"
 			(at -0.95 -1.93 90)
 			(layer "F.SilkS")
-			(uuid "d8c2bde1-75c7-4581-954d-8f5ddb6df020")
+			(uuid "249bafe2-3714-418c-96e7-8d6c75e02bdb")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100nF"
 			(at 0 1.68 90)
 			(layer "F.Fab")
-			(uuid "a4920b9f-05d8-44a8-820e-b76e128e3256")
+			(uuid "b51d6e1b-b035-48bc-bd6e-65ac79ead8ee")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2442,10 +2454,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "dab70532-2b7a-425f-96c6-c4ce8768b61f")
+			(uuid "3e4bb0d8-31a9-4f9d-b251-a311f201bdd8")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2453,22 +2466,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6c12f58c-ce74-4d65-bb27-ea5cc2fbf022")
+			(uuid "40c6ca6e-918e-4143-bac6-e31b9609a1f2")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "b534cb06-9854-4dc9-8850-f76e9867bca2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2476,12 +2490,6 @@
 		(path "/2e487246-77a7-4a43-9320-fc841c5a3810")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2532,8 +2540,8 @@
 			(uuid "ae5f079f-9be9-464e-948c-1e9b3ede2480")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2577,20 +2585,22 @@
 		(property "Reference" "Q3"
 			(at 2.39 -2.465 0)
 			(layer "F.SilkS")
-			(uuid "5b080d9b-36c6-4104-bc1a-f1b91a07282e")
+			(uuid "994428b2-66da-43e9-8937-f685a9e6a96f")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "IRLZ44N"
 			(at 1.37 -3.825 0)
 			(layer "F.SilkS")
-			(uuid "de1e33db-6d8a-4c1e-b0fd-9e666dd937e5")
+			(uuid "c2b230f2-d980-4024-a841-9a02912ca3a1")
 			(effects
 				(font
-					(size 0.6 0.6)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2598,10 +2608,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "bd50223b-f162-4c14-8abd-26614bcd53e8")
+			(uuid "3d902082-8d5c-472d-b716-171ad2aa0a49")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2609,22 +2620,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9e1b751f-841c-4fd6-8518-393bc54edf77")
+			(uuid "aa3dbbe1-4f49-40a2-8678-a06da81d00d8")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "package/TO_SOT/THT"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "9825a741-3307-4519-8996-30bcd0ae3057")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2632,12 +2644,6 @@
 		(path "/dfa929c5-ac6d-4072-aa94-a669a0c9e039")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2762,6 +2768,17 @@
 			(layer "F.Fab")
 			(uuid "972a8c34-48e5-495f-8b9c-a1b21c49ece8")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 2.54 -0.95 0)
+			(layer "F.Fab")
+			(uuid "7c37b507-0e71-453b-94d2-4edca677fb84")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" thru_hole rect
 			(at 0 0)
 			(size 1.905 2)
@@ -2817,22 +2834,22 @@
 		(property "Reference" "R10"
 			(at 0 -1.65 0)
 			(layer "F.SilkS")
-			(uuid "2cc8943b-2d8c-4f56-bd65-e938c3bc46d4")
+			(uuid "08876822-a7f1-4ac0-a799-0a4a1aef3438")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "10k"
 			(at 0 1.65 0)
 			(layer "F.Fab")
-			(uuid "c115167b-b3d0-42e9-a8d5-8564c4fb8ca3")
+			(uuid "aa992758-aa4b-40da-8b74-14d4f2019da1")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2840,10 +2857,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9286f934-0fc7-4936-b9da-5b101ec12160")
+			(uuid "34cb5a53-6d33-4d8a-8950-85d4f21c12dd")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2851,22 +2869,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "7dac8e7c-2400-471a-8385-d7f759449af6")
+			(uuid "08cabe37-9aeb-4a85-9270-3a4af479151a")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "85ac8bc7-6fed-42b6-9646-008dc0af78ca")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2874,12 +2893,6 @@
 		(path "/ff5f5716-9643-4833-a376-334d0500f417")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -2930,8 +2943,8 @@
 			(uuid "ca71bb59-f7dc-42c1-a041-16eff74277bf")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2975,20 +2988,22 @@
 		(property "Reference" "R1"
 			(at -0.065 1.3 90)
 			(layer "F.SilkS")
-			(uuid "e087751d-386c-4cde-8465-45411a7c1003")
+			(uuid "61127a25-ac41-4379-8923-615198918602")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100k"
 			(at 0.195 -1.44 90)
 			(layer "F.SilkS")
-			(uuid "470cd20f-fff5-4163-aecd-2d8e0bce6747")
+			(uuid "7689b60f-d2ea-4b66-87a3-4fb87c6c06a8")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -2996,10 +3011,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "816d198b-3039-447a-9c44-694d36ef6709")
+			(uuid "6b8f46c2-8d9c-42eb-ae86-834fcdcaee86")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3007,22 +3023,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6a978da1-7958-416c-8809-8203e49b18d9")
+			(uuid "7ff933db-91a9-493f-9866-8ee1ec4a4997")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "6e8686b1-b1b6-4467-89d2-56f379e7d433")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3030,12 +3047,6 @@
 		(path "/a766eeb5-d302-4d66-baf0-568a0f9a9a5d")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3086,8 +3097,8 @@
 			(uuid "8dc2a6f7-38e4-4e4c-b802-e851971119f4")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3131,20 +3142,22 @@
 		(property "Reference" "C2"
 			(at 0.03 1.46 90)
 			(layer "F.SilkS")
-			(uuid "af6cef29-7578-4566-a46d-1baeb31654a9")
+			(uuid "7e658a38-5ead-4905-984e-246e593b3667")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100nF"
 			(at -0.36 -1.55 90)
 			(layer "F.SilkS")
-			(uuid "c83a9248-ea7a-4cfa-a12c-5992d24a5e9f")
+			(uuid "45283c0b-1244-433d-8915-95483be0c649")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3152,10 +3165,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "940914b9-7d48-4468-843e-6a7a76767b26")
+			(uuid "b2255359-09e7-455f-87a0-330b4a0b0545")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3163,22 +3177,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "de637bf8-2de4-466b-8c09-1b615b7a0ee1")
+			(uuid "ba5e5175-d182-4b74-954d-53805dad1fc5")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "300d44ef-f8b1-475b-8c58-be9112b8f34d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3186,12 +3201,6 @@
 		(path "/7e180e7d-d5bb-4bcd-b20e-c883d8b1f1c4")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3242,8 +3251,8 @@
 			(uuid "9b017e7d-a964-43c2-9d79-8f77ceeb2f60")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3287,22 +3296,22 @@
 		(property "Reference" "F6"
 			(at 0 -1.83 90)
 			(layer "F.SilkS")
-			(uuid "58e849d0-2c6e-4f87-847e-f84e8dc8e1ae")
+			(uuid "6daa85f3-5f3b-4640-8fea-1046b6edd6ca")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "3A"
 			(at 0 1.83 90)
 			(layer "F.Fab")
-			(uuid "4c0aeb6b-fc90-4dde-9aac-d48ee99b7fda")
+			(uuid "5959bb66-ef19-4278-91e6-af1f219b80aa")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3310,10 +3319,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "31f2dba7-8d22-4654-b313-ad0c50df819f")
+			(uuid "e4bf0d6c-1c79-4026-859f-660dc5db7b38")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3321,22 +3331,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "4fd39c3f-eab1-4c4c-b9f3-f0c696dda11b")
+			(uuid "91da3aab-a950-4eab-988d-e52e2842b803")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "f3c8d7bb-0764-419b-908f-c6fe0f4f3a2b")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3344,12 +3355,6 @@
 		(path "/3978c320-73ff-438d-ad18-3dbeabaea395")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3400,8 +3405,8 @@
 			(uuid "7b4b3025-ba61-4e15-a1cc-c2f4c1d32d3f")
 			(effects
 				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3445,22 +3450,22 @@
 		(property "Reference" "C5"
 			(at 2.94 -2.84 90)
 			(layer "F.SilkS")
-			(uuid "916ac0c9-34f2-425e-96ce-10afb2e3f028")
+			(uuid "7126853e-d0f8-45ba-be77-f9886dafba4a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100uF"
 			(at 0 1.68 90)
 			(layer "F.Fab")
-			(uuid "6e5aed8d-8bf0-44b4-887a-fdb8a08dba0f")
+			(uuid "780c0389-f633-4dbb-bc83-5e84bede01aa")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3468,10 +3473,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "e1e29439-13d6-463f-9ed0-03c2d78d769b")
+			(uuid "65332583-d670-4879-8099-b011753b18bc")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3479,22 +3485,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "87b18803-8b00-498e-b449-c90167d0325f")
+			(uuid "1c10603c-24c6-4c6a-90ee-2c3b6d702e6d")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "7ba7def0-0e26-477a-a732-a10ca17561a5")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3502,12 +3509,6 @@
 		(path "/919982d2-cac7-41d1-beea-3d5b629b2e49")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3558,8 +3559,8 @@
 			(uuid "2a9e1cc8-575e-4c41-8278-eebb25cb0ef4")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3604,22 +3605,22 @@
 			(at 0 -5.25 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "93585aa8-77c9-4d47-a884-d89edc1e9ced")
+			(uuid "1e271210-488d-4076-a4b2-bfa82b784d8d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "MountingHole"
 			(at 0 5.25 0)
 			(layer "F.Fab")
-			(uuid "2ec86909-60b9-4890-af50-eb0c5504b39a")
+			(uuid "611d0677-a53d-4fec-8804-dec89ef95015")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3627,10 +3628,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "38f1cff6-1294-4412-bc23-da9b6555c6d2")
+			(uuid "9965291b-fe83-4658-b868-6a3a5079ad30")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3638,22 +3640,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "ffa4e83d-f575-4f2a-a930-2983b0cad952")
+			(uuid "ce3f9b6f-3780-44c7-ae87-5c4428766aca")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "84a18e49-96d1-45a7-9d7c-a712fb960df5")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3661,12 +3664,6 @@
 		(path "/fdec33ac-1c8f-43e8-a199-912e2e3e4eb2")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins)
-			)
-		)
 		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -3698,7 +3695,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3720,20 +3717,22 @@
 		(property "Reference" "R3"
 			(at -0.01 1.31 90)
 			(layer "F.SilkS")
-			(uuid "dd7b6210-ad52-4b8e-a11b-d302a742a043")
+			(uuid "ef7bcadf-c73d-42bf-9f02-9fc9eaca4136")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "4.7k"
-			(at -0.04 -1.44 90)
+			(at 3.54 0.77 90)
 			(layer "F.SilkS")
-			(uuid "e5ac1b28-deab-4951-ba31-c433886ac03c")
+			(uuid "5c0e924f-8a36-4368-a3a3-1bea6127341e")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3741,10 +3740,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "96891b46-4f1c-4e6e-824d-f46d4671cd2b")
+			(uuid "e5c593dc-93b7-4ba4-a160-deae81c67ad0")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3752,22 +3752,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "d3bf7aab-2631-4a47-9f56-6c5615efd7eb")
+			(uuid "070214f2-8411-40d5-aea7-f19c211d446b")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "f1059756-d875-4cfe-9845-1d526438bf36")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3775,12 +3776,6 @@
 		(path "/7f6f4bb7-0ea2-4fc5-b796-2a222fff1b30")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -3831,8 +3826,8 @@
 			(uuid "a5169373-4213-4981-bb82-1c8047fdbeab")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3876,11 +3871,11 @@
 			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "d646741f-72dc-42ff-92bd-f108b567ad26")
+			(uuid "e1060447-4ab4-40c0-b209-2ac0721389e4")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3888,11 +3883,11 @@
 			(at 6.9075 -22.67 0)
 			(unlocked yes)
 			(layer "F.Fab")
-			(uuid "de8eeabb-71bf-4f16-b3ad-70109b3f4224")
+			(uuid "e4496396-5143-4c7d-b123-e39d67a07d76")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3901,11 +3896,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "0dadc908-05d5-4621-834f-10666fe21abc")
+			(uuid "a600a9eb-103f-404c-98df-4979b8afbae7")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3914,11 +3909,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "52ae0dd5-d211-47ce-b403-09f234eaf6fc")
+			(uuid "e7994bb9-a551-4f93-b65c-ce862d6bfe14")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -3941,17 +3936,18 @@
 				(type default)
 			)
 			(fill no)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "89681dcf-50ba-4ecd-8b47-68d7349c8e4f")
 		)
 		(fp_text user "Vin"
 			(at 5.1475 -0.34 270)
 			(unlocked yes)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "b52a8ca1-0e3a-4372-963b-bbe222520759")
 			(effects
 				(font
 					(size 1 1)
+					(thickness 0.2)
 				)
 				(justify left bottom)
 			)
@@ -3959,12 +3955,12 @@
 		(fp_text user "GND"
 			(at 12.8575 -0.38 270)
 			(unlocked yes)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "77dbf93c-41af-47f5-9fc7-8226d6688142")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.2)
 				)
 				(justify left bottom)
 			)
@@ -3972,37 +3968,12 @@
 		(fp_text user "MPPT Solar Module"
 			(at 10.42 -15.53 0)
 			(unlocked yes)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "03231cf1-1f77-4da8-a0b7-71b58f0126cf")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
-				)
-				(justify left bottom)
-			)
-		)
-		(fp_text user "GND"
-			(at 15.7275 -44.77 90)
-			(unlocked yes)
-			(layer "F.SilkS")
-			(uuid "9c2ba793-3913-432f-b094-f217f5f873cd")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.1)
-				)
-				(justify left bottom)
-			)
-		)
-		(fp_text user "Vout"
-			(at 7.3075 -44.87 90)
-			(unlocked yes)
-			(layer "F.SilkS")
-			(uuid "eb5ea8e2-10cf-4814-9e63-298309e3125a")
-			(effects
-				(font
-					(size 1 1)
+					(thickness 0.2)
 				)
 				(justify left bottom)
 			)
@@ -4015,8 +3986,34 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
+			)
+		)
+		(fp_text user "GND"
+			(at 15.7275 -44.77 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(uuid "9c2ba793-3913-432f-b094-f217f5f873cd")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.2)
+				)
+				(justify left bottom)
+			)
+		)
+		(fp_text user "Vout"
+			(at 7.3075 -44.87 90)
+			(unlocked yes)
+			(layer "F.Fab")
+			(uuid "eb5ea8e2-10cf-4814-9e63-298309e3125a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.2)
+				)
+				(justify left bottom)
 			)
 		)
 		(pad "1" thru_hole rect
@@ -4074,20 +4071,22 @@
 		(property "Reference" "D8"
 			(at -0.05 -1.505 0)
 			(layer "F.SilkS")
-			(uuid "7b1f57a8-1728-41e9-8bc2-c7d2498cd3e1")
+			(uuid "82109fc2-c2f8-48ce-8f3f-571b58c386a0")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "LED_Red"
 			(at -0.09 1.505 0)
 			(layer "F.SilkS")
-			(uuid "4bb046a4-45da-4119-8281-27095cf96fde")
+			(uuid "dd5ccdf0-2ebd-4cbc-a073-4b06e17bf80d")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4095,10 +4094,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c8393ed1-c8f9-4692-b320-fae7e4e55f6d")
+			(uuid "b94b08c1-c3c6-4a9e-ac12-58a4d314029d")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4106,22 +4106,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "942db7fd-3fc2-4d20-8949-737c4ef84a39")
+			(uuid "0231a35d-13e3-46a5-acac-e0ff44bcb1b5")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "f653d2d6-fe1b-489f-a1f1-32ede97db5bb")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4134,7 +4135,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4142,12 +4143,6 @@
 		(path "/6a0abade-0c11-426e-824e-9745ab3a7ed1")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4247,8 +4242,8 @@
 			(uuid "328175c2-c23a-42bc-923f-ad1baf9924bc")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4294,22 +4289,22 @@
 		(property "Reference" "R15"
 			(at 0 -1.65 90)
 			(layer "F.SilkS")
-			(uuid "a551e057-75f4-4513-b6fd-117117131206")
+			(uuid "07da7fca-e9a1-4f25-aadd-b270cdbd89b5")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100 ohm"
 			(at 0 1.65 90)
 			(layer "F.Fab")
-			(uuid "dee0a1bd-498f-4c65-b0c1-2e39aa0e1da2")
+			(uuid "10315c32-3293-47ac-83b4-ee4ec55a164f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4317,10 +4312,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "bb53aeb4-046f-4e19-a1a2-60a572d906ae")
+			(uuid "4538d2a6-5dfb-4714-9742-6c603cb7d44a")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4328,22 +4324,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "fb52ad7c-1050-4dc1-b43d-3834542fb137")
+			(uuid "147b9832-8c0d-4851-a0b5-8b424b02f1e7")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "1b954248-df5b-4c2c-b70d-151ad641c1c2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4351,12 +4348,6 @@
 		(path "/a12bd3ae-7263-43a2-8f20-89bb4d8b7a5b")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4407,8 +4398,8 @@
 			(uuid "948ec699-6deb-490b-8fe0-3cd7d7ae065c")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4451,11 +4442,11 @@
 			(at 0 -0.5 270)
 			(unlocked yes)
 			(layer "F.SilkS")
-			(uuid "392f0da0-5fa6-468c-a63a-cb1c407eaea0")
+			(uuid "e0b85ff2-9fde-4d69-b29e-90f55a3ca6ac")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4463,10 +4454,11 @@
 			(at -0.63 0.97 270)
 			(unlocked yes)
 			(layer "F.SilkS")
-			(uuid "459928d0-bc93-4258-8d87-4d37fce85aec")
+			(uuid "5b021dc4-8482-4e48-80ca-4f0bd76b494b")
 			(effects
 				(font
-					(size 0.8 0.8)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4475,11 +4467,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "edf48267-6cac-47d3-8b03-45e436a15543")
+			(uuid "2d1241b7-0915-4bb5-ac5b-6997547f4dda")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4488,11 +4480,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "b4db9b39-0621-48d8-bfa1-4e65d19749ee")
+			(uuid "3747c60c-0e9a-466f-aae4-842b5879a3eb")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4515,7 +4507,7 @@
 				(type default)
 			)
 			(fill no)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "7f3ec8ef-5a59-4b01-979b-8f64ed8c8e90")
 		)
 		(fp_text user "${REFERENCE}"
@@ -4526,7 +4518,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4593,20 +4585,22 @@
 		(property "Reference" "C3"
 			(at 0.0075 -1.37 0)
 			(layer "F.SilkS")
-			(uuid "6396b0e5-3d6f-4c92-9900-1ed3645eecef")
+			(uuid "c3200764-9b36-4e5b-8ce4-1de464a5ed69")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100uF"
 			(at 1.3575 1.44 0)
 			(layer "F.Fab")
-			(uuid "68d2b446-c1d0-4d03-aece-4e4d423ace1c")
+			(uuid "16f2623f-48b7-4bfb-8ae5-6b969da0a0a1")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4614,10 +4608,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "e8811dd9-708f-47bc-b8d4-86e00560a274")
+			(uuid "bd08a6e2-7573-4b2f-9640-e5ea3d034949")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4625,22 +4620,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "d9034c8b-02ab-4609-8159-f757cf13f587")
+			(uuid "91f7b90b-d645-405d-b911-aa0e9dd06b89")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "f960d8d7-0bc6-42ee-9043-65d15a902334")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4648,12 +4644,6 @@
 		(path "/6c093759-730e-4175-98af-9f9fd608c9e2")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4704,8 +4694,8 @@
 			(uuid "9a575275-343c-4c77-961e-dbe24bac9f41")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4749,20 +4739,22 @@
 		(property "Reference" "R4"
 			(at 0.02 1.455 0)
 			(layer "F.SilkS")
-			(uuid "8594ce69-c9d6-4a43-8b9c-fd5d4b347fc9")
+			(uuid "038cabaf-a330-472c-8873-30494658b1c7")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "220"
 			(at -0.02 -1.475 0)
 			(layer "F.SilkS")
-			(uuid "59057e73-39dd-47c0-a4a7-43545ee36c08")
+			(uuid "25fe82f4-7ef1-4a14-ab23-49994803fda8")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4770,10 +4762,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "bcde220d-f1e3-4eb0-9d64-13dd7a613181")
+			(uuid "c9197b94-58cd-4311-9ea2-eb3693c4b3f0")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4781,22 +4774,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "14268851-161c-4259-abf0-ead9f3d4ed6c")
+			(uuid "99368eb6-d7f1-4f22-bb5f-3f2c2e74f7e5")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "8f053342-7190-43d8-b4c6-ecc1379b8a47")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4804,12 +4798,6 @@
 		(path "/46db71d0-63d1-4be3-b4ef-3e67df4dc47e")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -4860,8 +4848,8 @@
 			(uuid "f6b3fd1e-7217-48f8-8f7f-d3f407b11409")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4906,11 +4894,11 @@
 			(at 0 -5.25 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "f7d62729-19e8-4d55-ae1b-ee4c47e54287")
+			(uuid "384dc60a-b904-4380-a48d-95c70cd06726")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4918,11 +4906,11 @@
 			(at 0 5.25 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "98685a94-6b9c-4790-b209-30a7bbff5a6e")
+			(uuid "4381334f-578b-49e4-b368-651e2b7631b6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4930,10 +4918,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "4969e583-b187-464a-a189-56773102fae6")
+			(uuid "aba8c6c4-ae7f-4846-86c7-181fe84cc932")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4941,22 +4930,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "e0b7d53b-2ecd-4c44-80df-85203ac16136")
+			(uuid "ffb30192-dc67-4d1c-8fae-620a2779a70a")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "df690afc-4b41-4b95-9dff-e10d55248447")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -4964,12 +4954,6 @@
 		(path "/d62c7bbd-3681-44f3-b45b-5161b92a0e2d")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins)
-			)
-		)
 		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -5001,7 +4985,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5023,21 +5007,22 @@
 		(property "Reference" "J13"
 			(at 1.9875 4.085 0)
 			(layer "F.SilkS")
-			(uuid "97fa3295-f0f6-457b-94e1-3685611c9574")
+			(uuid "2e562ef8-bb77-40c9-9c3f-e42699959a85")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "ADCS_5V_POWER"
 			(at 1.98 6 0)
 			(layer "F.SilkS")
-			(uuid "26f7bcaf-bc63-4234-991b-600028e0e50e")
+			(uuid "dc83a006-2f72-4a4c-b6dd-924d73d66f43")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5045,10 +5030,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c2ee54bc-44e0-43d8-a612-5f5af85e51ca")
+			(uuid "114a8c9f-a2d3-487f-b2dc-a0bee00e1d05")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5056,22 +5042,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "84fcc420-ece1-4317-b2f3-cb45ed3e7c88")
+			(uuid "79de7242-d93c-406a-aeea-1107d85f958a")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "38ef2c98-ee49-4111-b5da-0024150fb3b5")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5079,12 +5066,6 @@
 		(path "/3f38da45-897e-4e89-8f43-1a37b73ef5cc")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5276,7 +5257,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5325,22 +5306,22 @@
 		(property "Reference" "J3"
 			(at 4.88 3.64 90)
 			(layer "F.SilkS")
-			(uuid "ce4b010e-490a-421b-a532-60b7d16a7325")
+			(uuid "0d283cd0-646c-415c-a180-0f050ab5580d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "BMS_MODULE"
 			(at -3.28 0.305 0)
 			(layer "F.Fab")
-			(uuid "aecad16b-ff94-4e04-819b-407fe623514c")
+			(uuid "f5dfc1c2-6c95-4f7a-9340-f81e03811138")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5348,10 +5329,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "ab5f040e-12b7-4c36-b44f-23e71586602d")
+			(uuid "60c17cb6-f96f-4634-9440-b43fbad8671e")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5359,22 +5341,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "13ddc7c5-985e-40d2-aa4c-6cd80ce25172")
+			(uuid "8e285e81-89db-4ff8-8aae-f76170d71c9e")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "9d7bb672-98b7-4c14-aefb-45b2f2ad9169")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5382,12 +5365,6 @@
 		(path "/4abe2587-6a0b-45b6-96b5-019abe16de26")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5579,7 +5556,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5661,20 +5638,22 @@
 		(property "Reference" "TP4"
 			(at 0 -3 0)
 			(layer "F.SilkS")
-			(uuid "81fc8d92-a098-4b88-9f1a-043e545e7f4a")
+			(uuid "7d3e03fe-8e8a-4327-92ab-de331926affb")
 			(effects
 				(font
-					(size 0.6 0.6)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "GND_TEST"
 			(at 0 3 0)
 			(layer "F.SilkS")
-			(uuid "da5cd652-1711-4687-bbda-25091ab36fcb")
+			(uuid "0b8d7505-91f7-4a37-97bd-8884d83fe835")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5683,11 +5662,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "693f3e46-eb5c-4e80-a80d-9f76d058e4f6")
+			(uuid "7bba30c6-f38b-4863-8e61-b0948fcfa210")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5696,11 +5675,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c36facd8-32d5-4ce2-ac83-a7b970e3de10")
+			(uuid "5f3e4eb8-5c9c-4948-957e-da2a7aa864cf")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5708,12 +5687,6 @@
 		(path "/89039af8-f705-4319-83a2-34e5ab422921")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1")
-			)
-		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -5737,6 +5710,17 @@
 			(layer "F.CrtYd")
 			(uuid "2389fd5c-561a-45dc-b6bb-6be5a16e7450")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 0 -2.5 0)
+			(layer "F.Fab")
+			(uuid "54221ff0-5dd7-4bfc-bc8f-a095b5dc8cbe")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" thru_hole circle
 			(at 0 0)
 			(size 3 3)
@@ -5759,20 +5743,22 @@
 		(property "Reference" "C1"
 			(at -0.0025 -1.48 90)
 			(layer "F.SilkS")
-			(uuid "4c1aeda0-9170-4092-9040-d1f216e0b315")
+			(uuid "af35503b-186e-48bf-8edf-fb85e230e3f2")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100uF"
 			(at 0.3175 1.58 90)
 			(layer "F.SilkS")
-			(uuid "d9588b02-2827-4261-b3d6-d97e20d007d6")
+			(uuid "4af00d53-18d5-42d9-922e-9d8d84c64043")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5780,10 +5766,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "bac5c46d-9ba3-4fa1-bf84-0af89c175780")
+			(uuid "608768d8-d3fd-4d17-a280-f7a4bc041483")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5791,22 +5778,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "3330a3eb-9640-4313-b9db-fc723b80eedc")
+			(uuid "f9881b85-74f0-4340-a821-50b62c92d6ff")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "dbacc676-ce3e-4177-99da-d7f90e09d90b")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5814,12 +5802,6 @@
 		(path "/366efdd2-7cf9-4e48-93ab-e05a51d26589")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -5870,8 +5852,8 @@
 			(uuid "74b3435b-9089-4db1-83a7-65659d31b8e0")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5916,22 +5898,22 @@
 			(at 0 -5.25 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "62c0061d-d0d7-48a3-9bc8-cfa803003efc")
+			(uuid "ee8c0e89-e2f1-462b-b1bf-56ef24986e66")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "MountingHole"
 			(at 0 5.25 0)
 			(layer "F.Fab")
-			(uuid "a98154ac-0c1f-4be8-83e3-3d4940d274a9")
+			(uuid "3f6b5e15-4236-4a55-af9e-b846c917f350")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5939,10 +5921,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "f1b6245f-474b-4029-abf8-b00744c3516d")
+			(uuid "f1e203b6-8fed-44b6-af88-9759aafcfd89")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5950,22 +5933,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "dd788b01-2d5f-40ba-8e4e-bd4102579894")
+			(uuid "4faf25cf-9107-4868-8a64-c039c6509e86")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "6bacd54c-caf5-4e81-85b7-6d64ee5fdebe")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -5973,12 +5957,6 @@
 		(path "/e15b7916-ace2-4b6c-aa81-de8fd728a1c1")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins)
-			)
-		)
 		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -6010,7 +5988,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6032,20 +6010,22 @@
 		(property "Reference" "R2"
 			(at -0.1025 -1.31 90)
 			(layer "F.SilkS")
-			(uuid "a67ce37d-b5ac-4167-a9b1-4df4efb55feb")
+			(uuid "4c7f963e-7bd1-4205-b927-e1c04699354e")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "4.7k"
-			(at 0.1075 1.4 90)
+			(at 3.5525 -1.295 90)
 			(layer "F.SilkS")
-			(uuid "c3a020a3-ed7b-4535-aa0c-65a99186b832")
+			(uuid "811d9587-e466-4eaa-bbfb-e3973bdbf838")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6053,10 +6033,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "39fe88d8-92b2-4981-8381-41eaaa926799")
+			(uuid "ba9f44fb-358d-476a-91d7-58f74bd48471")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6064,22 +6045,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "fd2e96a1-7a36-48fd-9015-69095dd9779b")
+			(uuid "58cc787d-7322-4939-83e7-2b4b9eab4831")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "977868ca-7be1-45ac-b118-1d302f9bbd47")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6087,12 +6069,6 @@
 		(path "/d77c33bc-80d1-4d6e-bfeb-0125a5b9288c")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6143,8 +6119,8 @@
 			(uuid "56261594-2589-40b5-b94c-3d485fa68f9a")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6188,22 +6164,22 @@
 		(property "Reference" "J4"
 			(at 3.6975 -2.88 90)
 			(layer "F.SilkS")
-			(uuid "68f98b8e-7a52-4b5c-9129-ccb8db9aa849")
+			(uuid "1ade607d-b0f7-49fc-a2e6-ca7f3c5797df")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "BATTERY_PACK"
 			(at 4.42 7.5 90)
 			(layer "F.Fab")
-			(uuid "ad6decde-2d16-4fbd-b92b-48c29bf3c785")
+			(uuid "24e8d087-07a5-4910-9eaa-ac51d64e556d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6211,10 +6187,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "150fd85e-5d30-42e5-83cb-b078674c1078")
+			(uuid "9a154b00-6051-4ade-93f7-6d093b17ddce")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6222,22 +6199,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6de9ce5d-1768-46c0-b9a5-d3a87d47398c")
+			(uuid "94ac8d99-acfb-4720-ba58-41ca4eda959c")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "3fe48b3a-13b7-4c67-a68f-a076c4e05ef6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6245,12 +6223,6 @@
 		(path "/e7b9b2c1-acde-4d95-bac4-2a934f34902d")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6442,7 +6414,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6502,20 +6474,22 @@
 		(property "Reference" "J25"
 			(at 1.27 -4.37 0)
 			(layer "F.SilkS")
-			(uuid "f2a0155e-830c-4273-87c5-fc9bd25c48c1")
+			(uuid "827812f4-130a-43ac-94b8-55704dcdc3c3")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "Pyro"
 			(at 1.1 4.6125 0)
 			(layer "F.SilkS")
-			(uuid "c2a0ec6b-5051-4447-89ee-84b1c5049871")
+			(uuid "5527f81b-6d89-425d-ba0f-d94ff9ceabb2")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6523,10 +6497,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "73b5a111-7f86-42d9-af64-47dedfd8e323")
+			(uuid "9927cb3d-748c-4380-b883-b92d5106c95b")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6534,22 +6509,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6945d85d-deff-4cae-bb3b-c913051bb4e1")
+			(uuid "f39e6bb1-706b-4716-b272-002625718547")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "terminal_block/TE_Connectivity"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "46b47883-2fe5-4cd9-bcef-bd4e87c42fe2")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6557,12 +6533,6 @@
 		(path "/a4079bf3-4299-4d45-92db-40e871962352")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -6797,7 +6767,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6846,11 +6816,11 @@
 			(unlocked yes)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "da2eda8a-854b-41b1-b8e3-e26848a1fd0b")
+			(uuid "06ad48e1-7412-4899-b7ab-1154a36c8aed")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6859,11 +6829,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "481b7e1e-5dea-4910-a042-d08c603eee47")
+			(uuid "e163699a-9cd7-4042-9bc2-113ab72286b3")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6872,11 +6842,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "5ddb9356-72fa-4065-9a67-7138b04d115b")
+			(uuid "e639662b-87b3-45f6-91b3-18720f418862")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6885,23 +6855,23 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "0c74a221-dc0c-4531-8b26-d4cfb07c6c09")
+			(uuid "b42fc11e-77df-45aa-8ad3-f321999e5931")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/pin_header_socket"
 			(at 6.77 -21.92 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "e092d997-dc43-45ce-9e33-7d20e06ae83d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -6924,7 +6894,7 @@
 				(width 0.12)
 				(type solid)
 			)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "a7c18684-ec0e-4afa-95ca-a337cebaf210")
 		)
 		(fp_line
@@ -6934,7 +6904,7 @@
 				(width 0.12)
 				(type solid)
 			)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "3ea29b12-cdde-4975-b5d6-f4290494210a")
 		)
 		(fp_line
@@ -6944,7 +6914,7 @@
 				(width 0.12)
 				(type solid)
 			)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "c5bef655-717e-4afe-a9bf-c6ddc87427e6")
 		)
 		(fp_line
@@ -6954,29 +6924,8 @@
 				(width 0.12)
 				(type solid)
 			)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "3e4f5ed0-dafc-4058-9aaa-6879f427eeeb")
-		)
-		(fp_line
-			(start 3.31 -17.55)
-			(end 3.31 0.34)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "2bf8ca67-802f-4399-9951-66ed41fe5191")
-		)
-		(fp_rect
-			(start 0 -20.47)
-			(end 20 0.49)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.SilkS")
-			(uuid "91a39fc1-557d-46ca-824e-92f76d14474f")
 		)
 		(fp_line
 			(start 0.66 -14.2925)
@@ -7028,18 +6977,26 @@
 			(layer "F.Fab")
 			(uuid "8fd5afe7-ccdf-43b8-95e8-b6c03531c335")
 		)
-		(fp_text user "INA226 Sensor"
-			(at 5.97 -9.35 0)
-			(unlocked yes)
-			(layer "F.SilkS")
-			(uuid "f3cde8b4-5e18-446a-8ceb-77533ac5d1ac")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-				(justify left bottom)
+		(fp_line
+			(start 3.31 -17.55)
+			(end 3.31 0.34)
+			(stroke
+				(width 0.12)
+				(type solid)
 			)
+			(layer "F.Fab")
+			(uuid "2bf8ca67-802f-4399-9951-66ed41fe5191")
+		)
+		(fp_rect
+			(start 0 -20.47)
+			(end 20 0.49)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "91a39fc1-557d-46ca-824e-92f76d14474f")
 		)
 		(fp_text user "${REFERENCE}"
 			(at 1.93 -9.93 90)
@@ -7048,8 +7005,21 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
+			)
+		)
+		(fp_text user "INA226 Sensor"
+			(at 5.97 -9.35 0)
+			(unlocked yes)
+			(layer "F.Fab")
+			(uuid "f3cde8b4-5e18-446a-8ceb-77533ac5d1ac")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.2)
+				)
+				(justify left bottom)
 			)
 		)
 		(pad "1" thru_hole rect
@@ -7151,22 +7121,22 @@
 		(property "Reference" "F4"
 			(at -0.1 -2 90)
 			(layer "F.SilkS")
-			(uuid "363e6a05-ae9b-4828-9994-72abb46e1f9a")
+			(uuid "0f17d5dd-85b9-4afc-9e43-f20fd53b5df5")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "TBD"
 			(at 0 2 90)
 			(layer "F.Fab")
-			(uuid "da048a70-071e-4449-98f5-83c82918b4d5")
+			(uuid "2e9ecd72-1082-43eb-9309-8c7719598e93")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7174,10 +7144,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "4973e5e3-0a92-4c2b-b01d-1a123fafbadf")
+			(uuid "a1e9c735-5822-4a41-8266-c0cd8474cfe7")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7185,22 +7156,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "f4713fd2-2a46-4d9d-bf0b-204633434b42")
+			(uuid "374b2bcb-6489-416c-88d7-85e218f23b86")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "03e0b672-0cfa-49a5-b4ee-778af6c5081e")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7208,12 +7180,6 @@
 		(path "/eae124b0-bea1-4847-ac57-6e01a5a86225")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7264,8 +7230,8 @@
 			(uuid "13c15725-b18f-40d4-b555-3d8fb82a6df7")
 			(effects
 				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7309,20 +7275,22 @@
 		(property "Reference" "TP1"
 			(at 0 -1.648 0)
 			(layer "F.SilkS")
-			(uuid "6995d9dd-8906-4d08-a213-a850e4304f76")
+			(uuid "1dec3f2c-2e7f-4ce5-ad6a-5df541909b87")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "VBUS_TEST"
 			(at 0.16 1.75 0)
 			(layer "F.SilkS")
-			(uuid "faec78b5-2f40-4593-85ce-8a2a506d91fa")
+			(uuid "019cd7d2-5667-454e-8ed7-898830b3b743")
 			(effects
 				(font
-					(size 0.6 0.6)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7331,11 +7299,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c2a728ca-711b-4ccc-80c3-4d2d8378d018")
+			(uuid "d48163c7-0c35-4181-80c9-c10320006eeb")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7344,11 +7312,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "469418f5-14d7-4567-a2f9-23d214849d25")
+			(uuid "b968a65b-c209-4a0b-9d00-92d9ebcc0e2a")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7356,12 +7324,6 @@
 		(path "/eb7cc792-567f-4025-82f3-101d95a3f7dd")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1")
-			)
-		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -7385,6 +7347,17 @@
 			(layer "F.CrtYd")
 			(uuid "ea29bd11-3ed1-464e-95aa-f6819fdc1636")
 		)
+		(fp_text user "${REFERENCE}"
+			(at 0 -1.65 0)
+			(layer "F.Fab")
+			(uuid "ed3e5a02-6f49-4eb1-bda7-3802036d4c32")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
 		(pad "1" smd circle
 			(at 0 0)
 			(size 1.5 1.5)
@@ -7405,21 +7378,22 @@
 		(property "Reference" "J10"
 			(at 1.9925 4.11 0)
 			(layer "F.SilkS")
-			(uuid "93c7454d-2f65-4bf6-823f-23fc4262a490")
+			(uuid "dc42e77c-a1da-4740-aba4-6a974593295b")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "AUX_POWER_OUT"
 			(at 2.0525 6.43 0)
 			(layer "F.SilkS")
-			(uuid "58c3c832-e965-4c59-bf7f-209af01955ab")
+			(uuid "83a21d83-15ce-4a3c-a91f-5a5f452a47f4")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7427,10 +7401,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "271f7b28-2174-4f4f-9762-2bde89a2c529")
+			(uuid "b55387a0-4e9e-472b-835e-76e622d835e0")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7438,22 +7413,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "480c9608-27a1-4536-ad80-b932feb36dad")
+			(uuid "259bbe0a-4c33-4398-8a1d-bdd682f4da45")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "f5215701-1583-4784-82f8-e109137a0bd4")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7461,12 +7437,6 @@
 		(path "/06c06acd-ffd8-4276-9d16-3bbb6b82f9ea")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7658,7 +7628,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7707,21 +7677,22 @@
 		(property "Reference" "J8"
 			(at 1.9875 4.08 90)
 			(layer "F.SilkS")
-			(uuid "c238b03e-6d70-4fb5-8639-d630ea3e89cd")
+			(uuid "3b7f9d3b-8385-439e-bf7d-1ac4b34d0266")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "ADCS_POWER"
 			(at 1.9075 6.05 90)
 			(layer "F.Fab")
-			(uuid "a85937a8-e174-418e-9959-476dcaf55a7d")
+			(uuid "93baba76-078c-4060-b373-c16ebf7fd97d")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7729,10 +7700,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "99ab273a-8a86-438d-94c2-b47d113954af")
+			(uuid "f5d3fd57-5d0d-4405-938f-b05804a9d03d")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7740,22 +7712,23 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9e0898a7-8e9d-4de6-a52a-186613bdcf36")
+			(uuid "c4b5a606-81b3-4969-94e8-21cf8261f10c")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "a66d9b65-50e7-4b5a-988b-67276ac06f26")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -7763,12 +7736,6 @@
 		(path "/41bd0a67-89f6-4f8d-866a-4773e3187c13")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -7960,7 +7927,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8010,11 +7977,11 @@
 			(at 0 -5.25 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "4acae877-36d1-4092-afe3-56234bc2228b")
+			(uuid "74e13b92-4a3a-4ac6-bc59-28582b457704")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8022,11 +7989,11 @@
 			(at 0 5.25 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "7e2c5a83-4acf-4c30-80f8-c1b6f3f77255")
+			(uuid "c557d046-6c74-4ea2-b246-fdf607e9105e")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8034,10 +8001,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6428738f-5817-4d13-bf1f-dff393dc4789")
+			(uuid "bfdb4cd1-82ce-4999-a12e-01c750901c97")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8045,22 +8013,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "b2a82a39-89d1-4f2f-ac5f-38794dac1ce7")
+			(uuid "5f8fb83a-e25a-4677-a567-e5a8fd3a7ec3")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "38d9f5c0-fe84-41b8-9b17-9e4e1fc70652")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8068,12 +8037,6 @@
 		(path "/fa2cc2e2-8e4f-40af-badf-978ccc24c918")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins)
-			)
-		)
 		(attr exclude_from_bom)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
@@ -8105,7 +8068,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8127,20 +8090,22 @@
 		(property "Reference" "F5"
 			(at -0.78 -1.82 0)
 			(layer "F.SilkS")
-			(uuid "5f45d031-7f90-46cc-80f8-d671ce009f7c")
+			(uuid "dad4bec3-ce75-412e-b722-5adb7b00d2f0")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "5A"
 			(at 0 1.83 0)
 			(layer "F.Fab")
-			(uuid "705dd9ad-99f0-494a-aaa6-f065408c8490")
+			(uuid "ea0ef3c5-18d8-4a34-a7ca-89da7d463359")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8148,10 +8113,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "acd81719-f59b-492a-960a-09486e822dfa")
+			(uuid "fb30fe1f-a210-421d-9033-07cf48aa64b8")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8159,22 +8125,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "559e46b6-93a6-4710-af76-6b2c8781955f")
+			(uuid "b889006f-a34b-4377-8c45-9c7c0c2170c1")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "cd267f00-4980-4aab-be02-51b5c4261950")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8182,12 +8149,6 @@
 		(path "/82429f9e-e390-4a80-8b21-b8c828f5af5e")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8238,8 +8199,8 @@
 			(uuid "3117a982-93d6-4468-9796-f7d53bbdf9f0")
 			(effects
 				(font
-					(size 0.8 0.8)
-					(thickness 0.12)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8283,20 +8244,22 @@
 		(property "Reference" "C4"
 			(at 0.07 1.41 0)
 			(layer "F.SilkS")
-			(uuid "ac39663b-3c15-41b5-afeb-66de20cfb70d")
+			(uuid "ed236b3f-105c-4f0b-9036-f9764d833ba2")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "100nF"
 			(at -0.09 -1.44 0)
 			(layer "F.Fab")
-			(uuid "77768c8d-fa6e-4427-970a-3b558522e7b3")
+			(uuid "1f48fe68-d33d-498b-867d-86d7caee6e26")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8304,10 +8267,11 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "87002257-77d3-480d-87b0-16b2b16df7f6")
+			(uuid "910d8823-f875-4b89-a005-85f94f9e00a5")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8315,22 +8279,23 @@
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "45908713-bfea-47e2-9ccb-95e857f6a04a")
+			(uuid "f73cac7e-cc14-4584-b555-dbb2eb262d1f")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "SMD_2terminal_chip_molded"
 			(at 0 0 0)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "90a9d011-a09c-4860-9c6a-84906fc9d485")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8338,12 +8303,6 @@
 		(path "/43e4f65e-654d-45e8-8032-4df0cd2a0d94")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
 		(attr smd)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8394,8 +8353,8 @@
 			(uuid "e45a883e-cbcd-4241-a9f9-32a10b38c650")
 			(effects
 				(font
-					(size 0.5 0.5)
-					(thickness 0.08)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8439,20 +8398,22 @@
 		(property "Reference" "TP3"
 			(at 0.04 -2.685 0)
 			(layer "F.SilkS")
-			(uuid "c378f2ed-6811-4859-9f66-df5021b8dcd2")
+			(uuid "9fb373e6-122b-4719-920f-9eeebdfb2767")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "+3V3_TEST"
 			(at 0.06 2.575 0)
 			(layer "F.Fab")
-			(uuid "c3c85f0a-0495-4afd-b833-041eedea3c8c")
+			(uuid "163260fe-b3b4-4421-bb11-c1b0b85b049b")
 			(effects
 				(font
-					(size 0.7 0.7)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8461,11 +8422,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "9b444f6f-76e5-4371-9f1d-050bfbbb1872")
+			(uuid "6c8565c5-3150-44f8-9d64-33b79f598604")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8474,11 +8435,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "eedc6ca1-3232-4d4a-9477-b39a4dbe9d87")
+			(uuid "2d0a8c50-1f7e-42f2-b3bd-2d570fb8fa34")
 			(effects
 				(font
-					(size 1.27 1.27)
-					(thickness 0.15)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8486,12 +8447,6 @@
 		(path "/169ad93f-8eff-4723-851f-edd002f7e0ef")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1")
-			)
-		)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_circle
 			(center 0 0)
@@ -8522,7 +8477,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8547,11 +8502,11 @@
 			(at 4.45 -0.78 270)
 			(unlocked yes)
 			(layer "F.SilkS")
-			(uuid "a5daa652-37c6-469b-abe5-5c456f86d29d")
+			(uuid "f9ef6a6c-ecff-4698-9c68-17580c7d5b1d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8559,11 +8514,11 @@
 			(at 22.295 12.045 0)
 			(unlocked yes)
 			(layer "F.SilkS")
-			(uuid "9840554c-f4f6-4aa9-a9f2-49d2dbe244ea")
+			(uuid "8b9d2ed3-c751-4b8a-ae6e-a1055921e72c")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8572,11 +8527,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "448b3151-7301-4b1c-95de-35af073f3b17")
+			(uuid "1267f222-683d-4d89-b9c9-52a7fd1f4e3a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8585,11 +8540,11 @@
 			(unlocked yes)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "0d689338-27ee-4d57-a8f4-b7898befa3f2")
+			(uuid "04c8ace8-36cb-459a-8f06-c5cea3fade59")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8604,17 +8559,6 @@
 		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
-		(fp_rect
-			(start 0 0)
-			(end 53 23)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.SilkS")
-			(uuid "06221920-a99e-4d12-838f-1388ffefee50")
-		)
 		(fp_line
 			(start 0.12 22.88)
 			(end 0.12 20.34)
@@ -8665,6 +8609,17 @@
 			(layer "F.Fab")
 			(uuid "830fb7bd-6563-4c93-90f4-b808f00158be")
 		)
+		(fp_rect
+			(start 0 0)
+			(end 53 23)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "06221920-a99e-4d12-838f-1388ffefee50")
+		)
 		(fp_text user "${REFERENCE}"
 			(at -3.17 5.14 0)
 			(unlocked yes)
@@ -8673,7 +8628,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8732,22 +8687,22 @@
 		(property "Reference" "J6"
 			(at 3.49 6.035 270)
 			(layer "F.SilkS")
-			(uuid "7ca90384-da0f-4925-95a1-7c901dd7a73e")
+			(uuid "66782efb-f23e-4dde-ba6d-53392d84bab8")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "Value" "OBC_INTERFACE"
 			(at 7.8 3.445 270)
 			(layer "F.SilkS")
-			(uuid "a6356927-4de6-41d2-a5d6-b44e87834e9e")
+			(uuid "0ca92719-44df-411b-8521-6a0c54904435")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8755,10 +8710,11 @@
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "f6432d3c-3a52-488c-8cc7-b51003b679e5")
+			(uuid "f9e0a631-6066-4432-bc04-a9d15e402e12")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8766,22 +8722,23 @@
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "cf5eb68c-72e4-4543-9b67-83888b7a2840")
+			(uuid "3a48dfe7-52a4-4ae9-b1f0-a9f2036e8610")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "connector/JST"
 			(at 0 0 270)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "861d32b7-88a0-4a6e-a7f9-9d066f129a64")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -8789,12 +8746,6 @@
 		(path "/1c406110-1695-4fce-8038-c97c495eb81a")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2" "3" "4" "5")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -8986,7 +8937,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9068,10 +9019,11 @@
 		(property "Reference" "Q1"
 			(at 2.45 -3.89 90)
 			(layer "F.SilkS")
-			(uuid "2a3fa918-45eb-4e96-8294-ae17955fbfe2")
+			(uuid "e361bf04-61d4-409c-9936-8f29b162c1ba")
 			(effects
 				(font
-					(size 0.5 0.5)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9079,11 +9031,11 @@
 			(at 2.86 2.66 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "99807958-e4ea-4ea9-a843-5443ef1f6507")
+			(uuid "33b06968-fa01-4a8b-9ddf-6c19d3295a2f")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9091,10 +9043,11 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "c823a6b1-36d4-46dc-9ed9-69a940db1bb2")
+			(uuid "6d0e2c26-3428-4c7b-8b10-eb3d38f4a612")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9102,34 +9055,29 @@
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "2e422fd2-fa13-4991-bae3-d1e134bcc106")
+			(uuid "b923bc3b-7cc5-4108-91a4-fddffab11098")
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+					(thickness 0.2)
 				)
 			)
 		)
 		(property "KiLib_Generator" "package/TO_SOT/THT"
 			(at 0 0 90)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(hide yes)
 			(uuid "6b877f8d-fd54-4633-8c59-d8608e3300ad")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
 		(path "/fe6f4523-c510-4774-b616-c4757d1e5dfb")
 		(sheetname "/")
 		(sheetfile "CubeSat_EPS.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "3" "2")
-			)
-		)
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
@@ -9261,7 +9209,7 @@
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9372,26 +9320,26 @@
 		(uuid "6022f6ae-7a69-4f94-995f-b03f7367150d")
 	)
 	(gr_text "5V Buck "
-		(at 117.18 83.8 270)
-		(layer "F.SilkS")
-		(uuid "aac2be3c-1b81-496f-acab-278f77705a8f")
-		(effects
-			(font
-				(size 1 0.8)
-				(thickness 0.17)
-				(bold yes)
-			)
-			(justify left bottom)
-		)
-	)
-	(gr_text "5V Buck "
 		(at 137.63 101.66 0)
 		(layer "F.SilkS")
 		(uuid "4bb0481c-8c30-4121-ac69-c204f3c729ae")
 		(effects
 			(font
 				(size 1 1)
-				(thickness 0.17)
+				(thickness 0.2)
+				(bold yes)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "5V Buck "
+		(at 117.18 83.8 270)
+		(layer "F.SilkS")
+		(uuid "aac2be3c-1b81-496f-acab-278f77705a8f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
 				(bold yes)
 			)
 			(justify left bottom)
@@ -9424,13 +9372,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "84"
-			(at 191.025 91.925 90)
+			(at 190.975 91.925 90)
 			(layer "Eco1.User")
 			(uuid "4b66c389-a0f5-4aef-86da-3bd5967022d1")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9462,13 +9410,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "4"
-			(at 189.25 51.95 90)
+			(at 189.2 51.95 90)
 			(layer "Eco1.User")
 			(uuid "732b04d6-259f-4924-989b-0196e18235b9")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9500,13 +9448,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "5.5"
-			(at 185.525 47.45 0)
+			(at 185.525 47.4 0)
 			(layer "Eco1.User")
 			(uuid "f96adaf9-0fe3-47b1-b555-27be76130990")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9538,13 +9486,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "75.495"
-			(at 107.6 91.7225 90)
+			(at 107.55 91.7225 90)
 			(layer "F.Fab")
 			(uuid "115dc8d4-95e5-4e6c-b6b8-f77a5e36eb1d")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9576,13 +9524,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "5.5"
-			(at 185.5 136.375 0)
+			(at 185.5 136.325 0)
 			(layer "F.Fab")
 			(uuid "3378df75-842f-4ea7-928f-8b6a392feae7")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9614,13 +9562,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "74"
-			(at 145.75 52.825 0)
+			(at 145.75 52.775 0)
 			(layer "F.Fab")
 			(uuid "573ee721-cce9-4adb-a456-82d5e197420a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9652,13 +9600,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "76"
-			(at 181.6 91.975 90)
+			(at 181.55 91.975 90)
 			(layer "F.Fab")
 			(uuid "9aab9d5b-ac4d-493a-89f9-d50efebd7719")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9690,13 +9638,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "5.5"
-			(at 106 46.5 0)
+			(at 106 46.45 0)
 			(layer "F.Fab")
 			(uuid "b998e787-c13c-4551-a6db-22f135688dba")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
@@ -9728,13 +9676,13 @@
 			(keep_text_aligned yes)
 		)
 		(gr_text "74"
-			(at 145.75 128.825 0)
+			(at 145.75 128.775 0)
 			(layer "F.Fab")
 			(uuid "fb921867-e2d9-4aae-94cb-ebb3b00f55a3")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.15)
+					(thickness 0.2)
 				)
 			)
 		)
