@@ -1,0 +1,28 @@
+/COM,ANSYS RELEASE 2026 R1           BUILD 26.1      UP20260202       03:06:28
+
+ *** WARNING ***                         ELAPSED TIME =       6.290   TIME= 03:06:30
+ Element shape checking is currently inactive.  Issue SHPP,ON or         
+ SHPP,WARN to reactivate, if desired.                                    
+
+ *** WARNING ***                         ELAPSED TIME =      11.921   TIME= 03:06:35
+ Overconstraint may occur for Lagrange multiplier or MPC based contact   
+ algorithm.                                                              
+
+ *** WARNING ***                         ELAPSED TIME =      11.921   TIME= 03:06:35
+ Certain contact elements (for example 76283 & 78426) overlap with       
+ other.                                                                  
+
+ *** WARNING ***                         ELAPSED TIME =      18.739   TIME= 03:06:42
+ Multiple constraints have been applied on degree of freedom 1 of        
+ contact node 7504 (may be more nodes).  The program will remove         
+ certain internal MPCs.  Please check the model carefully.               
+
+ *** WARNING ***                         ELAPSED TIME =      19.054   TIME= 03:06:43
+ Multiple constraints have been applied on degree of freedom 1 of        
+ contact node 63946 (may be more nodes).  The program will remove        
+ certain internal MPCs.  Please check the model carefully.               
+
+ *** WARNING ***                         ELAPSED TIME =      19.122   TIME= 03:06:43
+ Multiple constraints have been applied on degree of freedom 1 of        
+ contact node 47 (may be more nodes).  The program will remove certain   
+ internal MPCs.  Please check the model carefully.                       
