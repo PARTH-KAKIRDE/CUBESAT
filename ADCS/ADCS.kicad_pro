@@ -155,9 +155,9 @@
         "min_microvia_diameter": 0.2,
         "min_microvia_drill": 0.1,
         "min_resolved_spokes": 2,
-        "min_silk_clearance": 0.1,
-        "min_text_height": 0.8,
-        "min_text_thickness": 0.05,
+        "min_silk_clearance": 0.0,
+        "min_text_height": 0.9,
+        "min_text_thickness": 0.16,
         "min_through_hole_diameter": 0.2,
         "min_track_width": 0.1,
         "min_via_annular_width": 0.1,
@@ -703,13 +703,13 @@
         "uuid": "61fc66e7-0dad-4b92-b779-a9b5a9d854f7"
       }
     ],
-    "used_designators": "U1-11,#PWR1-98,D1-6,C1-23,#FLG1-17,TH1,R1-14,TP1-20,R1_806-807,J1-11,J13-16",
+    "used_designators": "",
     "variants": []
   },
   "sheets": [
     [
       "61fc66e7-0dad-4b92-b779-a9b5a9d854f7",
-      "Cubesat"
+      "ADCS"
     ]
   ],
   "text_variables": {},
