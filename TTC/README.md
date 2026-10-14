@@ -9,6 +9,15 @@ The antenna output is either an SMA connector (default) or an LC balun feeding a
 
 **Status:** schematic complete. PCB is 84.2 × 84.2 mm, 2-layer, **fully routed** (DRC: 0 violations, 0 unconnected, schematic parity clean; ERC clean). Outline and four 4 mm mounting holes (75 mm pitch, 4.6 mm from edges) match ADCS and EPS so the boards stack. Tracks: 0.15 mm signal, 0.3 mm power, 0.6 mm RF; GND poured on both layers with stitching vias. Design rules set to JLCPCB standard 2-layer limits (0.127 mm track/space).
 
+## Review changes (branch `rayon/ttc-v2`)
+- 8 MHz crystal Y1 rotated 180° so PH0/PH1 no longer cross: crystal tracks 37.1 → 28.5 mm.
+- Teardrops on 470 pad/via joints (vibration robustness).
+- 9 extra GND vias along the antenna and balun tracks.
+- DRC "missing courtyard" check switched on (no issues found).
+- KiCad DRC after the changes: 0 violations, 0 unconnected, schematic parity clean.
+
+An automatically placed and routed alternative of this board is in `../TTC_auto/`.
+
 ## Contents
 - `TTC_LoRa.kicad_sch`: schematic
 - `TTC_LoRa.kicad_pcb`: PCB layout (routed)
