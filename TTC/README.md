@@ -7,11 +7,11 @@ An STM32F446RET6 (same MCU and footprint as ADCS) drives an RFM98W LoRa module (
 
 The antenna output is either an SMA connector (default) or an LC balun feeding a dipole; fit one of the 0 Ω links R18 or R19.
 
-**Status:** schematic complete. PCB is 70 × 70 mm, 2-layer, with components **placed but not yet routed**.
+**Status:** schematic complete. PCB is 84.2 × 84.2 mm, 2-layer, **fully routed** (DRC: 0 violations, 0 unconnected, schematic parity clean; ERC clean). Outline and four 4 mm mounting holes (75 mm pitch, 4.6 mm from edges) match ADCS and EPS so the boards stack. Tracks: 0.15 mm signal, 0.3 mm power, 0.6 mm RF; GND poured on both layers with stitching vias. Design rules set to JLCPCB standard 2-layer limits (0.127 mm track/space).
 
 ## Contents
 - `TTC_LoRa.kicad_sch`: schematic
-- `TTC_LoRa.kicad_pcb`: PCB layout (placement only)
+- `TTC_LoRa.kicad_pcb`: PCB layout (routed)
 - `TTC_LoRa.kicad_pro`: project configuration
 - `TTC_LoRa.pdf`: schematic PDF export
 - `TTC.kicad_sym`, `Library.pretty/`, `sym-lib-table`, `fp-lib-table`: project libraries (TPS7A2033 symbol, Tag-Connect footprint) needed to open the project
