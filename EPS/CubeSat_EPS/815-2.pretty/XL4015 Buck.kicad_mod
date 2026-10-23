@@ -1,0 +1,210 @@
+(footprint "XL4015 Buck"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 4.45 -0.78 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "326ac8ae-23b0-4387-8f50-8fc6b18ccacf")
+		(effects
+			(font
+				(size 0.9 0.9)
+				(thickness 1.6)
+			)
+		)
+	)
+	(property "Value" "XL4015"
+		(at 22.295 12.045 90)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "9ba6439f-29d3-4516-8272-a5ded3c832dc")
+		(effects
+			(font
+				(size 0.9 0.9)
+				(thickness 1.6)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "19695190-53e0-4f78-8258-0894aa4a9e04")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Description" "module : adjustable step down module 3.2V-40V to 1.25V-35V 3A"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "08794a61-2945-4834-9ac7-70753ba4d214")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+			)
+		)
+	)
+	(sheetname "/")
+	(sheetfile "CubeSat_EPS.kicad_sch")
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_rect
+		(start 0 0)
+		(end 53 23)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "06221920-a99e-4d12-838f-1388ffefee50")
+	)
+	(fp_line
+		(start 0.08 0.705)
+		(end 0.715 0.07)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "830fb7bd-6563-4c93-90f4-b808f00158be")
+	)
+	(fp_line
+		(start 0.12 20.34)
+		(end 2.66 20.34)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0dc800a1-8eb6-43b8-83c3-ae0ed2488a26")
+	)
+	(fp_line
+		(start 0.12 22.88)
+		(end 0.12 20.34)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "60714a98-8d9b-4548-aa04-968e8179a3e5")
+	)
+	(fp_line
+		(start 2.66 20.34)
+		(end 2.66 22.88)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "5b99c114-3c4d-47b6-9a50-2d1a71f844dc")
+	)
+	(fp_line
+		(start 2.66 22.88)
+		(end 0.12 22.88)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "cee49e57-f1fd-4c19-ac98-e68df8f94adf")
+	)
+	(fp_text user "VIN"
+		(at 1.35 4.94 90)
+		(layer "F.SilkS")
+		(uuid "c660bfbd-f491-4009-9126-8d9132739c89")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "GND"
+		(at 1.39 18.01 90)
+		(layer "F.SilkS")
+		(uuid "73db250b-1628-49b9-8daf-a26a7c999a72")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "GND"
+		(at 51.62 18.04 90)
+		(layer "F.SilkS")
+		(uuid "a1e0b27c-82a5-41fd-8ea8-c45ea685f823")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "VOUT"
+		(at 51.649998 5.15 90)
+		(layer "F.SilkS")
+		(uuid "664f2043-8ddd-4cb6-81ff-8778b0818f9d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at -3.17 5.14 90)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "8afdfb57-b56c-4ac9-966a-854699b826ba")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at 1.35 1.34)
+		(size 2.54 2.54)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0e7a3aae-9d27-43a6-a0c9-0a3aa911a879")
+	)
+	(pad "2" thru_hole circle
+		(at 1.39 21.61)
+		(size 2.54 2.54)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "4b7a8b44-bae8-4796-b63a-c419b86f15d6")
+	)
+	(pad "3" thru_hole circle
+		(at 51.62 21.64)
+		(size 2.54 2.54)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "45360a13-8623-445c-9901-5d2cfb0279e9")
+	)
+	(pad "4" thru_hole circle
+		(at 51.65 1.35)
+		(size 2.54 2.54)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a8f1a115-89ac-4826-ba65-3186d98ad78e")
+	)
+	(embedded_fonts no)
+)
