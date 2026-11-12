@@ -1,0 +1,20 @@
+[project]
+name = "cubesat-obc"
+version = "0.2.0"
+description = "CubeSat OBC software for the Raspberry Pi 4B ground prototype"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+# Only needed on the Pi. On Raspberry Pi OS prefer: sudo apt install python3-smbus2 python3-gpiozero
+pi = ["smbus2>=0.4", "gpiozero>=2.0", "lgpio>=0.2"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+cubesat-obc = "cubesat_obc.__main__:main"
+
+[tool.setuptools]
+packages = ["cubesat_obc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,64 @@
+# OBC configuration for the Raspberry Pi 4B ground prototype.
+# Anything left out falls back to the defaults in cubesat_obc/config.py,
+# which come from icd/cubesat_icd.h.
+
+[link]
+# ADCS + TT&C. Hardware I2C1 = GPIO2 (SDA, pin 3) / GPIO3 (SCL, pin 5).
+# If link_test.py shows errors, switch to the bit-banged bus 11 (docs/RPI_SETUP.md).
+bus = 1
+adcs_addr = 0x32
+ttc_addr = 0x33
+
+[sensors]
+# EPS INA226 + TSL2591 on their own bus so a stuck sensor cannot hang the
+# STM32 link. I2C3 = GPIO4 (SDA, pin 7) / GPIO5 (SCL, pin 29).
+bus = 3
+ina226 = true
+ina226_addr = 0x40
+shunt_ohm = 0.01          # CHECK the module: many ship with R100 (0.1 ohm)
+max_current_a = 3.2
+tsl2591 = true
+
+[eps]
+low_batt_mv = 6600        # 2S Li-ion: SAFE below this
+recover_mv = 7000         # back to NOMINAL above this
+
+[pyro]
+enabled = false           # keep false until the pyro hardware test
+gpio = 17                 # PYRO_FIRE, EPS J6 pin 5 -> Pi pin 11 (pulled down at boot)
+max_ms = 2000
+arm_window_s = 10
+
+[camera]
+enabled = true
+device = "/dev/video0"
+resolution = "1280x720"
+
+[obc]
+data_dir = "/home/pi/cubesat_data"
+poll_period_s = 1.0
+slow_poll_every = 10      # sun sensors, radio telemetry, CPU temp
+beacon_update_s = 10
+allow_reboot = false
+adcs_auto_nominal = true  # command ADCS NOMINAL once it reports DETUMBLED
+max_ground_packets_per_tick = 4
+
+[adcs]
+# Re-sent at start-up and every time ADCS reports RESET_OCCURRED.
+bdot_gain = 300000        # duty permille per uT/s, x1000
+exit_rate_cdps = 200      # 2.00 deg/s
+enter_rate_cdps = 500
+dwell_s = 60
+period_ms = 1000
+settle_ms = 20
+mag_offset = [0, 0, 0]    # hard-iron offset in 0.025 uT LSB (from calibration)
+
+[ttc]
+beacon_period_s = 30
+
+[ground]
+# Secret key that authenticates ground commands (ICD.md, "Ground link").
+# Create it on the ground PC with `python ground/gs_tool.py keygen`, copy the
+# file here, then: chmod 600. Never commit it. Without it the OBC rejects
+# every ground command (beacons still go out).
+key_file = "/home/pi/.cubesat/ground_key"
