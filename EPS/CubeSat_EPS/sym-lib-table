@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "MP1584")(type "KiCad")(uri "${KIPRJMOD}/MP1584.kicad_sym")(options "")(descr "Bundled with project"))
+  (lib (name "yaaj_dcdc_stepdown_lm2596")(type "KiCad")(uri "${KIPRJMOD}/yaaj_dcdc_stepdown_lm2596.kicad_sym")(options "")(descr "Bundled with project"))
+)

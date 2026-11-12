@@ -1,0 +1,4 @@
+(version 1)
+(rule "U4_pad_clearance"
+  (constraint clearance (min 0.15mm))
+  (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.insideCourtyard('U4') && B.insideCourtyard('U4')"))

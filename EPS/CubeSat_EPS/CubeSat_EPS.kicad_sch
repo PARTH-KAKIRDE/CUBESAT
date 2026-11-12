@@ -6,12 +6,460 @@
 	(paper "A4")
 	(title_block
 		(title "CubeSat EPS")
-		(rev "Rev 1.0")
+		(rev "Rev 1.1")
 		(company "VJTI")
 		(comment 1 "Ground Model")
 		(comment 2 "Electrical Power System")
 	)
 	(lib_symbols
+	(symbol "Device:C_Polarized"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C_Polarized"
+				(at 0.635 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Polarized capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "CP_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_Polarized_0_1"
+				(rectangle
+					(start -2.286 0.508)
+					(end 2.286 1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.778 2.286) (xy -0.762 2.286)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 2.794) (xy -1.27 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start 2.286 -0.508)
+					(end -2.286 -1.016)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+			)
+			(symbol "C_Polarized_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	(symbol "Transistor_FET:Q_PMOS_GDS"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "Q"
+				(at 5.08 1.905 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Q_PMOS_GDS"
+				(at 5.08 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "P-MOSFET transistor, gate/drain/source"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "transistor PMOS P-MOS P-MOSFET"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Q_PMOS_GDS_0_1"
+				(polyline
+					(pts
+						(xy 0.254 1.905) (xy 0.254 -1.905)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 0) (xy -2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 2.286) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 1.778) (xy 3.302 1.778) (xy 3.302 -1.778) (xy 0.762 -1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 0.508) (xy 0.762 -0.508)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.27) (xy 0.762 -2.286)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 1.651 0)
+					(radius 2.794)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.286 0) (xy 1.27 0.381) (xy 1.27 -0.381) (xy 2.286 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 2.54) (xy 2.54 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.54 1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 2.54 -1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.921 -0.381) (xy 3.683 -0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.302 -0.381) (xy 2.921 0.254) (xy 3.683 0.254) (xy 3.302 -0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Q_PMOS_GDS_1_1"
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "G"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 5.08 270)
+					(length 2.54)
+					(name "D"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 -5.08 90)
+					(length 2.54)
+					(name "S"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector:Screw_Terminal_01x02"
 			(pin_names
 				(offset 1.016)
@@ -2492,7 +2940,7 @@
 				(pin power_in line
 					(at -2.54 6.35 0)
 					(length 2.54)
-					(name "IN-"
+					(name "IN+"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2507,10 +2955,10 @@
 						)
 					)
 				)
-				(pin power_in line
+				(pin passive line
 					(at -2.54 1.27 0)
 					(length 2.54)
-					(name "IN+"
+					(name "IN-"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2528,7 +2976,7 @@
 				(pin power_out line
 					(at 15.24 6.35 180)
 					(length 2.54)
-					(name "OUT-"
+					(name "OUT+"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2543,10 +2991,10 @@
 						)
 					)
 				)
-				(pin power_out line
+				(pin passive line
 					(at 15.24 1.27 180)
 					(length 2.54)
-					(name "OUT+"
+					(name "OUT-"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3677,307 +4125,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Transistor_FET:Q_PMOS_GSD"
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "Q"
-				(at 5.08 1.905 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Value" "Q_PMOS_GSD"
-				(at 5.08 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at 5.08 2.54 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "P-MOSFET transistor, gate/source/drain"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "transistor PMOS P-MOS P-MOSFET"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "Q_PMOS_GSD_0_1"
-				(polyline
-					(pts
-						(xy 0.254 1.905) (xy 0.254 -1.905)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.254 0) (xy -2.54 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.762 2.286) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.762 1.778) (xy 3.302 1.778) (xy 3.302 -1.778) (xy 0.762 -1.778)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.762 0.508) (xy 0.762 -0.508)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.762 -1.27) (xy 0.762 -2.286)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 1.651 0)
-					(radius 2.794)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.286 0) (xy 1.27 0.381) (xy 1.27 -0.381) (xy 2.286 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 2.54) (xy 2.54 1.778)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.54 1.778)
-					(radius 0.254)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(circle
-					(center 2.54 -1.778)
-					(radius 0.254)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.921 -0.381) (xy 3.683 -0.381)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.302 -0.381) (xy 2.921 0.254) (xy 3.683 0.254) (xy 3.302 -0.381)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "Q_PMOS_GSD_1_1"
-				(pin input line
-					(at -5.08 0 0)
-					(length 2.54)
-					(name "G"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 2.54 -5.08 90)
-					(length 2.54)
-					(name "S"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 2.54 5.08 270)
-					(length 2.54)
-					(name "D"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "power:GND"
 			(power global)
 			(pin_numbers
@@ -4690,12 +4837,6 @@
 		(uuid "c91f7ee6-c6d4-4a05-a8ea-324cff0959ff")
 	)
 	(junction
-		(at 39.37 35.56)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ceb167cb-00a0-4d58-89c2-cd7e28ff8cbc")
-	)
-	(junction
 		(at 39.37 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -5251,7 +5392,7 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 35.56) (xy 39.37 35.56)
+			(xy 29.21 35.56) (xy 29.21 31.75)
 		)
 		(stroke
 			(width 0)
@@ -5289,7 +5430,7 @@
 		)
 		(uuid "ff065740-b6b0-4c4d-b537-aca565bca793")
 	)
-	(label "Ras-pie_input"
+	(label "PYRO_FIRE"
 		(at 29.21 134.62 180)
 		(effects
 			(font
@@ -5479,7 +5620,7 @@
 		)
 		(uuid "5a4a136b-b3f2-407a-a4f8-ff3bc19fad59")
 	)
-	(label "Ras-pie_input"
+	(label "PYRO_FIRE"
 		(at 114.3 110.49 180)
 		(effects
 			(font
@@ -5489,7 +5630,7 @@
 		)
 		(uuid "5c542c82-d7d1-4534-8be3-d86744942200")
 	)
-	(label "+5V"
+	(label "PYRO_ARMED"
 		(at 86.36 151.13 0)
 		(effects
 			(font
@@ -6614,7 +6755,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "100nF 50V"
 			(at 276.86 72.3899 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6696,7 +6837,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "ADCS_5V_POWER"
+		(property "Value" "ADCS_5V_A"
 			(at 232.41 107.9499 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6837,7 +6978,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
+		(lib_id "Device:C_Polarized")
 		(at 54.61 63.5 90)
 		(unit 1)
 		(body_style 1)
@@ -6858,7 +6999,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100uF"
+		(property "Value" "100uF 50V"
 			(at 56.896 62.484 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6869,7 +7010,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:CP_Elec_6.3x7.7"
 			(at 58.42 62.5348 0)
 			(hide yes)
 			(show_name no)
@@ -6891,7 +7032,7 @@
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor"
+		(property "Description" "Polarized capacitor, aluminium electrolytic"
 			(at 54.61 63.5 0)
 			(hide yes)
 			(show_name no)
@@ -6938,7 +7079,7 @@
 				)
 			)
 		)
-		(property "Value" "3A"
+		(property "Value" "2A"
 			(at 238.76 70.358 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7019,7 +7160,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "ADCS_5V_POWER"
+		(property "Value" "ADCS_5V_B"
 			(at 172.72 107.9499 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7180,7 +7321,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "ADCS_POWER"
+		(property "Value" "ADCS_3V3_POWER"
 			(at 205.74 107.9499 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7340,7 +7481,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "100nF 50V"
 			(at 158.75 73.6599 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7919,7 +8060,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100uF"
+		(property "Value" "100uF 10V"
 			(at 176.53 73.6599 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7930,7 +8071,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder"
 			(at 173.6852 76.2 0)
 			(hide yes)
 			(show_name no)
@@ -8492,7 +8633,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "100nF 50V"
 			(at 55.626 81.026 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9130,7 +9271,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100uF"
+		(property "Value" "100uF 6.3V"
 			(at 261.62 72.3899 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9524,7 +9665,7 @@
 				)
 			)
 		)
-		(property "Value" "Fuse"
+		(property "Value" "TODO 1.5xIsc"
 			(at 34.798 27.94 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9604,7 +9745,7 @@
 				)
 			)
 		)
-		(property "Value" "100 ohm"
+		(property "Value" "100"
 			(at 33.02 136.906 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9999,7 +10140,7 @@
 				)
 			)
 		)
-		(property "Value" "D_Schottky"
+		(property "Value" "SS34"
 			(at 57.15 130.556 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10158,7 +10299,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "D_TVS"
+		(property "Value" "TVS TODO"
 			(at 55.8799 52.07 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10972,7 +11113,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "TBD"
+		(property "Value" "TODO max 2A"
 			(at 246.38 30.4799 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11368,7 +11509,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "12V_ZENER"
+		(property "Value" "12V Zener 1SMA5927"
 			(at 31.75 40.6399 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11580,9 +11721,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Transistor_FET:Q_PMOS_GSD")
+		(lib_id "Transistor_FET:Q_PMOS_GDS")
 		(at 36.83 46.99 0)
-		(mirror x)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -11602,7 +11742,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "P-MOSFET"
+		(property "Value" "IRF4905"
 			(at 43.18 45.7201 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11635,7 +11775,7 @@
 				)
 			)
 		)
-		(property "Description" "P-MOSFET transistor, gate/source/drain"
+		(property "Description" "P-MOSFET transistor, gate/drain/source"
 			(at 36.83 46.99 0)
 			(hide yes)
 			(show_name no)
@@ -11743,6 +11883,377 @@
 				)
 			)
 		)
+	)
+	(label "MPPT_IN+"
+		(at 29.21 31.75 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "637238a8-4db5-4474-a81a-df795cbbd5b9")
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 113.03 68.58 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7e2c4544-fb3a-4b11-9bbc-5c989871557d")
+		(property "Reference" "#FLG02"
+			(at 113.03 66.675 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 113.03 63.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 113.03 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 113.03 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 113.03 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2a5449dd-b227-4676-92b7-cd582b746cff")
+		)
+		(instances
+			(project "CubeSat_EPS"
+				(path "/7b56325b-65de-4812-a6b3-b266f1ecb4d4"
+					(reference "#FLG02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 213.36 72.39 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "fbb98a08-5750-4fe7-bfd2-e46f32287a02")
+		(property "Reference" "#FLG03"
+			(at 213.36 70.485 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 213.36 67.31 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 213.36 72.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 213.36 72.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 213.36 72.39 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "8cc66766-c0fa-432a-8e41-7307c3c1c1ee")
+		)
+		(instances
+			(project "CubeSat_EPS"
+				(path "/7b56325b-65de-4812-a6b3-b266f1ecb4d4"
+					(reference "#FLG03")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 154.94 27.94 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3bd28391-9458-492e-bbd1-808751073cf2")
+		(property "Reference" "#FLG04"
+			(at 154.94 26.035 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 154.94 22.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 154.94 27.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 154.94 27.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 154.94 27.94 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e72eb8be-ae1f-4cd0-9cbc-4819fceeab7c")
+		)
+		(instances
+			(project "CubeSat_EPS"
+				(path "/7b56325b-65de-4812-a6b3-b266f1ecb4d4"
+					(reference "#FLG04")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 219.71 143.51 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6bcbe745-5b4a-4dfd-87c1-38b39e47ee1d")
+		(property "Reference" "J26"
+			(at 222.25 143.5099 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "PYRO_ARM"
+			(at 222.25 146.0499 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_JST:JST_VH_B2P-VH_1x02_P3.96mm_Vertical"
+			(at 219.71 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 219.71 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 219.71 143.51 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "64c4768c-c330-4a74-9759-5e7d2d2e633c")
+		)
+		(pin "1"
+			(uuid "d5f7d014-beb2-4e5f-b65c-c872308f3190")
+		)
+		(instances
+			(project "CubeSat_EPS"
+				(path "/7b56325b-65de-4812-a6b3-b266f1ecb4d4"
+					(reference "J26")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(label "+5V"
+		(at 214.63 143.51 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "86091d2f-1be9-48a6-9254-ed96c9f60405")
+	)
+	(label "PYRO_ARMED"
+		(at 214.63 146.05 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3c379497-c364-480f-bcc1-1d8f06fb3ca8")
+	)
+	(text "NOTES (Rev 1.1)\n1. Set U1 (XL4015) to 5.0 V and U2 (MP1584) to 3.3 V BEFORE connecting any load.\n2. Check U2 module IN+/OUT+ and J2 INA226 pin order against the module silkscreen before soldering.\n3. Check the INA226 module shunt: R100 reads only 0.82 A full scale. Use R010-R020.\n4. J26 PYRO_ARM: no shorting plug except when deliberately firing. Drive PYRO_FIRE from a Pi GPIO 9-27 (boot pull-down).\n5. TODO D1: Vwm > panel Voc, Vc < 28 V (CN3722 max). TODO F1: about 1.5x panel Isc. TODO F4: AUX load (track max 2 A).\n6. Q3 IRLZ44N is specified at Vgs 4-5 V; at 3.3 V gate drive check it fully enhances at the pyro current."
+		(exclude_from_sim no)
+		(at 15.24 162.56 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "9c23578b-6cd4-408b-9af2-83a587d51839")
+	)
+	(text "PYRO ARM: remove-before-flight plug.\nOpen = pyro cannot fire."
+		(exclude_from_sim no)
+		(at 200.66 135.89 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "b8647194-1b40-45d4-8379-ea67db74731c")
 	)
 	(sheet_instances
 		(path "/"

@@ -1,0 +1,89 @@
+# OBC configuration for the Raspberry Pi 4B. Anything left out falls back to the
+# defaults in OBC/config.py, EPS.py (DEFAULTS) and Payload.py (DEFAULTS), which
+# come from ICD/cubesat_icd.h where they are ICD values.
+
+[link]
+# ADCS + TT&C. Hardware I2C1 = GPIO2 (SDA, pin 3) / GPIO3 (SCL, pin 5).
+# If the link test shows errors, switch to the bit-banged bus 11 (ICD.md section 1).
+bus = 1
+adcs_addr = 0x32
+ttc_addr = 0x33
+
+[sensors]
+# EPS INA226 + payload sensors on their own bus, so a stuck sensor cannot hang
+# the STM32 link. I2C3 = GPIO4 (SDA, pin 7) / GPIO5 (SCL, pin 29).
+bus = 3
+ina226 = true
+ina226_addr = 0x40
+shunt_ohm = 0.1           # CHECK the resistor on the module: R100 = 0.1, R010 = 0.01
+max_current_a = 0.8       # R100 can only measure up to 0.82 A; with R010 use e.g. 3.2
+# INA226 #2 (battery current), only once it is fitted (see EPS.py):
+# batt_shunt_ohm = 0.1
+# batt_max_current_a = 0.8
+
+[eps]
+cells = 2                 # 2S Li-ion
+low_batt_mv = 6600        # SAFE below this (3.30 V/cell), for low_hold_polls polls
+recover_mv = 7000         # back to NOMINAL above this, for recover_hold_polls polls
+critical_mv = 6200        # sync the SD card (BMS cut-off is close)
+full_mv = 8300            # charger in constant voltage = full
+r_int_ohm = 0.15          # pack + BMS resistance (measure at bring-up)
+sun_adc_threshold = 2000  # ADCS sun sensor raw value counted as sunlit (calibrate in sun)
+lux_threshold = 20000.0   # TSL2591 lux counted as sunlit
+# capacity_mah = 2000.0   # only with INA226 #2 (charge counting)
+
+[payload]
+enabled = true
+sample_period_s = 10.0    # TSL2591 (and VEML6075) sample period
+
+[payload.tsl2591]
+enabled = true
+gain = "low"              # least sensitive; direct sun still saturates it without a filter
+integration_ms = 100
+
+[payload.veml6075]
+enabled = false           # needs ICD_ADDR_VEML6075 uncommented in the ICD first
+
+[payload.camera]
+enabled = true
+period_s = 60.0           # automatic image every N s (0 = only on ground command)
+max_images_mb = 2000
+min_free_mb = 500
+
+[payload.mag]
+enabled = true            # log fresh ADCS magnetometer samples (taken with the coils off)
+
+[pyro]
+enabled = false           # keep false until the pyro hardware test
+gpio = 17                 # PYRO_FIRE, EPS J6 pin 5 -> Pi pin 11 (pulled down at boot)
+max_ms = 2000
+arm_window_s = 10
+
+[obc]
+data_dir = "/home/pi/cubesat_data"
+poll_period_s = 1.0
+slow_poll_every = 10      # sun sensors, radio telemetry, CPU temp
+beacon_update_s = 10
+allow_reboot = false
+adcs_auto_nominal = true  # command ADCS NOMINAL once it reports DETUMBLED
+max_ground_packets_per_tick = 4
+
+[adcs]
+# Re-sent at start-up and every time ADCS reports RESET_OCCURRED.
+bdot_gain = 300000        # duty permille per uT/s, x1000
+exit_rate_cdps = 200      # 2.00 deg/s
+enter_rate_cdps = 500
+dwell_s = 60
+period_ms = 1000
+settle_ms = 20
+mag_offset = [0, 0, 0]    # hard-iron offset in 0.025 uT LSB (from calibration)
+
+[ttc]
+beacon_period_s = 30
+
+[ground]
+# Secret key that authenticates ground commands (ICD.md section 11).
+# Create it on the ground PC with the ground tool's keygen, copy the file here,
+# then: chmod 600. Never commit it. Without it the OBC rejects every ground
+# command (beacons still go out).
+key_file = "/home/pi/.cubesat/ground_key"

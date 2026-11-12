@@ -1,0 +1,168 @@
+(footprint "MP1584 module 20mm_15mm"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -0.5 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "f172a43c-405f-48e2-8777-0d4b6aececf2")
+		(effects
+			(font
+				(size 0.9 0.9)
+				(thickness 1.6)
+			)
+		)
+	)
+	(property "Value" "MP1584 Buck Converter"
+		(at -0.63 0.97 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "c6875c6d-6b2b-431e-98dc-055c1fa688e6")
+		(effects
+			(font
+				(size 0.9 0.9)
+				(thickness 1.6)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "62a22f4e-e665-4d33-823c-6a7fdff9fc82")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "635c1dc9-4aa7-41f0-9d4d-ec9d2692c41a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+			)
+		)
+	)
+	(sheetname "/")
+	(sheetfile "CubeSat_EPS.kicad_sch")
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_rect
+		(start -10.25 -7.5)
+		(end 9.75 7.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "7f3ec8ef-5a59-4b01-979b-8f64ed8c8e90")
+	)
+	(fp_text user "IN+"
+		(at -6.2 -4.05 90)
+		(layer "F.SilkS")
+		(uuid "4305531e-651a-4fc9-ba80-b4476aa4620f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "IN-"
+		(at -6.2 4.05 90)
+		(layer "F.SilkS")
+		(uuid "d9f5fda3-c68c-4692-87ce-1db08faa189b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "OUT+"
+		(at 5.7 -4.05 90)
+		(layer "F.SilkS")
+		(uuid "586cc7dc-7ccd-41fb-bc68-de53298b23d2")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "OUT-"
+		(at 5.7 4.05 90)
+		(layer "F.SilkS")
+		(uuid "a2a9d914-9a52-4779-ad96-5cda9c4df67e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.18)
+			)
+		)
+	)
+	(fp_text user "${REFERENCE}"
+		(at -0.01 -0.54 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "65114631-57ed-412b-8a66-6f651c6c6348")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.2)
+			)
+		)
+	)
+	(pad "1" thru_hole roundrect
+		(at -8.5 -6.25)
+		(size 2.54 1.27)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.15)
+		(thermal_bridge_angle 45)
+		(uuid "ce1b2bd5-cb5c-45e6-a42a-73f0916a1754")
+	)
+	(pad "2" thru_hole roundrect
+		(at -8.5 6.25)
+		(size 2.54 1.27)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.15)
+		(thermal_bridge_angle 45)
+		(uuid "454928ac-c827-4aed-a0b2-32850d816b39")
+	)
+	(pad "3" thru_hole roundrect
+		(at 8 -6.25)
+		(size 2.54 1.27)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.15)
+		(thermal_bridge_angle 45)
+		(uuid "fe44a164-cfaf-4a41-b16e-b1f39c712ca1")
+	)
+	(pad "4" thru_hole roundrect
+		(at 8 6.25)
+		(size 2.54 1.27)
+		(drill 0.8)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(roundrect_rratio 0.15)
+		(thermal_bridge_angle 45)
+		(uuid "00f61a4c-67e8-4596-ac1f-7716b335bb2d")
+	)
+	(embedded_fonts no)
+)

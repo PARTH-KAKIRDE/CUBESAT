@@ -1,5 +1,15 @@
-# KiCad - local history and backups (DO NOT commit)
-.history/
+# ---------------------------------------------------------------
+# SECRETS - this repo is PUBLIC. Never commit these.
+# ---------------------------------------------------------------
+ground_key
+.ground_key
+.gs_ctr
+.gs_seq
+RASPBERRY_PI_GUIDE.md
+
+# ---------------------------------------------------------------
+# KiCad: local history, backups, autosave, lock files
+# ---------------------------------------------------------------
 .history
 *-backups/
 fp-info-cache
@@ -13,14 +23,25 @@ fp-info-cache
 *.tmp
 *.net
 *.erc
-*.drl
-
-# KiCad autosave / lock
 ~*
-*.swp
-*.swo
+# NOT ignored on purpose: *.drl, *.gbr etc. (Gerber/drill files in *_Gerber/ and PANEL*/fab/ are fab outputs)
 
-# OS generated files
+# ---------------------------------------------------------------
+# Software: Python caches, firmware build output, ARM toolchain
+# ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+build/
+*.o
+*.elf
+*.hex
+*.bin
+arm-gcc/
+
+# ---------------------------------------------------------------
+# OS and editor files
+# ---------------------------------------------------------------
 .DS_Store
 .DS_Store?
 ._*
@@ -29,20 +50,9 @@ fp-info-cache
 ehthumbs.db
 Thumbs.db
 Desktop.ini
-
-# Editors
 .vscode/
 .idea/
 *.code-workspace
+*.swp
+*.swo
 *~
-
-# Python / Build artifacts (for future firmware/scripts)
-__pycache__/
-*.py[cod]
-*.egg-info/
-build/
-dist/
-*.o
-*.elf
-*.hex
-*.bin
