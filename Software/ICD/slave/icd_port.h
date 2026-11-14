@@ -1,6 +1,6 @@
 /* Platform hooks the ICD link layer needs. Implemented once per platform:
- *   firmware/stm32/icd_port_stm32.c  (PRIMASK save/restore)
- *   firmware/host/icd_port_host.c    (no-op, single-threaded simulation) */
+ *   firmware/stm32/platform.c  (PRIMASK save/restore)
+ *   firmware/host/sim_api.c    (no-op, single-threaded simulation) */
 #ifndef ICD_PORT_H
 #define ICD_PORT_H
 

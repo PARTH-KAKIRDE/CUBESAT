@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""ICD v0.3 link acceptance tests (deliverables 4 and 5), run on the OBC.
+"""ICD link acceptance tests (deliverables 4 and 5), run on the OBC.
 
   python3 test_link.py                          all tests against /dev/i2c-1, ADCS address
   python3 test_link.py --addr 0x33              TT&C (or the dummy slave built for 0x33)
   python3 test_link.py --bus 11                 bit-banged bus (clock-stretching fallback)
   python3 test_link.py --sim-lib PATH           against the PC firmware simulation
-                                                (code/build/host/libcubesat_sim.so)
+                                                (Software/build/host/libcubesat_sim.so)
 
 Tests:
   0) CRC self-test, bus speed, GET_VERSION (fails on an ICD major mismatch, warns on minor)
@@ -47,7 +47,7 @@ def skip(name, why):
 
 
 class SimBus:
-    """The firmware simulation (built by code/firmware/build.py sim). Time moves only in wait_ms."""
+    """The firmware simulation (built by Software/firmware/build.py sim). Time moves only in wait_ms."""
 
     def __init__(self, path: str, seed: int = 7):
         self.lib = L = ctypes.CDLL(path)

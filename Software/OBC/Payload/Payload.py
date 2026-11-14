@@ -32,8 +32,8 @@ Wired into OBC/obc_app.py: Payload(...) at start-up, tick(mode, low_battery,
 ADCS page-0 sensors) every 1 s tick, request_capture() for the ground
 CAPTURE_IMAGE command, close() at shutdown. Settings: [payload] in obc.toml.
 
-Standalone (no magnetometer, since this process must never talk to ADCS):
-    python3 Payload.py --bus 3 --data-dir /home/pi/cubesat_data
+Standalone, from Software/ (no magnetometer, since this process must never talk to ADCS):
+    python3 OBC/Payload/Payload.py --bus 3 --data-dir /home/pi/cubesat_data
 """
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ from typing import Callable, Optional
 
 # The ICD folder is the single source of truth: constants and the I2C master come
 # from Software/ICD/python (the OBC package's __init__ does the same).
-_ICD_PY = Path(__file__).resolve().parent.parent / "ICD" / "python"
+_ICD_PY = Path(__file__).resolve().parents[2] / "ICD" / "python"
 if str(_ICD_PY) not in sys.path:
     sys.path.insert(0, str(_ICD_PY))
 import icd_defs as I                    # noqa: E402
@@ -646,7 +646,7 @@ class Payload:
 
 class SMBus2Bus:
     """/dev/i2c-N through smbus2 (sudo apt install python3-smbus2), with
-    repeated-START register reads. Same interface as OBC/bus.py LinuxI2CBus."""
+    repeated-START register reads. Same interface as OBC/comms/bus.py LinuxI2CBus."""
 
     def __init__(self, bus_num: int):
         self.bus_num = bus_num

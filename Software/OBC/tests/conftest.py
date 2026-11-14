@@ -1,14 +1,14 @@
 """Shared fixtures. Run from Software/:  python3 -B -m pytest -q OBC/tests
 
 The simulation tests run the real ADCS / TT&C firmware logic, compiled for the
-PC (libcubesat_sim). The firmware is not in Software/ yet, so they are skipped
-unless Software/build/host/libcubesat_sim.so exists or CUBESAT_SIM_LIB points
-at one (build it with the firmware's build.py sim).
+PC (libcubesat_sim). They are skipped unless Software/build/host/libcubesat_sim.so
+exists or CUBESAT_SIM_LIB points at one. Build it from Software/ with:
+    python3 firmware/build.py sim
 """
 import pytest
 
 from OBC import config as cfgmod  # first import of the package: puts ICD/python on sys.path
-from OBC.bus import SimLib, default_sim_lib
+from OBC.comms.bus import SimLib, default_sim_lib
 
 import os
 from pathlib import Path

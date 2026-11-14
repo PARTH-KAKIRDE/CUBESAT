@@ -45,7 +45,7 @@ state_bytes()). Wired into OBC/obc_app.py: make_eps() at start-up, update_sun()
 with the ADCS sun sensors (slow poll) and the payload light reading (every tick),
 poll() every tick, state_bytes() for GET_STATE. Settings: [sensors], [eps] in obc.toml.
 
-Bench check (standalone): python3 EPS.py --bus 3 [--shunt 0.1 --max-current 0.8]
+Bench check (standalone, from Software/): python3 OBC/EPS/EPS.py --bus 3 [--shunt 0.1 --max-current 0.8]
 """
 from __future__ import annotations
 
@@ -64,7 +64,7 @@ from typing import Callable, Optional
 
 # The ICD folder is the single source of truth: constants and the I2C master come
 # from Software/ICD/python (the OBC package's __init__ does the same).
-_ICD_PY = Path(__file__).resolve().parent.parent / "ICD" / "python"
+_ICD_PY = Path(__file__).resolve().parents[2] / "ICD" / "python"
 if str(_ICD_PY) not in sys.path:
     sys.path.insert(0, str(_ICD_PY))
 import icd_defs as I                    # noqa: E402
@@ -87,7 +87,7 @@ DEFAULTS = {
     "trend_min_s": 120.0,       # need at least this much history for a trend
     "slope_mv_per_min": 1.0,    # |trend| above this counts as rising / falling
     "soc_avg_s": 60.0,          # SOC uses the corrected voltage averaged over this
-    "sun_adc_threshold": 2000,  # ADCS sun sensor raw (0..4095) above this = sunlit (calibrate)
+    "sun_adc_threshold": 2000,  # only for ADCS fw < ICD v0.6 (no page 4): raw count above this = sunlit
     "lux_threshold": 20000.0,   # TSL2591 lux above this (or saturated) = sunlit
     "sun_max_age_s": 30.0,      # sun data older than this is ignored
     "sun_hold_s": 15.0,         # a sun/eclipse change must last this long (tumbling)
@@ -377,11 +377,20 @@ class Eps:
     # BATT:         log.error("battery INA226 not found at 0x%02X", ina.addr)
 
     # ---------------------------------------------------------- inputs
-    def update_sun(self, sun_raw=None, lux=None) -> None:
-        """sun_raw: the six ADCS sun-sensor values (page 1). lux: payload TSL2591
-        last_lux (None = no reading, inf = saturated). Call whenever either is read."""
+    def update_sun(self, sun_raw=None, lux=None, adcs_lit=None, adcs_hidden=False) -> None:
+        """adcs_lit: ADCS's own sunlit decision from its BPW34 sun sensors (page 4,
+        ICD v0.6; it knows which faces have a diode and its lit threshold).
+        sun_raw: the six raw sun-sensor values (page 1), used only when the ADCS
+        firmware is older and has no page 4. lux: payload TSL2591 last_lux (None =
+        no reading, inf = saturated), a second opinion. adcs_hidden (v0.7): ADCS says
+        the Sun is only behind a dead or missing diode, so it does not know: its vote
+        is dropped (never counted as eclipse). Call whenever one is read."""
         now = self.clock()
-        if sun_raw:
+        if adcs_hidden:
+            self._adcs_sun = None
+        elif adcs_lit is not None:
+            self._adcs_sun = (now, bool(adcs_lit))
+        elif sun_raw:
             self._adcs_sun = (now, max(sun_raw) >= self.cfg["sun_adc_threshold"])
         if lux is not None:
             self._tsl_sun = (now, lux == float("inf") or lux >= self.cfg["lux_threshold"])
@@ -720,9 +729,12 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="[eps] %(levelname)s %(message)s")
     try:
-        from .Payload import SMBus2Bus     # noqa: PLC0415
-    except ImportError:
-        from Payload import SMBus2Bus      # noqa: PLC0415
+        from ..Payload.Payload import SMBus2Bus     # noqa: PLC0415  (as part of the OBC package)
+    except ImportError:                             # run as a script: python3 OBC/EPS/EPS.py
+        _payload_dir = str(Path(__file__).resolve().parents[1] / "Payload")
+        if _payload_dir not in sys.path:
+            sys.path.insert(0, _payload_dir)
+        from Payload import SMBus2Bus               # noqa: PLC0415
     bus = SMBus2Bus(a.bus)
     cfg = {"sensors": {"shunt_ohm": a.shunt, "max_current_a": a.max_current}}
     eps = make_eps(cfg, bus)

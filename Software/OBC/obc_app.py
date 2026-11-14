@@ -5,8 +5,8 @@ One tick per second (ICD section 9):
   - re-send ADCS/TT&C configuration whenever a slave reports RESET_OCCURRED
   - drain ground packets (TTC_GET_RX) when GROUND_PKT_PENDING, execute them,
     queue ACKs back through TTC_QUEUE_TX
-  - EPS (EPS.py: INA226, power state, low-battery SAFE logic)
-  - payload (Payload.py: TSL2591, Pi camera, magnetometer samples from ADCS)
+  - EPS (EPS/EPS.py: INA226, power state, low-battery SAFE logic)
+  - payload (Payload/Payload.py: TSL2591, Pi camera, magnetometer samples from ADCS)
   - refresh the OBC beacon in TT&C every few seconds
   - write one JSON line of telemetry
 Every subsystem call is wrapped: one failing board never stops the loop.
@@ -28,11 +28,11 @@ from typing import Callable, Optional
 import icd_defs as I
 from icd_link import MODE_NAMES, BusError, LinkError, SlaveError, SlaveLink, status_name
 
-from . import ground
-from .bus import I2CBus
-from .EPS import Pyro, make_eps
-from .Payload import Payload
-from .slaves import AdcsClient, TtcClient
+from .comms import ground
+from .comms.bus import I2CBus
+from .EPS.EPS import Pyro, make_eps
+from .Payload.Payload import Payload
+from .comms.slaves import AdcsClient, TtcClient, face_mask, faces
 
 log = logging.getLogger("obc")
 LINK_ERRORS = (LinkError, SlaveError, BusError)
@@ -45,7 +45,9 @@ LINK_ERRORS = (LinkError, SlaveError, BusError)
 GROUND_FORWARD = {
     I.GL_TGT_ADCS: {I.ICD_CMD_PING, I.ICD_CMD_GET_VERSION, I.ICD_CMD_GET_TELEMETRY, I.ICD_CMD_SET_MODE,
                     I.ADCS_CMD_SET_BDOT_GAIN, I.ADCS_CMD_SET_DETUMBLE_THRESH, I.ADCS_CMD_SET_BDOT_TIMING,
-                    I.ADCS_CMD_GET_CONFIG, I.ADCS_CMD_MTQ_MANUAL, I.ADCS_CMD_SET_MAG_OFFSET},
+                    I.ADCS_CMD_GET_CONFIG, I.ADCS_CMD_MTQ_MANUAL, I.ADCS_CMD_SET_MAG_OFFSET,
+                    I.ADCS_CMD_SET_GYRO_OFFSET, I.ADCS_CMD_SET_SUN_CONFIG,
+                    I.ADCS_CMD_SET_SUN_DISABLED},
     I.GL_TGT_TTC: {I.ICD_CMD_PING, I.ICD_CMD_GET_VERSION, I.ICD_CMD_GET_TELEMETRY, I.ICD_CMD_SET_MODE,
                    I.TTC_CMD_GET_RADIO, I.TTC_CMD_SET_BEACON_PERIOD, I.TTC_CMD_BURN_ARM, I.TTC_CMD_BURN_FIRE},
 }
@@ -89,6 +91,12 @@ class ObcApp:
         self.gl_key = self._load_ground_key()
         self.ctr_file = self.data_dir / "ground_counter"
         self.last_counter = self._load_counter()
+        # Gyro zero-rate offset (ICD v0.5): ADCS measures it at boot when still
+        # (on the bench); the OBC keeps the last good value here and re-sends it
+        # when ADCS boots moving (in orbit) and cannot measure it.
+        self.gyro_ofs_file = self.data_dir / "adcs_gyro_offset.json"
+        self.stored_gyro_ofs = self._load_gyro_offset()
+        self._gyro_warned = False
         self.reboot_requested = False
         self.last = {"adcs_status": None, "ttc_status": None, "adcs_ctrl": {}, "eps": {}, "lux": None}
         self._notify_sock = None
@@ -120,6 +128,51 @@ class ObcApp:
         except OSError as e:
             log.error("cannot save ground counter: %s", e)
 
+    def _load_gyro_offset(self) -> Optional[list]:
+        try:
+            v = json.loads(self.gyro_ofs_file.read_text())["offset_lsb"]
+            if len(v) == 3 and all(isinstance(x, int) and abs(x) <= I.ADCS_GYRO_OFS_MAX for x in v):
+                return v
+            log.error("ignoring %s: bad offset %r", self.gyro_ofs_file, v)
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
+        return None
+
+    def _save_gyro_offset(self, cal: dict) -> None:
+        rec = {"offset_lsb": cal["offset_lsb"], "offset_dps": cal["offset_dps"], "samples": cal["samples"],
+               "gyro_spread_dps": cal["gyro_spread_dps"], "mag_spread_uT": cal["mag_spread_uT"],
+               "measured_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+        tmp = self.gyro_ofs_file.with_suffix(".tmp")
+        try:
+            tmp.write_text(json.dumps(rec))
+            os.replace(tmp, self.gyro_ofs_file)
+            self.stored_gyro_ofs = list(cal["offset_lsb"])
+            log.info("ADCS gyro offset measured at boot: %s dps (saved)", cal["offset_dps"])
+        except OSError as e:
+            log.error("cannot save the gyro offset: %s", e)
+
+    def _gyro_offset_logic(self, cal: dict) -> None:
+        """Automatic mode only ([adcs] gyro_offset = []). A manual value is
+        sent by configure_adcs() instead, at start-up and after every reset."""
+        if self.cfg["adcs"].get("gyro_offset"):
+            return
+        st = cal["state"]
+        if st == I.ADCS_GCAL_AUTO and cal["offset_lsb"] != self.stored_gyro_ofs:
+            self._save_gyro_offset(cal)
+        elif st in (I.ADCS_GCAL_NONE, I.ADCS_GCAL_REJECTED) and self.stored_gyro_ofs:
+            # ADCS booted moving (or without its magnetometer): use the bench value.
+            r = self._try("adcs gyro offset", self.adcs.set_gyro_offset, *self.stored_gyro_ofs)
+            if r == I.ICD_ST_OK:
+                log.info("ADCS could not measure its gyro offset (%s): sent the stored %s LSB",
+                         cal["state_name"], self.stored_gyro_ofs)
+            elif r is not None:
+                log.error("ADCS rejected the stored gyro offset: %s", status_name(r))
+        elif st in (I.ADCS_GCAL_NONE, I.ADCS_GCAL_REJECTED) and not self._gyro_warned:
+            self._gyro_warned = True
+            log.warning("ADCS gyro offset not measured (%s) and none stored: boot ADCS once while it "
+                        "is still (on the bench) so the OBC can keep the value", cal["state_name"])
+
+
     # ------------------------------------------------------------ helpers
     def uptime_s(self) -> int:
         return int(self.clock.monotonic() - self.t0)
@@ -138,7 +191,12 @@ class ObcApp:
             ("thresh", self.adcs.set_detumble_thresh, a["exit_rate_cdps"], a["enter_rate_cdps"], a["dwell_s"]),
             ("timing", self.adcs.set_bdot_timing, a["period_ms"], a["settle_ms"]),
             ("mag_offset", self.adcs.set_mag_offset, *a["mag_offset"]),
+            ("sun_config", self.adcs.set_sun_config, a["sun_lit_threshold"], a["sun_full_scale"]),
         ]
+        if a.get("sun_disabled_faces"):   # only when set: it also clears the dead diodes ADCS learned
+            steps.append(("sun_disabled", self.adcs.set_sun_disabled, face_mask(a["sun_disabled_faces"])))
+        if a.get("gyro_offset"):   # manual value overrides the boot measurement
+            steps.append(("gyro_offset", self.adcs.set_gyro_offset, *a["gyro_offset"]))
         for name, fn, *args in steps:
             st = self._try(f"adcs {name}", fn, *args)
             if st is not None and st != I.ICD_ST_OK:
@@ -284,10 +342,19 @@ class ObcApp:
         if c is not None:
             d["control"] = self.last["adcs_ctrl"] = c
         if slow:
-            sm = self._try("adcs sun", self.adcs.sun_mtq)
+            sm = self._try("adcs sun sensors", self.adcs.sun_mtq)
             if sm is not None:
                 d["sun_mtq"] = sm
-                self.eps.update_sun(sun_raw=sm["sun_raw"])   # 6 faces: sun / eclipse for the EPS
+            sun = self._try("adcs sun", self.adcs.sun)       # page 4: ADCS's own sun / eclipse decision
+            if sun is not None:
+                d["sun"] = sun
+                self.eps.update_sun(adcs_lit=sun["lit"], adcs_hidden=sun["hidden"])
+            elif sm is not None:                             # ADCS fw without page 4 (ICD < v0.6)
+                self.eps.update_sun(sun_raw=sm["sun_raw"])
+            gc = self._try("adcs gyro cal", self.adcs.gyro_cal)
+            if gc is not None:
+                d["gyro_cal"] = gc
+                self._gyro_offset_logic(gc)
         rec["adcs"] = d
 
     def _poll_ttc(self, rec: dict, slow: bool) -> None:
@@ -414,6 +481,12 @@ class ObcApp:
                 self.adcs.MAG_STALE_MS = ad["period_ms"] + 500
             elif c.cmd == I.ADCS_CMD_SET_MAG_OFFSET and len(a) == I.ADCS_SET_MAG_OFFSET_LEN:
                 ad["mag_offset"] = list(struct.unpack("<hhh", a))
+            elif c.cmd == I.ADCS_CMD_SET_SUN_DISABLED and len(a) == I.ADCS_SET_SUN_DISABLED_LEN:
+                ad["sun_disabled_faces"] = faces(a[0])
+            elif c.cmd == I.ADCS_CMD_SET_SUN_CONFIG and len(a) == I.ADCS_SET_SUN_CONFIG_LEN:
+                ad["sun_lit_threshold"], ad["sun_full_scale"] = struct.unpack("<HH", a)
+            elif c.cmd == I.ADCS_CMD_SET_GYRO_OFFSET and len(a) == I.ADCS_SET_GYRO_OFFSET_LEN:
+                ad["gyro_offset"] = list(struct.unpack("<hhh", a))   # manual until the OBC restarts
         elif c.cmd == I.TTC_CMD_SET_BEACON_PERIOD and len(a) == 2:
             self.cfg["ttc"]["beacon_period_s"] = struct.unpack("<H", a)[0]
 

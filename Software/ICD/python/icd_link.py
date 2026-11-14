@@ -1,4 +1,4 @@
-"""ICD v0.3 master side (OBC): CRC, framing, transactions, COMM_FAULT tracking.
+"""ICD master side (OBC): CRC, framing, transactions, COMM_FAULT tracking.
 
 Standard library only (from v0.1), with the v0.2 transaction rules:
 

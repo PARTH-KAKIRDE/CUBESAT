@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from OBC import Payload as P
+from OBC.Payload import Payload as P
 
 I = P.I
 

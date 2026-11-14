@@ -7,10 +7,10 @@ from typing import Optional, Tuple
 
 import icd_defs as I
 
-from .bus import LinuxI2CBus, SimBus, SimLib
-from .EPS import FakeINA226, GpioOut, Pyro, PyroConfig
+from .comms.bus import LinuxI2CBus, SimBus, SimLib
+from .EPS.EPS import FakeINA226, GpioOut, Pyro, PyroConfig
 from .obc_app import Clock, ObcApp
-from .Payload import FakeTSL2591
+from .Payload.Payload import FakeTSL2591
 
 # Stand-in for rpicam-still in the simulation: writes a tiny JPEG to the -o path.
 SIM_CAMERA_CMD = [sys.executable, "-c",

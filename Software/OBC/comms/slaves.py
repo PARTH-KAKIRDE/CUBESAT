@@ -100,11 +100,32 @@ class SlaveClient:
 
 ADCS_FAULT_NAMES = {I.ADCS_FLT_MAG: "MAG", I.ADCS_FLT_IMU: "IMU", I.ADCS_FLT_DRVX: "DRVX",
                     I.ADCS_FLT_DRVY: "DRVY", I.ADCS_FLT_DRVZ: "DRVZ", I.ADCS_FLT_LOCAL_I2C: "LOCAL_I2C",
-                    I.ADCS_FLT_OBC_I2C: "OBC_I2C", I.ADCS_FLT_SUN_ADC: "SUN_ADC"}
+                    I.ADCS_FLT_OBC_I2C: "OBC_I2C", I.ADCS_FLT_SUN_ADC: "SUN_ADC", I.ADCS_FLT_SUN_DIODE: "SUN_DIODE"}
 TTC_FAULT_NAMES = {I.TTC_FLT_RADIO_INIT: "RADIO_INIT", I.TTC_FLT_RADIO_TX_TIMEOUT: "RADIO_TX_TIMEOUT",
                    I.TTC_FLT_TEMP_SENSOR: "TEMP_SENSOR", I.TTC_FLT_RX_OVERFLOW: "RX_OVERFLOW",
                    I.TTC_FLT_TX_OVERFLOW: "TX_OVERFLOW", I.TTC_FLT_OBC_I2C: "OBC_I2C",
                    I.TTC_FLT_LOCAL_I2C: "LOCAL_I2C"}
+
+
+GCAL_NAMES = {I.ADCS_GCAL_NONE: "NONE", I.ADCS_GCAL_RUNNING: "RUNNING", I.ADCS_GCAL_AUTO: "AUTO",
+              I.ADCS_GCAL_REJECTED: "REJECTED", I.ADCS_GCAL_COMMANDED: "COMMANDED"}
+
+
+FACE_NAMES = {I.ADCS_FACE_PX: "+X", I.ADCS_FACE_MX: "-X", I.ADCS_FACE_PY: "+Y", I.ADCS_FACE_MY: "-Y",
+              I.ADCS_FACE_PZ: "+Z", I.ADCS_FACE_MZ: "-Z"}
+
+
+def faces(bits: int) -> list:
+    return [n for b, n in FACE_NAMES.items() if bits & b]
+
+
+def face_mask(names) -> int:
+    """["+X", "-Z"] -> ADCS_FACE_* bits (for [adcs] sun_disabled_faces)."""
+    by_name = {n: b for b, n in FACE_NAMES.items()}
+    try:
+        return sum(by_name[n] for n in set(names))
+    except KeyError as e:
+        raise ValueError(f"unknown face {e}; use one of {list(by_name)}") from None
 
 
 def fault_names(bits: int, table: dict) -> list:
@@ -160,6 +181,44 @@ class AdcsClient(SlaveClient):
             "local_i2c_errors": u16(p, I.ADCS_TLM2_OFS_LOCAL_I2C_ERR),
         }
 
+    def sun(self) -> dict:
+        """Telemetry page 4 (ICD v0.6): Sun direction in the body frame and sunlit/eclipse,
+        from the BPW34 sun sensors (not the payload TSL2591)."""
+        p = self.telemetry_raw(I.ADCS_TLM_PAGE_SUN)
+        fl = p[I.ADCS_TLM4_OFS_SUN_FLAGS]
+        valid = bool(fl & I.ADCS_SUNF_VECTOR_VALID)
+        return {
+            "lit": bool(fl & I.ADCS_SUNF_LIT),
+            "vector": [round(i16(p, o) / I.ADCS_SUN_UNIT, 4) for o in (I.ADCS_TLM4_OFS_SUN_X, I.ADCS_TLM4_OFS_SUN_Y,
+                                                                       I.ADCS_TLM4_OFS_SUN_Z)] if valid else None,
+            "blind_side": bool(fl & I.ADCS_SUNF_BLIND_SIDE),
+            # v0.7: all faces dark but the gyro-tracked Sun is behind a dead or missing
+            # diode: NOT an eclipse, just unknown. The vector is then the tracked one.
+            "hidden": bool(fl & I.ADCS_SUNF_HIDDEN),
+            "predicted": bool(fl & I.ADCS_SUNF_PREDICTED),
+            "dead_faces": faces(p[I.ADCS_TLM4_OFS_DEAD_FACES]),
+            "lit_faces": faces(p[I.ADCS_TLM4_OFS_LIT_FACES]),
+            "fitted_faces": faces(p[I.ADCS_TLM4_OFS_FITTED_FACES]),
+            "max_counts": u16(p, I.ADCS_TLM4_OFS_SUN_MAX),
+            "lit_threshold": u16(p, I.ADCS_TLM4_OFS_LIT_THRESHOLD),
+            "full_scale": u16(p, I.ADCS_TLM4_OFS_FULL_SCALE),
+        }
+
+    def gyro_cal(self) -> dict:
+        """Telemetry page 3 (ICD v0.5): the gyro zero-rate offset ADCS subtracts."""
+        p = self.telemetry_raw(I.ADCS_TLM_PAGE_GYRO_CAL)
+        ofs = [i16(p, I.ADCS_TLM3_OFS_GYRO_OFS_X + 2 * i) for i in range(3)]
+        state = p[I.ADCS_TLM3_OFS_CAL_STATE]
+        return {
+            "offset_lsb": ofs,
+            "offset_dps": [round(v * GYRO_DPS, 3) for v in ofs],
+            "state": state,
+            "state_name": GCAL_NAMES.get(state, str(state)),
+            "samples": p[I.ADCS_TLM3_OFS_CAL_SAMPLES],
+            "gyro_spread_dps": round(u16(p, I.ADCS_TLM3_OFS_GYRO_SPREAD) * GYRO_DPS, 3),
+            "mag_spread_uT": round(u16(p, I.ADCS_TLM3_OFS_MAG_SPREAD) * MAG_UT, 3),
+        }
+
     def set_bdot_gain(self, gain: int) -> int:
         return self.link.transact(I.ADCS_CMD_SET_BDOT_GAIN, struct.pack("<I", gain)).status
 
@@ -172,6 +231,15 @@ class AdcsClient(SlaveClient):
 
     def set_mag_offset(self, x: int, y: int, z: int) -> int:
         return self.link.transact(I.ADCS_CMD_SET_MAG_OFFSET, struct.pack("<hhh", x, y, z)).status
+
+    def set_sun_config(self, lit: int, full: int) -> int:
+        return self.link.transact(I.ADCS_CMD_SET_SUN_CONFIG, struct.pack("<HH", lit, full)).status
+
+    def set_sun_disabled(self, mask: int) -> int:
+        return self.link.transact(I.ADCS_CMD_SET_SUN_DISABLED, bytes([mask])).status
+
+    def set_gyro_offset(self, x: int, y: int, z: int) -> int:
+        return self.link.transact(I.ADCS_CMD_SET_GYRO_OFFSET, struct.pack("<hhh", x, y, z)).status
 
     def mtq_manual(self, dx: int, dy: int, dz: int, duration_ms: int) -> int:
         return self.link.transact(I.ADCS_CMD_MTQ_MANUAL, struct.pack("<hhhH", dx, dy, dz, duration_ms)).status

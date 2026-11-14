@@ -1,6 +1,6 @@
-# Inter-Subsystem ICD v0.3: OBC ↔ ADCS / TT&C I2C link, and the ground link
+# Inter-Subsystem ICD v0.7: OBC ↔ ADCS / TT&C I2C link, and the ground link
 
-**Status:** v0.4, 2026-11-12, owner Parth. v0.4 adds the EPS GET_STATE ground command (section 11) and the INA226 #2 address, commented out. Earlier text edit (2026-11-12): the camera is a Pi camera on CSI, not USB; VEML6075 entries added commented out. Merges the v0.1 draft into v0.2 (what came from where: `README.md`).
+**Status:** v0.7, 2026-11-14, owner Parth. v0.7 fits a sun diode on every face, adds gyro tracking of the Sun (dead-diode detection, HIDDEN instead of a false eclipse), the SUN_DIODE fault, SET_SUN_DISABLED 0x28 and page-4 dead_faces. v0.6 added the sun sensors' processed output: ADCS works out the Sun direction and sunlit/eclipse from its BPW34 diodes (5 faces, none on nadir) and reports them on telemetry page 4; SET_SUN_CONFIG 0x27 sets the light thresholds (sections 6, 7). v0.5 added the ADCS gyro zero-rate offset: SET_GYRO_OFFSET 0x26 (section 6), telemetry page 3 (section 7), automatic measurement at boot (section 8); page 0 gyro is now reported with the offset removed. v0.4 (2026-11-12) added the EPS GET_STATE ground command (section 11) and the INA226 #2 address, commented out. Earlier text edit (2026-11-12): the camera is a Pi camera on CSI, not USB; VEML6075 entries added commented out. Merges the v0.1 draft into v0.2 (what came from where: `README.md`).
 The single source of truth is [`cubesat_icd.h`](cubesat_icd.h) (I2C link) and [`ground_link.h`](ground_link.h) (radio link). This document explains them; **if they disagree, the header wins** and this document is fixed. Changes go through Parth and bump `ICD_VERSION_MINOR` (compatible) or `ICD_VERSION_MAJOR` (breaking).
 **TBD** = filled in by the named owner before freeze. **Unverified** = written down, not yet measured on the bench.
 
@@ -120,6 +120,7 @@ Response (slave → Pi): CMD_ID(1) | STATUS(1) | LEN(1) | PAYLOAD(0..24) | CRC16
 | 5 | LOCAL_I2C | OBC_I2C peripheral reset |
 | 6 | OBC_I2C peripheral reset | LOCAL_I2C |
 | 7 | SUN_ADC | — |
+| 8 | SUN_DIODE (v0.7): a sun diode reads dark where the gyro-tracked Sun should light it | — |
 
 Bits 5 and 6 are in opposite order on the two slaves: always use the header names, never the numbers.
 
@@ -141,6 +142,9 @@ Command ranges: ADCS **0x20–0x3F**, TT&C **0x40–0x5F** (`ICD_CMD_*_FIRST/LAS
 | 0x23 | GET_CONFIG | — | 20 bytes: gain, exit, enter, dwell, period, settle, mag offset x, y, z |
 | 0x24 | MTQ_MANUAL | duty x, y, z i16 (‰), duration_ms u16 | NOMINAL only, ≤ 10 s. 0 ms stops it. |
 | 0x25 | SET_MAG_OFFSET | x, y, z i16 (magnetometer LSB) | Hard-iron offset, subtracted from every sample. |
+| 0x26 | SET_GYRO_OFFSET | x, y, z i16 (gyro LSB) | v0.5. Gyro zero-rate offset, subtracted from every reading. Each axis ≤ 1310 LSB (20 °/s, the MPU-6050 limit), else `BAD_PARAM`. Overrides the boot measurement (page 3 state COMMANDED). |
+| 0x27 | SET_SUN_CONFIG | lit u16, full u16 (ADC counts) | v0.6. full = a diode with the Sun straight on it (100–4095); lit = the albedo threshold, a face at or above it is sunlit (above 60, below full). Defaults 1200 / 3000, **TBD (measure)**. |
+| 0x28 | SET_SUN_DISABLED | face mask u8 (bits 0–5) | v0.7. Faces ADCS must ignore (a diode known broken). Also forgets the dead diodes ADCS found itself. 0 = use all. |
 
 **TT&C**
 
@@ -160,7 +164,7 @@ Command ranges: ADCS **0x20–0x3F**, TT&C **0x40–0x5F** (`ICD_CMD_*_FIRST/LAS
 
 **Scales:**
 - Magnetometer: **0.025 µT/LSB** (value = B[µT] × 40, ±819 µT, covering the MMC5983MA's ±800 µT range). The firmware converts the 18-bit raw count (16384 counts/G) with ×125/512.
-- Gyro: **65.5 LSB per °/s**, raw MPU-6050 counts at **±500 °/s** (FS_SEL = 1). (v0.1 proposed ±250 °/s; it was widened for the post-deployment tumble. Change the range and this scale together.)
+- Gyro: **65.5 LSB per °/s**, MPU-6050 counts at **±500 °/s** (FS_SEL = 1), with the zero-rate offset (page 3) removed since v0.5. (v0.1 proposed ±250 °/s; it was widened for the post-deployment tumble. Change the range and this scale together.)
 
 **ADCS page 0, sensors (18 bytes):**
 
@@ -168,7 +172,7 @@ Command ranges: ADCS **0x20–0x3F**, TT&C **0x40–0x5F** (`ICD_CMD_*_FIRST/LAS
 |---|---|---|
 | 0 | uptime_ms | u32, ms since boot (wraps after 49.7 days; the Pi must handle the wrap) |
 | 4, 6, 8 | mag X, Y, Z | i16, 0.025 µT |
-| 10, 12, 14 | gyro X, Y, Z | i16, raw (65.5 LSB/°/s) |
+| 10, 12, 14 | gyro X, Y, Z | i16, 65.5 LSB/°/s, offset removed (v0.5; v0.4 sent the raw value) |
 | 16 | mag_age_ms | u16, age of the last clean sample; saturates at 65534; 0xFFFF = never valid |
 
 ADCS switches the coils off around each magnetometer sample, so `mag_age_ms` is the age of the last clean sample. The Pi marks a sample stale when the age exceeds period + 500 ms, and never presents an old sample as fresh.
@@ -177,7 +181,7 @@ ADCS switches the coils off around each magnetometer sample, so `mag_age_ms` is 
 
 | Offset | Field | Type / unit |
 |---|---|---|
-| 0, 2, …, 10 | SS1..SS6 | u16, raw 12-bit ADC (0..4095). **TBD (ADCS owner):** which face each index is. |
+| 0, 2, …, 10 | SS1..SS6 | u16, raw 12-bit ADC (0..4095) from the BPW34 sun sensors (J4..J9). Face of each index: `ADCS/board_config.h` (placeholder SS1..SS6 = +X, −X, +Y, −Y, +Z, −Z). **Unverified.** |
 | 12, 14, 16 | coil duty X, Y, Z | i16, ‰ of full drive, + = AOUT1 high |
 
 > **Coil current is not measured.** Each DRV8833 AISEN goes to ground through a 1 Ω sense resistor (R1_0805, R1_806, R1_807). That sets the driver's own current limit (about 200 mV / 1 Ω = 200 mA per bridge). The sense node is not connected to the STM32, so page 1 reports the commanded duty instead of the v0.1 "coil current".
@@ -217,6 +221,41 @@ ADCS switches the coils off around each magnetometer sample, so `mag_age_ms` is 
 
 **Dummy slave page 0 (24 bytes, link tests only):** uptime_ms, frames_ok, crc_errors, len_errors, overwritten (u32 each), bus_resets u16, reads (low 16 bits) u16. The dummy reports fw 0.1.0, which is how test tools tell it apart from TT&C (whose page 0 is also 24 bytes).
 
+**ADCS page 3, gyro offset (12 bytes, v0.5):**
+
+| Offset | Field | Type / unit |
+|---|---|---|
+| 0, 2, 4 | gyro offset X, Y, Z | i16, gyro LSB, subtracted from every reading |
+| 6 | cal_state | u8: 0 NONE (no IMU at boot), 1 RUNNING, 2 AUTO (measured, board still), 3 REJECTED (board moved, or no magnetometer), 4 COMMANDED (SET_GYRO_OFFSET) |
+| 7 | samples | u8, gyro reads averaged |
+| 8 | gyro_spread | u16, gyro LSB: largest max − min of one axis over the window |
+| 10 | mag_spread | u16, magnetometer LSB: largest max − min of one axis (raw, before the hard-iron offset) |
+
+**ADCS page 4, Sun (16 bytes, v0.6):**
+
+| Offset | Field | Type / unit |
+|---|---|---|
+| 0, 2, 4 | sun X, Y, Z | i16, unit vector × 10000, body frame; 0 when not valid |
+| 6 | sun_flags | u8: 0x01 LIT (some working face ≥ lit), 0x02 VECTOR_VALID, 0x04 BLIND_SIDE (a component inferred), 0x08 HIDDEN (v0.7: dark, but the tracked Sun is behind an unavailable face: unknown, not eclipse), 0x10 PREDICTED (v0.7: vector is the gyro-tracked one). Eclipse = neither LIT nor HIDDEN. |
+| 7 | lit_faces | u8 face bits: 0x01 +X, 0x02 −X, 0x04 +Y, 0x08 −Y, 0x10 +Z, 0x20 −Z |
+| 8 | fitted_faces | u8 face bits with a diode (0x3F since v0.7) |
+| 9 | dead_faces | u8 face bits ignored: detected dead or disabled (v0.7; reserved 0 in v0.6) |
+| 10 | sun_max | u16 counts, brightest fitted face |
+| 12, 14 | lit_threshold, full_scale | u16 counts in use (SET_SUN_CONFIG) |
+
+**How the Sun direction is worked out (v0.6, v0.7).** Sun sensors (BPW34, attitude) and the payload solar-flux sensor (TSL2591 on the Pi, science) are separate: only the sun sensors are used here. Since v0.7 there is a diode on **every face**. With no pointing control any face can face the Sun, and v0.6's bare nadir face read as eclipse whenever it did (about 5 % of all directions).
+
+- **Direction:** each face reads ≈ full × cos(angle to the Sun), 0 when the Sun is behind it; below 60 counts a face counts as dark. Of each opposite pair only the brighter face is used, because the Sun can light only one and the other reading is albedo or noise. That gives the axis component as ±(brighter / full).
+- **Lit** is the albedo threshold: a face counts as sunlit only at or above it, so the Earth's glow cannot fake daylight in the Earth's shadow.
+- **Unavailable faces:** a face is unavailable if it is not fitted, detected dead, or disabled with SET_SUN_DISABLED. If an axis has only one available side and that side is dark, the component comes from |s| = 1 (BLIND_SIDE).
+- **Gyro tracking:** between measurements ADCS turns the last Sun direction with the gyro.
+  - *Dead diodes:* with all diodes working the components add up to a unit vector. If, in daylight, they add up to less than √0.75, light is missing, and the dark face that can hold it, on the side the tracked Sun favours, is suspected. Still dark after 5 cycles while the tracked Sun lights it, that face is marked dead (fault SUN_DIODE). A face that reads light again is trusted again. This needs `full` within about 10 %.
+  - *HIDDEN:* all faces dark while the tracked Sun is behind an unavailable face. The state is unknown, not eclipse, and the EPS drops ADCS's vote. The tracked direction is reported (PREDICTED).
+  - *Limits:* tracking is believed for 5 min (gyro drift), so an eclipse that starts while the Sun is hidden shows only after that. Without a gyro there is no tracking.
+- Computed once per control cycle, with the coils off.
+
+**How the offset is measured (v0.5).** For `ADCS_GYRO_CAL_MS` (5 s) after every boot ADCS averages its gyro reads (every 100 ms). It keeps the mean only if the board was still: at least 40 reads, every gyro axis within 33 LSB (0.5 °/s), and every magnetometer axis within 20 LSB (0.5 µT) over at least 3 samples. The magnetometer is what catches a steady rotation, which the gyro alone cannot tell from an offset: 0.5 °/s turns a 30 µT field by about 1 µT between the first and last sample. Otherwise the state is REJECTED and the offset stays 0. So the offset can be measured on the bench (board still at power-on) but not after a reset in orbit (tumbling). The OBC therefore saves the last AUTO value and sends it with SET_GYRO_OFFSET when it sees NONE or REJECTED; `[adcs] gyro_offset` in obc.toml can force a value instead.
+
 ## 8. Modes
 
 BOOT = 0 · SAFE = 1 · DETUMBLE = 2 · NOMINAL = 3
@@ -227,10 +266,10 @@ BOOT = 0 · SAFE = 1 · DETUMBLE = 2 · NOMINAL = 3
 
 | Mode | ADCS | TT&C |
 |---|---|---|
-| BOOT | Self-test. Enters **DETUMBLE by itself**, without waiting for the Pi, or SAFE if the magnetometer is missing. | Initialises the radio. Goes to NOMINAL, or SAFE if the radio failed. |
-| SAFE | DRV8833s asleep (nSLEEP low). Sensors still sampled, telemetry still served. If it entered SAFE on a fault, the fault has been gone for 30 s and the Pi is silent, it returns to DETUMBLE by itself. | RX on. Beacon at least every 60 s. QUEUE_TX and BURN refused. Returns to NOMINAL by itself when the radio recovers. |
+| BOOT | Self-test. Enters **DETUMBLE by itself**, without waiting for the Pi, or SAFE if the magnetometer is missing. Starts the 5 s gyro offset measurement (page 3). | Initialises the radio. Goes to NOMINAL, or SAFE if the radio failed. |
+| SAFE | DRV8833s asleep (nSLEEP low). Sensors still sampled, telemetry still served. If it entered SAFE on a fault, the faults that stop B-dot (magnetometer, coil drivers) have been gone for 30 s and the Pi is silent, it returns to DETUMBLE by itself; a dead gyro or sun-sensor ADC does not block this (v0.5). If the fault returns within 10 min of such a restart, the wait doubles each time (30 s … 32 min), and resets after 10 clean minutes or any commanded mode change. | RX on. Beacon at least every 60 s. QUEUE_TX and BURN refused. Returns to NOMINAL by itself when the radio recovers. |
 | DETUMBLE | B-dot loop every period: coils off → settle → magnetometer sample → dB/dt → coils on. SAFE if the magnetometer fails 3 times or a driver fault lasts 3 cycles. Refused with `HW_FAULT` if the magnetometer is down. | Same as NOMINAL. |
-| NOMINAL | Coils off (pointing law TBD). MTQ_MANUAL allowed. The Pi promotes ADCS here once it reports DETUMBLED. | RX, beacons, Pi downlink, burn wire. |
+| NOMINAL | Coils off (pointing law TBD). MTQ_MANUAL allowed. The Pi promotes ADCS here once it reports DETUMBLED. Any commanded mode change switches the coils off at once (v0.5; before, the old duty stayed on until the end of the control cycle). | RX, beacons, Pi downlink, burn wire. |
 
 ## 9. Timing and failures
 
@@ -245,7 +284,7 @@ BOOT = 0 · SAFE = 1 · DETUMBLE = 2 · NOMINAL = 3
 
 - **ADCS:** SWD + SWO on J16 (Tag-Connect). Logs go out over SWO/ITM, because ADCS has no free UART.
 - **TT&C:** SWD on J4 (Tag-Connect TC2030); v0.1 said it had none. It also logs on USART1 at J6 (pin 2 = TX out, pin 1 = RX in, pin 3 = GND), 115200 8N1. The log must stay non-blocking (DMA or ring buffer) and covers boot reason, mode changes, every rejected frame with its status, and bus resets.
-- Without a programmer, the Pi can flash both STM32s by SWD bit-bang and read the ADCS SWO log on its UART (see the main project's `docs/NO_PROGRAMMER.md`).
+- Without a programmer, the Pi can flash both STM32s by SWD bit-bang and read the ADCS SWO log on its UART (see `../docs/NO_PROGRAMMER.md`).
 
 ## 11. Ground link (`ground_link.h`, GL_VERSION 2)
 
@@ -269,12 +308,12 @@ SAT_ID | TYPE=0x01 | SEQ | TARGET | CMD | LEN | ARGS (0..8) | COUNTER u32 | MAC 
 
 | Target | Forwarded | Not forwarded, and why |
 |---|---|---|
-| ADCS | PING, GET_VERSION, GET_TELEMETRY, SET_MODE, SET_BDOT_GAIN, SET_DETUMBLE_THRESH, SET_BDOT_TIMING, GET_CONFIG, MTQ_MANUAL, SET_MAG_OFFSET | — |
+| ADCS | PING, GET_VERSION, GET_TELEMETRY, SET_MODE, SET_BDOT_GAIN, SET_DETUMBLE_THRESH, SET_BDOT_TIMING, GET_CONFIG, MTQ_MANUAL, SET_MAG_OFFSET, SET_GYRO_OFFSET, SET_SUN_CONFIG, SET_SUN_DISABLED | — |
 | TT&C | PING, GET_VERSION, GET_TELEMETRY, SET_MODE, GET_RADIO, SET_BEACON_PERIOD, BURN_ARM, BURN_FIRE | GET_RX / QUEUE_TX / SET_BEACON: the OBC owns the queues and beacon. SET_RADIO: a wrong value cuts the uplink with no way back. |
 | both | GET_STATUS is **answered from the OBC's last poll**, because a real one would clear the reset and fault flags before the OBC saw them. | |
 
 - BURN_ARM and BURN_FIRE are refused while the OBC is in SAFE or the battery is low, the same rule as the pyro.
-- ADCS settings and the beacon period changed from the ground are kept in the OBC's memory, so a slave reset re-applies them. An OBC restart goes back to the configuration file.
+- ADCS settings (including a gyro offset) and the beacon period changed from the ground are kept in the OBC's memory, so a slave reset re-applies them. An OBC restart goes back to the configuration file.
 
 **Ground statuses:** 0x80 BAD_PACKET, 0x81 COMM_FAULT (the OBC could not reach the slave), 0x82 REFUSED.
 
@@ -317,11 +356,14 @@ How the OBC fills it (the EPS has no MCU; the INA226 on J11 sees only the load):
 
 ## 12. Verification
 
-| Item | Status (2026-11-09) |
+| Item | Status (2026-11-14) |
 |---|---|
 | CRC-16 in C and Python, 0x29B1, agree on 5,000 random inputs | Passing on PC (`tests/test_icd.py`) |
 | Every layout and constant adds up; header and Python in sync; generator rejects unparsable lines | Passing on PC |
 | Reference slave (`slave/`) against the Python master: boot frame, common commands, bad frames not acted on, BUSY staging, newest command wins, mode rules, status flags, lost-reply recovery, uptime rule | Passing on PC |
+| A second end-of-transfer after a read (STOP after the master's NACK) never re-runs the last command (`slave/icd_link.c` clears the receive buffer when a read starts) | Passing on PC (firmware host tests) |
+| Gyro offset (v0.5): measured when still, rejected when tumbling, not spoiled by a SET_MAG_OFFSET in the window, SET_GYRO_OFFSET limits; OBC saves and re-sends it | Passing on PC (firmware host tests, `OBC/tests/test_gyro_offset.py`) |
+| Sun direction and eclipse over a 324-point grid: six faces ≤ 1.2°, never dark in sunlight; albedo 0.3 × full from below: ≤ 0.3°; the albedo threshold keeps a shadowed satellite dark. A diode dying in orbit: found in 12 s, then HIDDEN instead of eclipse, tracked ≤ 4.2°; a wrong tracker never condemns a good diode; the 5-face build still passes. EPS: HIDDEN is not eclipse | Passing on PC (firmware host tests in both builds, `OBC/tests/test_sun.py`) |
 | Link tests (a) bad frames, (b) unplug, (c) 10,000 PINGs, against the firmware simulation | 15/15 on PC (`python/test_link.py --sim-lib`) |
 | Same link tests on the Pi against the Nucleo dummy slave and the real boards | **To run** (no ST-LINK or Nucleo yet; boards flashed from the Pi by SWD bit-bang) |
 
@@ -330,7 +372,7 @@ How the OBC fills it (the EPS has no MCU; the INA226 on J11 sees only the load):
 1. **SAFE-mode downlink:** in SAFE, TT&C refuses QUEUE_TX, so the OBC's ACKs and downlink cannot go out; only beacons do. Commands sent in SAFE still run, but the ground sees no ACK. Fixing it needs a TT&C firmware change (owner: TT&C).
 2. **Coil current limit:** the 1 Ω AISEN resistors cap each coil at about 200 mA. Confirm this suits the coil design; the detumble simulation does not model the cap (owner: ADCS).
 3. **Unverified bench values:** axis map and coil polarity, deploy pin polarity, INA226 shunt value (many modules use 0.1 Ω, not 0.01 Ω), and the LoRa frequency.
-4. **Sun sensor faces:** which face each SS1..SS6 index is (owner: ADCS).
+4. **Sun sensor faces:** which face each SS1..SS6 index is (placeholder in `ADCS/board_config.h`: SS1..SS6 = +X, −X, +Y, −Y, +Z, −Z), plus `full` (within ~10 %) and `lit` (above the albedo glow) measured in sunlight (owner: ADCS).
 5. **uptime_ms wrap** at 49.7 days (ADCS and TT&C page 0, and `uptime_s` derived from it). Acceptable for the EM as long as the Pi handles the wrap; a flight unit should use a wider clock.
 
-**Resolved since v0.1:** EPS address check (only the INA226 is on I2C); bus split (sensors on i2c-3); BUSY no longer means "queue full" (QUEUE_FULL 0x09); RESET_OCCURRED loss on a lost reply (recovery read + uptime rule); gyro range (±500 °/s); TT&C pins, modes and telemetry pages (filled in); ADCS commands (0x20–0x25 defined).
+**Resolved since v0.1:** EPS address check (only the INA226 is on I2C); bus split (sensors on i2c-3); BUSY no longer means "queue full" (QUEUE_FULL 0x09); RESET_OCCURRED loss on a lost reply (recovery read + uptime rule); gyro range (±500 °/s); TT&C pins, modes and telemetry pages (filled in); ADCS commands (0x20–0x27 defined); sun direction and eclipse from the sun sensors (v0.6), on all six faces with gyro tracking and dead-diode detection (v0.7); gyro zero-rate offset (v0.5: measured at boot, page 3, SET_GYRO_OFFSET).

@@ -22,7 +22,7 @@
 /* Version (returned by GET_VERSION)                                   */
 /* ------------------------------------------------------------------ */
 #define ICD_VERSION_MAJOR            0
-#define ICD_VERSION_MINOR            4
+#define ICD_VERSION_MINOR            7
 
 /* ------------------------------------------------------------------ */
 /* 1. Bus and addressing                                               */
@@ -43,7 +43,7 @@
 /* Second INA226 (battery current), spliced into the battery cable between
  * the pack and EPS J4 (no PCB change), A0 strapped to VCC. NOT FITTED YET.
  * To use it: delete the leading "// " below, run tools/gen_icd_py.py, and
- * uncomment the "# BATT: " lines in OBC/EPS.py. Same one-line rule as above. */
+ * uncomment the "# BATT: " lines in OBC/EPS/EPS.py. Same one-line rule as above. */
 // #define ICD_ADDR_INA226_BATT         0x41
 
 /* ------------------------------------------------------------------ */
@@ -157,12 +157,18 @@
 #define ADCS_CMD_GET_CONFIG          0x23 /* resp: see ADCS_CFG_OFS_*              */
 #define ADCS_CMD_MTQ_MANUAL          0x24 /* req: duty x,y,z i16, duration_ms u16  */
 #define ADCS_CMD_SET_MAG_OFFSET      0x25 /* req: x,y,z i16 (mag LSB)              */
+#define ADCS_CMD_SET_GYRO_OFFSET     0x26 /* req: x,y,z i16 (gyro LSB), v0.5       */
+#define ADCS_CMD_SET_SUN_CONFIG      0x27 /* req: lit u16, full u16 (ADC counts), v0.6 */
+#define ADCS_CMD_SET_SUN_DISABLED    0x28 /* req: face mask u8 to ignore, v0.7      */
 
 #define ADCS_SET_BDOT_GAIN_LEN       4
 #define ADCS_SET_DETUMBLE_THRESH_LEN 6
 #define ADCS_SET_BDOT_TIMING_LEN     4
 #define ADCS_MTQ_MANUAL_LEN          8
 #define ADCS_SET_MAG_OFFSET_LEN      6
+#define ADCS_SET_GYRO_OFFSET_LEN     6
+#define ADCS_SET_SUN_CONFIG_LEN      4
+#define ADCS_SET_SUN_DISABLED_LEN    1
 
 /* B-dot gain unit: duty[permille] = -(gain/1000) * dB/dt[uT/s]          */
 #define ADCS_BDOT_GAIN_MAX           10000000
@@ -178,6 +184,39 @@
 #define ADCS_SETTLE_MS_MIN           5
 #define ADCS_DUTY_MAX                1000 /* permille */
 #define ADCS_MANUAL_MAX_MS           10000
+/* Gyro zero-rate offset (v0.5). ADCS measures it for ADCS_GYRO_CAL_MS after
+ * every boot and keeps it only if the board was still: every gyro axis and
+ * every magnetometer axis moved less than the spread limits below.        */
+#define ADCS_GYRO_OFS_MAX            1310 /* |offset| LSB = 20 dps (MPU-6050 ZRO limit) */
+#define ADCS_GYRO_CAL_MS             5000
+#define ADCS_GYRO_CAL_MAX_SPREAD     33   /* gyro LSB, max - min per axis (0.5 dps)  */
+#define ADCS_GYRO_CAL_MAX_MAG_SPREAD 20   /* mag LSB, max - min per axis (0.5 uT)    */
+#define ADCS_GYRO_CAL_MIN_SAMPLES    40   /* of the 50 gyro reads in the window    */
+/* Sun sensors (v0.6, v0.7): BPW34 photodiodes, one on every face (v0.7;
+ * v0.6 had none on nadir).
+ * full = ADC counts with the Sun straight onto a diode (cos 0 = 1).
+ * lit  = the albedo threshold: a face at or above it counts as sunlit, so
+ *        set it above the Earth-albedo glow. Below ADCS_SUN_NOISE a face
+ *        counts as dark.                                                */
+#define ADCS_SUN_FULL_DEFAULT        3000 /* TBD: measure in sunlight          */
+#define ADCS_SUN_LIT_DEFAULT         1200 /* TBD: 0.4 x full, above albedo     */
+#define ADCS_SUN_FULL_MIN            100
+#define ADCS_SUN_NOISE               60   /* counts                           */
+#define ADCS_SUN_UNIT                10000 /* sun vector: 10000 = 1.0          */
+/* Dead diodes and gyro tracking (v0.7). With all diodes working, the
+ * per-axis readings (brighter side / full) form a vector of length 1. If
+ * it is shorter than ADCS_SUN_DEFICIT_PERMILLE (squared, permille) while
+ * the Sun is up, light is missing: a dark face whose axis can hold the
+ * missing part, on the side the gyro-tracked Sun favours, is suspected.
+ * Suspected (dark while the tracked Sun puts >= ADCS_SUN_DEAD_PERMILLE x
+ * full on it) for ADCS_SUN_DEAD_CYCLES cycles: dead. The tracked direction
+ * is trusted for that within ADCS_SUN_TRUST_MS of a measurement, and for
+ * HIDDEN for ADCS_SUN_TRACK_MAX_MS (gyro drift). Needs `full` within ~10%. */
+#define ADCS_SUN_DEFICIT_PERMILLE    750
+#define ADCS_SUN_DEAD_PERMILLE       300
+#define ADCS_SUN_DEAD_CYCLES         5
+#define ADCS_SUN_TRUST_MS            60000
+#define ADCS_SUN_TRACK_MAX_MS        300000
 
 /* GET_CONFIG response layout (20 bytes) */
 #define ADCS_CFG_OFS_GAIN            0    /* u32 */
@@ -200,6 +239,7 @@
 #define ADCS_FLT_LOCAL_I2C           0x0020 /* sensor bus (I2C1) error        */
 #define ADCS_FLT_OBC_I2C             0x0040 /* OBC link peripheral was reset  */
 #define ADCS_FLT_SUN_ADC             0x0080 /* ADC conversion timeout         */
+#define ADCS_FLT_SUN_DIODE           0x0100 /* a sun diode reads dark while the gyro-tracked Sun is on it (v0.7) */
 
 /* Scales */
 #define ADCS_MAG_NT_PER_LSB          25   /* 0.025 uT / LSB  (+-819 uT) */
@@ -213,7 +253,7 @@
 #define ADCS_TLM0_OFS_MAG_X          4    /* i16 x 0.025 uT */
 #define ADCS_TLM0_OFS_MAG_Y          6
 #define ADCS_TLM0_OFS_MAG_Z          8
-#define ADCS_TLM0_OFS_GYRO_X         10   /* i16 raw, 65.5 LSB/dps */
+#define ADCS_TLM0_OFS_GYRO_X         10   /* i16 65.5 LSB/dps, offset removed (v0.5) */
 #define ADCS_TLM0_OFS_GYRO_Y         12
 #define ADCS_TLM0_OFS_GYRO_Z         14
 #define ADCS_TLM0_OFS_MAG_AGE_MS     16   /* u16, 0xFFFF = never valid */
@@ -252,6 +292,54 @@
 #define ADCS_CF_COILS_ACTIVE         0x02
 #define ADCS_CF_MANUAL_ACTIVE        0x04
 #define ADCS_CF_MAG_VALID            0x08
+
+/* Telemetry page 3: gyro offset calibration (12 bytes, v0.5) */
+#define ADCS_TLM_PAGE_GYRO_CAL       3
+#define ADCS_TLM3_OFS_GYRO_OFS_X     0    /* i16 LSB, subtracted from every gyro read */
+#define ADCS_TLM3_OFS_GYRO_OFS_Y     2
+#define ADCS_TLM3_OFS_GYRO_OFS_Z     4
+#define ADCS_TLM3_OFS_CAL_STATE      6    /* u8 ADCS_GCAL_*                 */
+#define ADCS_TLM3_OFS_CAL_SAMPLES    7    /* u8 gyro reads averaged         */
+#define ADCS_TLM3_OFS_GYRO_SPREAD    8    /* u16 gyro LSB, largest max - min */
+#define ADCS_TLM3_OFS_MAG_SPREAD     10   /* mag LSB, largest max - min     */
+#define ADCS_TLM3_LEN                12
+
+#define ADCS_GCAL_NONE               0    /* no offset: IMU missing at boot           */
+#define ADCS_GCAL_RUNNING            1    /* boot window still open                  */
+#define ADCS_GCAL_AUTO               2    /* measured at boot, board was still       */
+#define ADCS_GCAL_REJECTED           3    /* board moved (or no mag): offset left 0  */
+#define ADCS_GCAL_COMMANDED          4    /* set with SET_GYRO_OFFSET                */
+
+/* Telemetry page 4: sun direction and sunlit/eclipse (16 bytes, v0.6) */
+#define ADCS_TLM_PAGE_SUN            4
+#define ADCS_TLM4_OFS_SUN_X          0    /* i16 unit vector x ADCS_SUN_UNIT, body frame */
+#define ADCS_TLM4_OFS_SUN_Y          2
+#define ADCS_TLM4_OFS_SUN_Z          4
+#define ADCS_TLM4_OFS_SUN_FLAGS      6    /* u8 ADCS_SUNF_*                    */
+#define ADCS_TLM4_OFS_LIT_FACES      7    /* u8 ADCS_FACE_* at or above lit    */
+#define ADCS_TLM4_OFS_FITTED_FACES   8    /* u8 ADCS_FACE_* with a diode       */
+#define ADCS_TLM4_OFS_DEAD_FACES     9    /* u8 ADCS_FACE_* ignored: dead or disabled (v0.7; v0.6: 0) */
+#define ADCS_TLM4_OFS_SUN_MAX        10   /* u16 counts, brightest fitted face */
+#define ADCS_TLM4_OFS_LIT_THRESHOLD  12   /* in use (SET_SUN_CONFIG)           */
+#define ADCS_TLM4_OFS_FULL_SCALE     14
+#define ADCS_TLM4_LEN                16
+
+/* Face bits (body frame) */
+#define ADCS_FACE_PX                 0x01
+#define ADCS_FACE_MX                 0x02
+#define ADCS_FACE_PY                 0x04
+#define ADCS_FACE_MY                 0x08
+#define ADCS_FACE_PZ                 0x10
+#define ADCS_FACE_MZ                 0x20
+
+#define ADCS_SUNF_LIT                0x01 /* some fitted face >= lit: not eclipse   */
+#define ADCS_SUNF_VECTOR_VALID       0x02 /* sun vector computed this cycle         */
+#define ADCS_SUNF_BLIND_SIDE         0x04 /* sun on a side with no working diode: */
+                                          /* that component from |s| = 1         */
+#define ADCS_SUNF_HIDDEN             0x08 /* v0.7: all dark, but the tracked Sun is */
+                                          /* behind a dead/missing diode: unknown, */
+                                          /* NOT eclipse                          */
+#define ADCS_SUNF_PREDICTED          0x10 /* v0.7: the vector is the gyro-tracked one */
 
 /* ------------------------------------------------------------------ */
 /* 6./7. TT&C (0x40 - 0x5F)                                            */

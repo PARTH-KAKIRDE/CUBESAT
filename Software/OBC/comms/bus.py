@@ -73,7 +73,7 @@ class FakeDevice(Protocol):
 
 def default_sim_lib() -> Path:
     name = {"Windows": "cubesat_sim.dll", "Darwin": "libcubesat_sim.dylib"}.get(platform.system(), "libcubesat_sim.so")
-    return Path(__file__).resolve().parents[1] / "build" / "host" / name   # Software/build/host
+    return Path(__file__).resolve().parents[2] / "build" / "host" / name   # Software/build/host
 
 
 class SimLib:
@@ -97,6 +97,14 @@ class SimLib:
         L.sim_adcs_set_rate_dps.argtypes = [ctypes.c_double] * 3
         L.sim_adcs_get_rate_dps.argtypes = [ctypes.POINTER(ctypes.c_double)]
         L.sim_adcs_set_faults.argtypes = [ctypes.c_uint32]
+        if hasattr(L, "sim_adcs_set_gyro_bias_dps"):   # not in simulators built before ICD v0.5
+            L.sim_adcs_set_gyro_bias_dps.argtypes = [ctypes.c_double] * 3
+        if hasattr(L, "sim_adcs_set_sun_body"):        # not in simulators built before ICD v0.6
+            L.sim_adcs_set_sun_body.argtypes = [ctypes.c_double] * 3
+            L.sim_adcs_set_eclipse.argtypes = [ctypes.c_int]
+        if hasattr(L, "sim_adcs_set_sun_dead"):        # not in simulators built before ICD v0.7
+            L.sim_adcs_set_sun_dead.argtypes = [ctypes.c_uint32]
+            L.sim_adcs_set_albedo.argtypes = [ctypes.c_double] * 4
         L.sim_adcs_dirty_mag_samples.restype = ctypes.c_uint32
         L.sim_ttc_uplink.argtypes = [u8p, ctypes.c_int, ctypes.c_int]
         L.sim_ttc_downlink.argtypes = [u8p]

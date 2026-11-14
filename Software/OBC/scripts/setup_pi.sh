@@ -31,5 +31,5 @@ echo "Remove any 'dtoverlay=uart3' line: it uses GPIO4/5, the same pins as i2c3.
 echo "After reboot check:"
 echo "    ls /dev/i2c-1 /dev/i2c-3 ; i2cdetect -y 1 ; i2cdetect -y 3     (expect 29 TSL2591, 40 INA226 on bus 3)"
 echo "    rpicam-still --list-cameras"
-echo "    python3 OBC/EPS.py --bus 3          (INA226 bench check: VBUS must read the battery voltage)"
+echo "    python3 OBC/EPS/EPS.py --bus 3      (INA226 bench check: VBUS must read the battery voltage)"
 echo "    python3 ICD/python/test_link.py --bus 1 --addr 0x32"

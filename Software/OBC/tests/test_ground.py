@@ -6,7 +6,7 @@ import pytest
 
 import icd_defs as I  # noqa: E402
 from icd_link import FrameError, build_command, build_response, crc16, parse_response  # noqa: E402
-from OBC import ground  # noqa: E402
+from OBC.comms import ground  # noqa: E402
 
 from .conftest import SOFTWARE
 

@@ -1,7 +1,7 @@
 """OBC configuration: TOML file merged over built-in defaults.
 
 Only the values the OBC itself needs are listed here. The [eps] and [payload]
-tables are passed whole to EPS.py and Payload.py, which merge them over their
+tables are passed whole to EPS/EPS.py and Payload/Payload.py, which merge them over their
 own DEFAULTS, so any key documented there can be set in obc.toml.
 """
 from __future__ import annotations
@@ -26,7 +26,16 @@ DEFAULTS = {
     "adcs": {"bdot_gain": I.ADCS_BDOT_GAIN_DEFAULT, "exit_rate_cdps": I.ADCS_EXIT_RATE_DEFAULT,
              "enter_rate_cdps": I.ADCS_ENTER_RATE_DEFAULT, "dwell_s": I.ADCS_DWELL_S_DEFAULT,
              "period_ms": I.ADCS_PERIOD_MS_DEFAULT, "settle_ms": I.ADCS_SETTLE_MS_DEFAULT,
-             "mag_offset": [0, 0, 0]},
+             "mag_offset": [0, 0, 0],
+             # [] = automatic: ADCS measures it at boot, the OBC keeps the last good value.
+             # [x, y, z] (gyro LSB, 65.5 per dps) = always send this value instead.
+             "gyro_offset": [],
+             # Sun sensors (BPW34, ICD v0.6), ADC counts: full = Sun straight onto a diode;
+             # lit = a face at or above this is sunlit (keep it above the Earth-albedo glow).
+             "sun_lit_threshold": I.ADCS_SUN_LIT_DEFAULT, "sun_full_scale": I.ADCS_SUN_FULL_DEFAULT,
+             # Sun diodes ADCS must ignore, e.g. ["-Z"] if one is known broken (it also finds
+             # dead ones itself). [] = use all. Sending it resets what ADCS has learned.
+             "sun_disabled_faces": []},
     "ttc": {"beacon_period_s": I.TTC_BEACON_PERIOD_DEFAULT_S},
     # Secret key for ground-command MACs (hex text). Missing -> every ground command is rejected.
     "ground": {"key_file": "/home/pi/.cubesat/ground_key"},

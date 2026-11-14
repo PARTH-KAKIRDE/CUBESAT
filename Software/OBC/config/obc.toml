@@ -1,5 +1,5 @@
 # OBC configuration for the Raspberry Pi 4B. Anything left out falls back to the
-# defaults in OBC/config.py, EPS.py (DEFAULTS) and Payload.py (DEFAULTS), which
+# defaults in OBC/config.py, EPS/EPS.py (DEFAULTS) and Payload/Payload.py (DEFAULTS), which
 # come from ICD/cubesat_icd.h where they are ICD values.
 
 [link]
@@ -77,6 +77,21 @@ dwell_s = 60
 period_ms = 1000
 settle_ms = 20
 mag_offset = [0, 0, 0]    # hard-iron offset in 0.025 uT LSB (from calibration)
+# Gyro zero-rate offset (ICD v0.5). [] = automatic: ADCS measures it for 5 s
+# after every power-on and keeps it if the board was still; the OBC saves the
+# last good value (data_dir/adcs_gyro_offset.json) and re-sends it when ADCS
+# boots moving (in orbit). Power ADCS up once on the bench, untouched, to get
+# it. [x, y, z] in gyro LSB (65.5 per deg/s) forces a value instead.
+gyro_offset = []
+# Sun sensors (BPW34 on all six faces; ICD v0.6/v0.7), ADC counts 0..4095.
+# full: a diode with the Sun straight on it (measure in sunlight).
+# lit:  a face at or above this is sunlit; ADCS reports eclipse when no face
+#       is. Keep it above the Earth-albedo glow (~0.3-0.4 x full).
+sun_full_scale = 3000       # TBD: measure
+sun_lit_threshold = 1200    # TBD: 0.4 x full (the albedo threshold: above the Earth's glow)
+# Diodes to ignore, e.g. ["-Z"] if one is known broken. ADCS also detects dead
+# ones itself (fault SUN_DIODE, tlm adcs 4 dead_faces). [] = use all six.
+sun_disabled_faces = []
 
 [ttc]
 beacon_period_s = 30

@@ -130,7 +130,7 @@ def test_no_recovery_read_after_a_write_nack():
 
 
 def test_status_merges_lost_reset_flag_and_faults():
-    from OBC.slaves import SlaveClient
+    from OBC.comms.slaves import SlaveClient
     later = build_response(I.ICD_CMD_GET_STATUS, I.ICD_ST_OK, bytes([1, 0, 0, 0, 6, 0, 0, 0]))
     bus = ScriptBus([corrupt(STATUS_RESET)] * 4 + [STATUS_RESET, later])
     c = SlaveClient(SlaveLink(bus, 0x32, "t"))
@@ -141,7 +141,7 @@ def test_status_merges_lost_reset_flag_and_faults():
 
 
 def test_status_detects_reset_from_uptime():
-    from OBC.slaves import SlaveClient
+    from OBC.comms.slaves import SlaveClient
 
     def st(uptime):
         return build_response(I.ICD_CMD_GET_STATUS, I.ICD_ST_OK, bytes([1, 0, 0, 0]) + uptime.to_bytes(4, "little"))

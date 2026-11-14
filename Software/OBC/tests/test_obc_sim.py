@@ -7,11 +7,11 @@ from pathlib import Path
 
 import icd_defs as I  # noqa: E402
 from icd_link import SlaveLink  # noqa: E402
-from OBC import ground  # noqa: E402
-from OBC.bus import SimBus  # noqa: E402
-from OBC.EPS import decode_state  # noqa: E402
+from OBC.comms import ground  # noqa: E402
+from OBC.comms.bus import SimBus  # noqa: E402
+from OBC.EPS.EPS import decode_state  # noqa: E402
 from OBC.factory import build_sim  # noqa: E402
-from OBC.slaves import AdcsClient, TtcClient  # noqa: E402
+from OBC.comms.slaves import AdcsClient, TtcClient  # noqa: E402
 
 from .conftest import TEST_KEY
 

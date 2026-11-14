@@ -21,8 +21,8 @@ import icd_defs as I
 from icd_link import BusError, LinkError, SlaveError, SlaveLink, status_name
 
 from . import config as cfgmod
-from .bus import LinuxI2CBus, SimBus, SimLib
-from .slaves import ADCS_FAULT_NAMES, TTC_FAULT_NAMES, AdcsClient, TtcClient, fault_names
+from .comms.bus import LinuxI2CBus, SimBus, SimLib
+from .comms.slaves import ADCS_FAULT_NAMES, TTC_FAULT_NAMES, AdcsClient, TtcClient, fault_names
 
 MODES = {"safe": I.ICD_MODE_SAFE, "detumble": I.ICD_MODE_DETUMBLE, "nominal": I.ICD_MODE_NOMINAL}
 
@@ -127,7 +127,7 @@ def main(argv=None) -> int:
             return 0
         if args.cmd == "tlm":
             if args.target == "adcs":
-                out = {0: c.sensors, 1: c.sun_mtq, 2: c.control}
+                out = {0: c.sensors, 1: c.sun_mtq, 2: c.control, 3: c.gyro_cal, 4: c.sun}
             else:
                 out = {0: c.radio, 1: c.counters}
             pages = [args.page] if args.page is not None else list(out)

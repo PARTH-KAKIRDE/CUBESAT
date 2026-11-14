@@ -55,7 +55,8 @@ SIZES = {"u8": 1, "i8": 1, "u16": 2, "i16": 2, "u32": 4}
 LAYOUTS = {  # prefix, length constant, first offset, trailing CRC bytes
     "ICD_STATUS_OFS_": ("ICD_GET_STATUS_RESP_LEN", 0, 0), "ADCS_CFG_OFS_": ("ADCS_CFG_LEN", 0, 0),
     "ADCS_TLM0_OFS_": ("ADCS_TLM0_LEN", 0, 0), "ADCS_TLM1_OFS_": ("ADCS_TLM1_LEN", 0, 0),
-    "ADCS_TLM2_OFS_": ("ADCS_TLM2_LEN", 0, 0), "TTC_RADIO_OFS_": ("TTC_RADIO_LEN", 0, 0),
+    "ADCS_TLM2_OFS_": ("ADCS_TLM2_LEN", 0, 0), "ADCS_TLM3_OFS_": ("ADCS_TLM3_LEN", 0, 0), "ADCS_TLM4_OFS_": ("ADCS_TLM4_LEN", 0, 0),
+    "TTC_RADIO_OFS_": ("TTC_RADIO_LEN", 0, 0),
     "TTC_TLM0_OFS_": ("TTC_TLM0_LEN", 0, 0), "TTC_TLM1_OFS_": ("TTC_TLM1_LEN", 0, 0),
     "DUMMY_TLM0_OFS_": ("DUMMY_TLM0_LEN", 0, 0), "GL_HK_OFS_": ("GL_HK_LEN", 0, 0),
     "GL_EPS_OFS_": ("GL_EPS_LEN", 0, 0), "GL_BO_OFS_": ("GL_BO_LEN", 3, 2), "GL_BT_OFS_": ("GL_BT_LEN", 3, 2),
@@ -104,9 +105,15 @@ def test_constant_arithmetic():
     assert I.GL_ACK_MAX_DATA == I.GL_MAX_LEN - I.GL_ACK_OFS_DATA - I.GL_CRC_LEN
     assert I.GL_TLM_MAX_DATA == I.GL_MAX_LEN - I.GL_TLM_OFS_DATA - I.GL_CRC_LEN
     assert I.ADCS_MTQ_MANUAL_LEN <= I.GL_CMD_MAX_ARGS            # largest ground-forwarded command fits
+    assert I.ADCS_GYRO_CAL_MIN_SAMPLES <= 255                     # sent as a u8 on page 3 (v0.5)
+    assert I.ADCS_GYRO_OFS_MAX <= 32767 and I.ADCS_GYRO_CAL_MAX_SPREAD < I.ADCS_GYRO_OFS_MAX
+    assert I.ADCS_SUN_NOISE < I.ADCS_SUN_LIT_DEFAULT < I.ADCS_SUN_FULL_DEFAULT <= 4095   # v0.6
+    assert I.ADCS_SUN_FULL_MIN <= I.ADCS_SUN_FULL_DEFAULT and I.ADCS_SUN_UNIT <= 32767
+    assert 0 < I.ADCS_SUN_DEAD_PERMILLE < 1000 and I.ADCS_SUN_TRUST_MS < I.ADCS_SUN_TRACK_MAX_MS   # v0.7
+    assert 0 < I.ADCS_SUN_DEFICIT_PERMILLE < 1000
     assert I.GL_EPSS_LEN <= I.GL_ACK_MAX_DATA + I.GL_TLM_MAX_DATA   # ACK + one TLM part (v0.4)
     for k, v in vars(I).items():                                  # flag bytes: single bits, fit in a u8
-        if k.startswith(("GL_EF_", "GL_SUNF_")):
+        if k.startswith(("GL_EF_", "GL_SUNF_", "ADCS_SUNF_", "ADCS_FACE_")):
             assert v and v & (v - 1) == 0 and v <= 0xFF, k
     for name, text in (("TTC_BURN_ARM_KEY", b"BURN"), ("GL_REBOOT_KEY", b"BOOT"), ("GL_PYRO_KEY", b"PYRO")):
         assert getattr(I, name).to_bytes(4, "little") == text
@@ -115,7 +122,7 @@ def test_constant_arithmetic():
 
 
 @pytest.mark.parametrize("prefix", ["ICD_ST_", "ICD_CMD_", "ADCS_CMD_", "TTC_CMD_", "ICD_MODE_", "ICD_MR_",
-                                    "ADCS_FLT_", "TTC_FLT_", "ICD_SF_", "GL_T_", "GL_TGT_", "GL_ST_",
+                                    "ADCS_FLT_", "ADCS_GCAL_", "ADCS_FACE_", "ADCS_SUNF_", "TTC_FLT_", "ICD_SF_", "GL_T_", "GL_TGT_", "GL_ST_",
                                     "GL_PS_", "GL_EF_", "GL_SUNF_", "GL_EPS_"])
 def test_codes_are_unique(prefix):
     skip = ("_LEN", "_COUNT", "_MASK", "_NONE", "_FIRST", "_LAST")

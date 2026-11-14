@@ -11,10 +11,10 @@ from pathlib import Path
 
 import pytest
 
-from OBC import EPS as E
+from OBC.EPS import EPS as E
 
-SRC = Path(E.__file__)                     # Software/OBC/EPS.py
-SW = SRC.parent.parent                     # Software/
+SRC = Path(E.__file__)                     # Software/OBC/EPS/EPS.py
+SW = SRC.parents[2]                        # Software/
 
 
 def load(path, name):
@@ -213,6 +213,30 @@ def test_sun_sources_and_debounce():
     assert eps.sunlit is None and eps.state == I.GL_PS_UNKNOWN and eps.sun_flags() == 0
 
 
+def test_adcs_own_sun_decision_is_used_when_given():
+    """ICD v0.6: ADCS reports sunlit/eclipse itself (page 4); raw counts are then ignored."""
+    eps, fake, clk, _ = rig()
+    eps.update_sun(adcs_lit=True, sun_raw=[0] * 6)
+    step(eps, clk)
+    assert eps.sunlit is True and eps.sun_flags() & I.GL_SUNF_ADCS_FRESH
+    for _ in range(16):                                             # ADCS dark for > hold, raw says bright
+        eps.update_sun(adcs_lit=False, sun_raw=[4000] * 6)
+        step(eps, clk)
+    assert eps.sunlit is False and eps.state == I.GL_PS_ECLIPSE
+
+
+def test_adcs_hidden_sun_is_unknown_not_eclipse():
+    """ICD v0.7: the Sun behind a broken diode is 'don't know', not eclipse."""
+    eps, fake, clk, _ = rig()
+    eps.update_sun(adcs_lit=True)
+    step(eps, clk)
+    assert eps.sunlit is True
+    for _ in range(40):                                             # hidden for 40 s
+        eps.update_sun(adcs_lit=False, adcs_hidden=True)
+        step(eps, clk)
+    assert eps.sunlit is not False and eps.state != I.GL_PS_ECLIPSE
+
+
 def test_lux_none_ignored_and_threshold():
     eps, fake, clk, _ = rig(cfg={"lux_threshold": 20000})
     eps.update_sun(lux=None)
@@ -333,9 +357,10 @@ def B(tmp_path_factory):
     through the exact sed command from its docstring."""
     root = tmp_path_factory.mktemp("batt")
     shutil.copytree(SW / "ICD", root / "ICD")
-    (root / "OBC").mkdir()
-    shutil.copy(SW / "OBC" / "Payload.py", root / "OBC" / "Payload.py")
-    shutil.copy(SRC, root / "OBC" / "EPS.py")
+    (root / "OBC" / "EPS").mkdir(parents=True)
+    (root / "OBC" / "Payload").mkdir()
+    shutil.copy(SW / "OBC" / "Payload" / "Payload.py", root / "OBC" / "Payload" / "Payload.py")
+    shutil.copy(SRC, root / "OBC" / "EPS" / "EPS.py")
     h = root / "ICD" / "cubesat_icd.h"
     t = h.read_text()
     assert t.count("// #define ICD_ADDR_INA226_BATT") == 1
@@ -345,14 +370,14 @@ def B(tmp_path_factory):
     doc = SRC.read_text()
     m = re.search(r"sed -i '(.*?)' EPS\.py", doc)
     sed_expr = m.group(1).replace("\\\\", "\\")                   # docstring escapes -> real text
-    subprocess.run(["sed", "-i", sed_expr, "EPS.py"], cwd=root / "OBC", check=True)
-    out = (root / "OBC" / "EPS.py").read_text()
+    subprocess.run(["sed", "-i", sed_expr, "EPS.py"], cwd=root / "OBC" / "EPS", check=True)
+    out = (root / "OBC" / "EPS" / "EPS.py").read_text()
     assert not [l for l in out.splitlines() if l.lstrip().startswith("# BATT: ")]
     compile(out, "EPS.py", "exec")
     saved = sys.modules.pop("icd_defs", None)          # use the regenerated ICD, not the cached one
     path_before = list(sys.path)
     try:
-        mod = load(root / "OBC" / "EPS.py", "EPS_batt")
+        mod = load(root / "OBC" / "EPS" / "EPS.py", "EPS_batt")
     finally:
         sys.path[:] = path_before
         if saved is not None:

@@ -74,6 +74,12 @@ void icd_link_isr_write_end(icd_link_t *l)
 
 void icd_link_isr_read_begin(icd_link_t *l)
 {
+    /* The last command's bytes are already handed over (pend_buf). Forget
+     * them here, so that a stray write_end after this read (a driver seeing
+     * STOP after the master's NACK) finds rx_len == 0 and does nothing,
+     * instead of queueing the old command a second time. */
+    l->rx_len = 0;
+    l->rx_overflow = 0;
     memcpy(l->tx_shadow, l->tx_frame, ICD_RESP_FRAME_LEN);
     l->tx_idx = 0;
     l->isr_activity++;
