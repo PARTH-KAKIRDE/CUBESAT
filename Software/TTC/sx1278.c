@@ -3,6 +3,10 @@
  * RESET = PC4. DIO0..5 are wired (PB0, PB1, PB12-15) but this driver polls
  * RegIrqFlags over SPI instead, which needs no interrupt setup.
  * Output on PA_BOOST (the RFM98W only brings out PA_BOOST).
+ * Split frequency (ICD v0.8): receive on freq_up_hz, transmit on freq_down_hz.
+ * The chip is half duplex, so it is retuned in standby before every TX and
+ * again before going back to RX (three register writes; the synthesizer
+ * settles in tens of microseconds).
  */
 #include <stddef.h>
 
@@ -23,6 +27,7 @@
 #define REG_FIFO_RX_CUR    0x10
 #define REG_IRQ_FLAGS      0x12
 #define REG_RX_NB_BYTES    0x13
+#define REG_MODEM_STAT     0x18
 #define REG_PKT_SNR        0x19
 #define REG_PKT_RSSI       0x1A
 #define REG_MODEM_CONFIG1  0x1D
@@ -47,6 +52,7 @@
 #define IRQ_TX_DONE        0x08
 
 static bool s_tx_mode;
+static uint32_t s_freq_up_hz, s_freq_down_hz;
 
 static void wr(uint8_t reg, uint8_t v)
 {
@@ -67,6 +73,16 @@ static uint8_t rd(uint8_t reg)
 
 static void set_mode(uint8_t m) { wr(REG_OP_MODE, (uint8_t)(MODE_LORA | m)); }
 
+/* Frf = f * 2^19 / 32 MHz. Write in SLEEP or STDBY only; the new value takes
+ * effect when the LSB is written. */
+static void set_freq(uint32_t hz)
+{
+    uint64_t frf = ((uint64_t)hz << 19) / 32000000u;
+    wr(REG_FRF_MSB, (uint8_t)(frf >> 16));
+    wr(REG_FRF_MSB + 1, (uint8_t)(frf >> 8));
+    wr(REG_FRF_MSB + 2, (uint8_t)frf);
+}
+
 bool ttc_hw_radio_init(const ttc_radio_cfg_t *c)
 {
     /* Hardware reset: hold RESET low 1 ms, release (input), wait 10 ms. */
@@ -81,10 +97,9 @@ bool ttc_hw_radio_init(const ttc_radio_cfg_t *c)
     wr(REG_OP_MODE, MODE_SLEEP); /* LoRa bit can only change in sleep */
     wr(REG_OP_MODE, MODE_LORA | MODE_SLEEP);
 
-    uint64_t frf = ((uint64_t)c->freq_hz << 19) / 32000000u;
-    wr(REG_FRF_MSB, (uint8_t)(frf >> 16));
-    wr(REG_FRF_MSB + 1, (uint8_t)(frf >> 8));
-    wr(REG_FRF_MSB + 2, (uint8_t)frf);
+    s_freq_up_hz = c->freq_up_hz;
+    s_freq_down_hz = c->freq_down_hz;
+    set_freq(s_freq_up_hz);
 
     wr(REG_FIFO_TX_BASE, 0);
     wr(REG_FIFO_RX_BASE, 0);
@@ -114,6 +129,8 @@ bool ttc_hw_radio_init(const ttc_radio_cfg_t *c)
 
 void ttc_hw_radio_rx(void)
 {
+    set_mode(MODE_STDBY);       /* after TX_DONE the chip is already in STDBY */
+    set_freq(s_freq_up_hz);
     wr(REG_DIO_MAPPING1, 0x00); /* DIO0 = RxDone */
     wr(REG_IRQ_FLAGS, 0xFF);
     wr(REG_FIFO_ADDR_PTR, 0);
@@ -125,6 +142,7 @@ bool ttc_hw_radio_tx(const uint8_t *d, uint8_t n)
 {
     if (n == 0) return false;
     set_mode(MODE_STDBY);
+    set_freq(s_freq_down_hz);
     wr(REG_DIO_MAPPING1, 0x40); /* DIO0 = TxDone */
     wr(REG_IRQ_FLAGS, 0xFF);
     wr(REG_FIFO_ADDR_PTR, 0);
@@ -136,6 +154,13 @@ bool ttc_hw_radio_tx(const uint8_t *d, uint8_t n)
     set_mode(MODE_TX);
     s_tx_mode = true;
     return true;
+}
+
+bool ttc_hw_radio_rx_active(void)
+{
+    if (s_tx_mode) return false;
+    /* RegModemStat: bit 0 signal detected, 1 synchronised, 3 header valid. */
+    return (rd(REG_MODEM_STAT) & 0x0Bu) != 0;
 }
 
 int ttc_hw_radio_poll(uint8_t *buf, uint8_t *len, int16_t *rssi, int8_t *snr)

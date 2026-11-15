@@ -91,6 +91,55 @@ def test_ground_key_file(tmp_path):
         ground.load_key(f)
 
 
+def test_key_file_readable_by_others_is_flagged(tmp_path, caplog):
+    import os
+    f = tmp_path / "k"
+    f.write_text(KEY.hex())
+    os.chmod(f, 0o644)
+    assert ground.load_key(f) == KEY and "chmod 600" in caplog.text
+    caplog.clear()
+    os.chmod(f, 0o600)
+    ground.load_key(f)
+    assert "chmod 600" not in caplog.text
+
+
+def test_counter_store_never_reuses_a_counter(tmp_path):
+    t = [1_800_000_000.0]
+    c = ground.CounterStore(tmp_path / "obc_ctr", clock=lambda: t[0])
+    a, b = c.next(), c.next()
+    assert a == 1_800_000_000 and b == a + 1                 # same second: still higher
+    t[0] -= 3600                                             # PC clock set back an hour
+    assert c.next() == b + 1
+    c2 = ground.CounterStore(tmp_path / "obc_ctr", clock=lambda: t[0])   # restart: from the file
+    assert c2.next() == b + 2 and c2.last() == b + 2
+    t[0] += 7200
+    assert c2.next() == 1_800_003_600                        # clock ahead again: jumps up
+    lost = ground.CounterStore(tmp_path / "gone", clock=lambda: t[0])
+    assert lost.next() == 1_800_003_600 > 0                  # lost file: Unix time, not 1
+    assert not list(tmp_path.glob("*.tmp"))
+    (tmp_path / "bad").write_text("x")
+    with pytest.raises(ground.PacketError):
+        ground.CounterStore(tmp_path / "bad").next()
+
+
+def test_keygen_writes_two_private_keys_outside_the_repo(tmp_path):
+    import importlib.util
+    import os
+    spec = importlib.util.spec_from_file_location("keygen", SOFTWARE / "OBC" / "scripts" / "keygen.py")
+    kg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(kg)
+    d = tmp_path / "keys"
+    assert kg.main(["--dir", str(d)]) == 0
+    k1, k2 = ground.load_key(d / "ground_key"), ground.load_key(d / "ttc_key")
+    assert len(k1) == len(k2) == 32 and k1 != k2
+    assert (d / "ttc_key").stat().st_mode & 0o777 == 0o600 and d.stat().st_mode & 0o777 == 0o700
+    assert kg.main(["--dir", str(d)]) == 1                   # no silent overwrite
+    assert ground.load_key(d / "ground_key") == k1
+    assert kg.main(["--dir", str(d), "--force"]) == 0 and ground.load_key(d / "ground_key") != k1
+    assert kg.main(["--dir", str(SOFTWARE / "keys_here")]) == 1   # never inside the public repo
+    assert not (SOFTWARE / "keys_here").exists()
+
+
 def test_ack_split_and_reassemble():
     data = bytes(range(24))
     pkts = ground.build_ack(3, I.GL_TGT_ADCS, I.ICD_CMD_GET_TELEMETRY, 0, data)
@@ -111,3 +160,20 @@ def test_icd_link_test_script_in_sim(sim_lib):
     r = subprocess.run([sys.executable, "-B", str(SOFTWARE / "ICD" / "python" / "test_link.py"),
                         "--sim-lib", str(sim_lib.path), "-n", "2000"], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout[-2000:] + r.stderr[-2000:]
+
+
+def test_ecmd_is_never_taken_for_a_cmd():
+    """GL v4: an emergency command has its own TYPE inside the MAC, so it can never
+    be replayed to the OBC as an ordinary command (or the other way round)."""
+    e = ground.build_ecmd(3, I.GL_TGT_OBC, I.GL_E_OBC_RESET, b"\x42\x4f\x4f\x54", key=KEY, counter=9)
+    c = ground.build_cmd(3, I.GL_TGT_OBC, I.GL_E_OBC_RESET, b"\x42\x4f\x4f\x54", key=KEY, counter=9)
+    assert e[I.GL_OFS_TYPE] == I.GL_T_ECMD and len(e) == len(c) and e[-6:-2] != c[-6:-2]
+    with pytest.raises(ground.PacketError):
+        ground.parse_cmd(e, KEY)
+    with pytest.raises(ground.PacketError):
+        ground.build_cmd(1, 0, 1, b"", key=KEY, counter=1, ptype=I.GL_T_ACK)
+    ack = ground._seal(bytes([I.GL_SAT_ID, I.GL_T_ACK, 3, I.GL_TGT_OBC | I.GL_TGT_EMERGENCY, 1, 0, 0]))
+    d = ground.parse_downlink(ack)
+    assert d["emergency"] and d["target"] == I.GL_TGT_OBC
+    with pytest.raises(ground.PacketError):
+        ground.parse_eping(b"\x00" * 3)

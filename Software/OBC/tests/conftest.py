@@ -36,6 +36,24 @@ def sim(sim_lib):
 
 
 TEST_KEY = bytes(range(32))
+# TT&C emergency key of the host build (firmware/host/ttc_key_test.c).
+TTC_TEST_KEY = bytes(range(32))
+
+
+def make_exif_jpeg(thumb: bytes, endian: str = "<", body: bytes = b"main image data") -> bytes:
+    """A minimal JPEG whose EXIF IFD1 holds `thumb`, as rpicam-still --thumb writes it."""
+    import struct
+    bo = b"II" if endian == "<" else b"MM"
+    ifd1 = 14
+    tiff = bo + struct.pack(endian + "HI", 42, 8) + struct.pack(endian + "HI", 0, ifd1)
+    data_at = ifd1 + 2 + 2 * 12 + 4
+    tiff += struct.pack(endian + "H", 2)
+    tiff += struct.pack(endian + "HHII", 0x0201, 4, 1, data_at)
+    tiff += struct.pack(endian + "HHII", 0x0202, 4, 1, len(thumb))
+    tiff += struct.pack(endian + "I", 0) + thumb
+    app1 = b"Exif\x00\x00" + tiff
+    return (b"\xff\xd8" + b"\xff\xe1" + struct.pack(">H", len(app1) + 2) + app1
+            + b"\xff\xda\x00\x02" + body + b"\xff\xd9")
 
 
 @pytest.fixture

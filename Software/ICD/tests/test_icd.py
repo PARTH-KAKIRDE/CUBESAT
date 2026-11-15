@@ -61,6 +61,9 @@ LAYOUTS = {  # prefix, length constant, first offset, trailing CRC bytes
     "DUMMY_TLM0_OFS_": ("DUMMY_TLM0_LEN", 0, 0), "GL_HK_OFS_": ("GL_HK_LEN", 0, 0),
     "GL_EPS_OFS_": ("GL_EPS_LEN", 0, 0), "GL_BO_OFS_": ("GL_BO_LEN", 3, 2), "GL_BT_OFS_": ("GL_BT_LEN", 3, 2),
     "GL_EPSS_OFS_": ("GL_EPSS_LEN", 0, 0),
+    "GL_FS_OFS_": ("GL_FS_LEN", 0, 0), "GL_FA_OFS_": ("GL_FA_LEN", 0, 0),   # v0.8 file downlink
+    "GL_EP_OFS_": ("GL_EP_LEN", 0, 0),                                    # v0.9 emergency PING
+    "GL_EV_OFS_": ("GL_EV_LEN", 3, 2),                                    # v0.9 EVENT packet
 }
 
 
@@ -112,8 +115,38 @@ def test_constant_arithmetic():
     assert 0 < I.ADCS_SUN_DEAD_PERMILLE < 1000 and I.ADCS_SUN_TRUST_MS < I.ADCS_SUN_TRACK_MAX_MS   # v0.7
     assert 0 < I.ADCS_SUN_DEFICIT_PERMILLE < 1000
     assert I.GL_EPSS_LEN <= I.GL_ACK_MAX_DATA + I.GL_TLM_MAX_DATA   # ACK + one TLM part (v0.4)
+    # v0.8: split frequency, file downlink
+    assert I.TTC_FREQ_MIN_HZ <= I.TTC_FREQ_DOWN_DEFAULT_HZ < I.TTC_FREQ_UP_DEFAULT_HZ <= I.TTC_FREQ_MAX_HZ
+    assert 5 <= I.TTC_CR_DEFAULT <= 8
+    assert I.GL_FILE_SHORT_DATA == I.GL_MAX_LEN - I.GL_FILE_OFS_DATA - I.GL_CRC_LEN
+    # v0.9: long FILE packets, emergency commands, auto-deploy, band
+    assert I.GL_FILE_MAX_DATA == I.GL_DOWN_MAX_LEN - I.GL_FILE_OFS_DATA - I.GL_CRC_LEN
+    assert I.GL_DOWN_MAX_LEN == I.TTC_TX_MAX_LEN <= 255
+    assert I.TTC_TXP_MAX_DATA == I.ICD_MAX_PAYLOAD - I.TTC_TXP_OFS_DATA
+    assert I.GL_EP_LEN <= I.GL_ACK_MAX_DATA                       # E_PING answer fits one ACK
+    assert 4 + 1 <= I.GL_CMD_MAX_ARGS                             # E_OBC_POWER_CYCLE args: key + off_s
+    assert I.GL_TGT_EMERGENCY & 0xFF == I.GL_TGT_EMERGENCY
+    assert max(v for k, v in vars(I).items() if k.startswith("GL_TGT_") and k != "GL_TGT_EMERGENCY") < I.GL_TGT_EMERGENCY
+    assert I.GL_E_WDT_MIN_MIN * 60 > 30                           # longer than the 30 s master-lost time
+    assert I.GL_E_WDT_MAX_ACTIONS * I.GL_E_WDT_MAX_MIN * 60000 < 2**32   # no overflow in the ms comparison
+    assert I.TTC_AUTODEPLOY_BURN_MS <= I.TTC_BURN_MAX_MS and I.TTC_AUTODEPLOY_MAX_ATTEMPTS >= 1
+    assert I.TTC_DEPLOY_RESET_KEY.to_bytes(4, "little") == b"REAR"
+    assert I.TTC_FREQ_MIN_HZ == 433050000                         # India 433.05-434.79 MHz band edge
+    for f in (I.TTC_FREQ_DOWN_DEFAULT_HZ, I.TTC_FREQ_UP_DEFAULT_HZ):   # 125 kHz channel + 20 kHz drift inside 433.05-434.04
+        assert 433050000 <= f - 62500 - 20000 and f + 62500 + 20000 <= 434040000
+    assert I.TTC_POWER_DEFAULT_DBM <= 10                          # 10 mW ERP licence-free limit
+    assert I.GL_EV_LEN <= I.GL_MAX_LEN and I.GL_EVL_COUNT * I.GL_EVL_ENTRY_LEN <= I.GL_ACK_MAX_DATA
+    e_cmds = [v for k, v in vars(I).items() if k.startswith("GL_E_") and not k.endswith(("_MS", "_S", "_MIN", "_ACTIONS"))]
+    ev_cmds = [v for k, v in vars(I).items() if k.startswith("GL_EV_") and not k.startswith(("GL_EV_OFS_", "GL_EV_LEN"))
+               and k != "GL_EV_OBC_WAIT_S"]
+    assert max(e_cmds) < min(ev_cmds)                             # EVENT codes never look like a command
+    assert I.TTC_LISTEN_GAP_MS > 0 and I.TTC_PRIO_DEPTH >= 2
+    assert I.GL_FILE_OFS_DATA == I.GL_FILE_OFS_BLOCK + 2 and I.GL_FILE_OFS_BLOCK == I.GL_HDR_LEN
+    assert I.GL_FS_LEN <= I.GL_ACK_MAX_DATA and I.GL_FA_LEN <= I.GL_CMD_MAX_ARGS
+    assert I.GL_FILE_WINDOW_MAX == 32 and I.GL_FILE_MAX_BLOCKS == 0xFFFF
+    assert I.TTC_RADIO_LEN <= I.GL_ACK_MAX_DATA                   # ground GET_RADIO fits one ACK
     for k, v in vars(I).items():                                  # flag bytes: single bits, fit in a u8
-        if k.startswith(("GL_EF_", "GL_SUNF_", "ADCS_SUNF_", "ADCS_FACE_")):
+        if k.startswith(("GL_EF_", "GL_SUNF_", "ADCS_SUNF_", "ADCS_FACE_", "TTC_DF_", "TTC_TXP_F_")):
             assert v and v & (v - 1) == 0 and v <= 0xFF, k
     for name, text in (("TTC_BURN_ARM_KEY", b"BURN"), ("GL_REBOOT_KEY", b"BOOT"), ("GL_PYRO_KEY", b"PYRO")):
         assert getattr(I, name).to_bytes(4, "little") == text
@@ -123,7 +156,7 @@ def test_constant_arithmetic():
 
 @pytest.mark.parametrize("prefix", ["ICD_ST_", "ICD_CMD_", "ADCS_CMD_", "TTC_CMD_", "ICD_MODE_", "ICD_MR_",
                                     "ADCS_FLT_", "ADCS_GCAL_", "ADCS_FACE_", "ADCS_SUNF_", "TTC_FLT_", "ICD_SF_", "GL_T_", "GL_TGT_", "GL_ST_",
-                                    "GL_PS_", "GL_EF_", "GL_SUNF_", "GL_EPS_"])
+                                    "GL_PS_", "GL_EF_", "GL_SUNF_", "GL_EPS_", "GL_OBC_", "TTC_DF_", "GL_EP_OFS_"])
 def test_codes_are_unique(prefix):
     skip = ("_LEN", "_COUNT", "_MASK", "_NONE", "_FIRST", "_LAST")
     vals = [v for k, v in vars(I).items() if k.startswith(prefix) and "_OFS_" not in k and not k.endswith(skip)]

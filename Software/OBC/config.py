@@ -22,7 +22,11 @@ DEFAULTS = {
     "pyro": {"enabled": False, "gpio": 17, "max_ms": 2000, "arm_window_s": 10},
     "obc": {"data_dir": "/home/pi/cubesat_data", "poll_period_s": 1.0, "slow_poll_every": 10,
             "beacon_update_s": 10, "allow_reboot": False, "adcs_auto_nominal": True,
-            "max_ground_packets_per_tick": 4},
+            "max_ground_packets_per_tick": 4,
+            # File downlink, Selective Repeat (ICD v0.8 / GL v3): blocks per burst
+            # (1..32, the FILE_ACK bitmap), and how long a transfer waits for a FILE_ACK.
+            # file_block (GL v4): bytes per block, 1..248; 17 = one 24-byte QUEUE_TX.
+            "file_window": 16, "file_timeout_s": 1800, "file_block": 200},
     "adcs": {"bdot_gain": I.ADCS_BDOT_GAIN_DEFAULT, "exit_rate_cdps": I.ADCS_EXIT_RATE_DEFAULT,
              "enter_rate_cdps": I.ADCS_ENTER_RATE_DEFAULT, "dwell_s": I.ADCS_DWELL_S_DEFAULT,
              "period_ms": I.ADCS_PERIOD_MS_DEFAULT, "settle_ms": I.ADCS_SETTLE_MS_DEFAULT,

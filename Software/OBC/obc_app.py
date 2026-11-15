@@ -5,6 +5,8 @@ One tick per second (ICD section 9):
   - re-send ADCS/TT&C configuration whenever a slave reports RESET_OCCURRED
   - drain ground packets (TTC_GET_RX) when GROUND_PKT_PENDING, execute them,
     queue ACKs back through TTC_QUEUE_TX
+  - file downlink (comms/arq.py, Selective Repeat): feed the blocks the ground
+    asked for into TTC_QUEUE_TX after the ACKs
   - EPS (EPS/EPS.py: INA226, power state, low-battery SAFE logic)
   - payload (Payload/Payload.py: TSL2591, Pi camera, magnetometer samples from ADCS)
   - refresh the OBC beacon in TT&C every few seconds
@@ -28,10 +30,10 @@ from typing import Callable, Optional
 import icd_defs as I
 from icd_link import MODE_NAMES, BusError, LinkError, SlaveError, SlaveLink, status_name
 
-from .comms import ground
+from .comms import arq, ground
 from .comms.bus import I2CBus
 from .EPS.EPS import Pyro, make_eps
-from .Payload.Payload import Payload
+from .Payload.Payload import Payload, exif_thumbnail
 from .comms.slaves import AdcsClient, TtcClient, face_mask, faces
 
 log = logging.getLogger("obc")
@@ -87,6 +89,8 @@ class ObcApp:
         self.beacon_seq = 0
         self.last_beacon_update = -1e9
         self.outbox: list = []
+        self.xfer: Optional[arq.FileSender] = None   # file downlink in progress (one at a time)
+        self.xfer_next_id = 1
         self.ack_cache: "OrderedDict[tuple, tuple]" = OrderedDict()
         self.gl_key = self._load_ground_key()
         self.ctr_file = self.data_dir / "ground_counter"
@@ -290,6 +294,7 @@ class ObcApp:
         self._mode_logic()
         self._update_beacon()
         self._flush_outbox()
+        self._file_task(rec)
 
         rec["comm_flags"] = self.comm_flags()
         rec["links"] = {n: {"ok": c.link.stats.ok, "fail": c.link.stats.failures,
@@ -547,12 +552,101 @@ class ObcApp:
             client = self.adcs if a[0] == I.GL_TGT_ADCS else self.ttc
             r = client.link.transact(I.ICD_CMD_GET_TELEMETRY, bytes([a[1]]))
             return r.status, r.payload
+        if c.cmd in (I.GL_OBC_FILE_START, I.GL_OBC_FILE_ACK, I.GL_OBC_FILE_ABORT):
+            return self._exec_file(c)
         if c.cmd == I.GL_OBC_REBOOT:
             if not self.cfg["obc"]["allow_reboot"] or len(a) != 4 or struct.unpack("<I", a)[0] != I.GL_REBOOT_KEY:
                 return I.GL_ST_REFUSED, b""
             self.reboot_requested = True
             return I.ICD_ST_OK, b""
         return I.ICD_ST_UNKNOWN_CMD, b""
+
+    # ------------------------------------------------------------ file downlink (GL v3)
+    def _file_allowed(self) -> bool:
+        return self.mode != I.ICD_MODE_SAFE and not self.eps.low_battery
+
+    def _exec_file(self, c: ground.Command):
+        a, now = c.args, self.clock.monotonic()
+        if c.cmd == I.GL_OBC_FILE_START:
+            if len(a) not in (2, 3):                  # image u16 [, variant u8 (GL v4)]
+                return I.ICD_ST_BAD_LENGTH, b""
+            variant = a[2] if len(a) == 3 else I.GL_FV_FULL
+            if variant not in (I.GL_FV_FULL, I.GL_FV_THUMB):
+                return I.ICD_ST_BAD_PARAM, b""
+            if self.payload is None or self.payload.cam is None or not self._file_allowed():
+                return I.GL_ST_REFUSED, b""
+            names = self.payload.cam.image_names()
+            idx = struct.unpack_from("<H", a)[0]      # 0 = newest
+            if idx >= len(names):
+                return I.ICD_ST_NO_DATA, b""
+            try:
+                data = (self.payload.cam.dir / names[-1 - idx]).read_bytes()
+                if variant == I.GL_FV_THUMB:
+                    data = exif_thumbnail(data)
+                    if data is None:
+                        log.warning("file downlink: %s has no EXIF thumbnail", names[-1 - idx])
+                        return I.ICD_ST_NO_DATA, b""
+                s = arq.FileSender(self.xfer_next_id, data, self.cfg["obc"]["file_window"], now,
+                                   self.cfg["obc"]["file_block"])
+            except OSError as e:
+                log.error("file downlink: cannot read %s: %s", names[-1 - idx], e)
+                return I.ICD_ST_HW_FAULT, b""
+            except ValueError as e:                    # empty or too large
+                log.warning("file downlink refused: %s (%s)", e, names[-1 - idx])
+                return I.ICD_ST_BAD_PARAM, b""
+            self.xfer_next_id = (self.xfer_next_id + 1) & 0xFF or 1
+            if self.xfer is not None:
+                log.info("file downlink %d replaced by a new one", self.xfer.xfer)
+            self.xfer = s
+            log.info("file downlink %d: %s%s, %d bytes, %d blocks of %d, window %d",
+                     s.xfer, names[-1 - idx], " (thumbnail)" if variant == I.GL_FV_THUMB else "",
+                     len(data), s.blocks, s.block, s.window)
+            return I.ICD_ST_OK, s.start_info()
+        if c.cmd == I.GL_OBC_FILE_ACK:
+            if len(a) != I.GL_FA_LEN:
+                return I.ICD_ST_BAD_LENGTH, b""
+            x, base, bitmap = arq.parse_ack_args(a)
+            if self.xfer is None:
+                return I.ICD_ST_NO_DATA, b""
+            if x != self.xfer.xfer or base > self.xfer.blocks:
+                return I.ICD_ST_BAD_PARAM, b""
+            if not self._file_allowed():
+                return I.GL_ST_REFUSED, b""
+            n = self.xfer.on_ack(base, bitmap, now)
+            if self.xfer.done:
+                log.info("file downlink %d complete: %d blocks sent for %d (%.0f%% overhead)",
+                         self.xfer.xfer, self.xfer.sent_total, self.xfer.blocks,
+                         100.0 * (self.xfer.sent_total - self.xfer.blocks) / self.xfer.blocks)
+                self.xfer = None
+            return I.ICD_ST_OK, bytes([n])
+        # FILE_ABORT
+        if len(a) != 1:
+            return I.ICD_ST_BAD_LENGTH, b""
+        if self.xfer is None or a[0] != self.xfer.xfer:
+            return I.ICD_ST_NO_DATA, b""
+        log.info("file downlink %d aborted by the ground", self.xfer.xfer)
+        self.xfer = None
+        return I.ICD_ST_OK, b""
+
+    def _file_task(self, rec: dict) -> None:
+        """Feed the requested blocks into the TT&C queue, behind the ACKs."""
+        x = self.xfer
+        if x is None:
+            return
+        if self.clock.monotonic() - x.last_activity > self.cfg["obc"]["file_timeout_s"]:
+            log.warning("file downlink %d dropped: no FILE_ACK for %d s", x.xfer, self.cfg["obc"]["file_timeout_s"])
+            self.xfer = None
+            return
+        queued = 0
+        if not self.outbox and self._file_allowed():
+            while (pkt := x.next_packet()) is not None:
+                st = self._try("ttc queue_tx", self.ttc.queue_tx, pkt)
+                if st != I.ICD_ST_OK:
+                    break                  # QUEUE_FULL, link error or TT&C in SAFE: next tick
+                x.pop()
+                queued += 1
+        rec["file"] = {"xfer": x.xfer, "base": x.base, "blocks": x.blocks, "pending": len(x.pending),
+                       "queued": queued}
 
     def _exec_eps(self, c: ground.Command):
         a = c.args

@@ -87,6 +87,7 @@ DEFAULTS = {
         "command": "",           # "" = rpicam-still (or libcamera-still); a command line or list overrides
         "width": 0, "height": 0,  # 0 = sensor default
         "quality": 90,
+        "thumb": "160:120:60",   # rpicam --thumb w:h:q, the EXIF thumbnail sent by FILE_START variant 1
         "settle_ms": 1000,       # rpicam -t: lets auto-exposure settle
         "timeout_s": 20.0,       # kill the capture if it takes longer
         "max_images_mb": 2000,   # delete the oldest images above this...
@@ -110,6 +111,50 @@ def merge_config(over: Optional[dict]) -> dict:
                 base[k] = v
     _m(cfg, over)
     return cfg
+
+
+def exif_thumbnail(jpeg: bytes) -> Optional[bytes]:
+    """The JPEG thumbnail that rpicam-still embeds in the EXIF block (IFD1), or None.
+
+    Pure Python, no Pillow: walk the JPEG segments to APP1 "Exif", read the
+    TIFF header (either byte order), follow IFD0 -> IFD1 and take the
+    JPEGInterchangeFormat (0x0201) offset and length (0x0202). Every offset
+    is checked, so a damaged file gives None, never an exception."""
+    import struct
+    try:
+        if jpeg[:2] != b"\xff\xd8":
+            return None
+        i = 2
+        while i + 4 <= len(jpeg) and jpeg[i] == 0xFF:
+            marker, seg_len = jpeg[i + 1], struct.unpack_from(">H", jpeg, i + 2)[0]
+            if marker in (0xDA, 0xD9):          # start of scan / end: no EXIF before the image data
+                return None
+            seg = jpeg[i + 4:i + 2 + seg_len]
+            if marker == 0xE1 and seg[:6] == b"Exif\x00\x00":
+                t = seg[6:]
+                end = {b"II": "<", b"MM": ">"}.get(t[:2])
+                if end is None or struct.unpack_from(end + "H", t, 2)[0] != 42:
+                    return None
+                ifd0 = struct.unpack_from(end + "I", t, 4)[0]
+                n0 = struct.unpack_from(end + "H", t, ifd0)[0]
+                ifd1 = struct.unpack_from(end + "I", t, ifd0 + 2 + 12 * n0)[0]
+                if ifd1 == 0:
+                    return None
+                off = ln = None
+                for k in range(struct.unpack_from(end + "H", t, ifd1)[0]):
+                    tag, _typ, _cnt, val = struct.unpack_from(end + "HHII", t, ifd1 + 2 + 12 * k)
+                    if tag == 0x0201:
+                        off = val
+                    elif tag == 0x0202:
+                        ln = val
+                if off is None or not ln or off + ln > len(t):
+                    return None
+                thumb = bytes(t[off:off + ln])
+                return thumb if thumb[:2] == b"\xff\xd8" else None
+            i += 2 + seg_len
+    except struct.error:
+        return None
+    return None
 
 
 def utc_now() -> datetime:
@@ -360,6 +405,8 @@ class PiCamera:
                 "-o", str(self.dir / self.TMP_NAME)]
         if c["width"] and c["height"]:
             args += ["--width", str(int(c["width"])), "--height", str(int(c["height"]))]
+        if c.get("thumb"):
+            args += ["--thumb", str(c["thumb"])]
         self.target = self.dir / f"img_{self.seq:06d}_{utc_now():%Y%m%dT%H%M%SZ}.jpg"
         self._err = open(self.dir / self.ERR_NAME, "w+b")
         try:

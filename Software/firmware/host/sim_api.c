@@ -37,6 +37,7 @@ SIM_API void sim_run_ms(uint32_t ms)
         ttc_sim_step();
         adcs_step(&g_adcs, g_now);
         ttc_step(&g_ttc, g_now);
+        if (ttc_sim_take_reset()) ttc_init(&g_ttc, g_now); /* GL_E_TTC_RESET */
     }
 }
 

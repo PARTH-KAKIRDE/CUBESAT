@@ -55,10 +55,26 @@ SIM_API int sim_adcs_mode(void);
 /* TT&C radio and pins */
 SIM_API void sim_ttc_uplink(const uint8_t *data, int len, int rssi_dbm);
 SIM_API int sim_ttc_downlink(uint8_t *buf); /* returns length, 0 if none */
-SIM_API void sim_ttc_set_pins(int deploy_sw, int rbf_in);
+SIM_API void sim_ttc_set_pins(int deploy_sw, int rbf_in); /* default 0, 0: stowed, RBF in */
 SIM_API int sim_ttc_burn_on(void);
 SIM_API uint32_t sim_ttc_burn_total_ms(void);
 SIM_API void sim_ttc_set_radio_ok(int ok);
+SIM_API uint32_t sim_ttc_rx_freq(void); /* ICD v0.8 split frequency */
+SIM_API uint32_t sim_ttc_tx_freq(void);
 SIM_API int sim_ttc_mode(void);
+/* v0.9: emergency lines (TTC_LINE_*), TT&C software resets, flash store */
+SIM_API int sim_ttc_line(int line);              /* 1 = asserted now */
+SIM_API uint32_t sim_ttc_line_pulses(int line);  /* times asserted */
+SIM_API uint32_t sim_ttc_line_ms(int line);      /* total ms asserted */
+SIM_API int sim_ttc_resets(void);
+SIM_API void sim_ttc_nv_fail(int fail);
+SIM_API uint32_t sim_ttc_nv_erases(void);
+SIM_API uint32_t sim_ttc_nv_programs(void);
+SIM_API void sim_ttc_nv_poke(uint32_t byte_ofs, uint32_t word);
+SIM_API void sim_ttc_nv_wipe(void);
+/* Half-duplex radio model (default off): uplinks sent while TT&C transmits are lost. */
+SIM_API void sim_ttc_set_half_duplex(int on);
+SIM_API uint32_t sim_ttc_uplink_lost(void);
+SIM_API void sim_ttc_set_rx_noise(int on);        /* modem always "hears something" */
 
 #endif

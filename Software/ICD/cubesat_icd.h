@@ -7,6 +7,15 @@
  * Parth and bumps ICD_VERSION_MINOR (compatible) or ICD_VERSION_MAJOR
  * (breaking). v0.3 merges the v0.1 draft into v0.2 (see README.md).
  * v0.4 adds the EPS GET_STATE ground command (ground_link.h).
+ * v0.8 splits the TT&C radio frequency into downlink and uplink (SET_RADIO /
+ * GET_RADIO 9 -> 13 bytes), moves the defaults to 433 MHz (uplink above
+ * downlink), makes CR 4/8 the default, and adds Selective Repeat file
+ * downlink (ground_link.h GL_VERSION 3).
+ * v0.9 moves the TT&C defaults inside India's licence-free 433.05-434.79 MHz
+ * band (433.3 down / 433.8 up, 10 dBm), adds TT&C automatic antenna deployment
+ * with a flash flag, QUEUE_TX_PART for long (up to 255-byte) FILE packets,
+ * DEPLOY_RESET (bench only), a radio-setting confirm/revert timer, and the
+ * emergency commands that TT&C executes itself (ground_link.h GL_VERSION 4).
  *
  * Rules for this file (the Python generator depends on them):
  *   - Only "#define NAME VALUE" with integer values (dec or hex, optional u/U).
@@ -22,7 +31,7 @@
 /* Version (returned by GET_VERSION)                                   */
 /* ------------------------------------------------------------------ */
 #define ICD_VERSION_MAJOR            0
-#define ICD_VERSION_MINOR            7
+#define ICD_VERSION_MINOR            9
 
 /* ------------------------------------------------------------------ */
 /* 1. Bus and addressing                                               */
@@ -352,6 +361,8 @@
 #define TTC_CMD_GET_RADIO            0x45 /* resp: see TTC_RADIO_OFS_*         */
 #define TTC_CMD_BURN_ARM             0x46 /* req: key u32                      */
 #define TTC_CMD_BURN_FIRE            0x47 /* req: duration_ms u16              */
+#define TTC_CMD_QUEUE_TX_PART        0x48 /* v0.9 req: TTC_TXP_* (long packets) */
+#define TTC_CMD_DEPLOY_RESET         0x49 /* v0.9 req: key u32, RBF must be IN  */
 
 #define TTC_RX_QUEUE_DEPTH           8
 #define TTC_TX_QUEUE_DEPTH           8
@@ -362,27 +373,75 @@
 #define TTC_BURN_ARM_WINDOW_MS       10000
 #define TTC_BURN_MAX_MS              8000
 
-/* Radio config layout (SET_RADIO request / GET_RADIO response, 9 bytes) */
-#define TTC_RADIO_OFS_FREQ_HZ        0    /* u32 */
+/* v0.9 QUEUE_TX_PART: builds one packet of up to TTC_TX_MAX_LEN bytes from
+ * several I2C transactions. OFFSET 0 starts a new packet (drops any half-built
+ * one); every other part must start exactly where the previous one ended. The
+ * part with FLAG_LAST queues the packet (QUEUE_FULL drops it: start again).
+ * Refused in SAFE (only bulk data needs it). */
+#define TTC_TX_MAX_LEN               255  /* LoRa maximum payload */
+#define TTC_TXP_OFS_FLAGS            0    /* u8 TTC_TXP_F_* */
+#define TTC_TXP_OFS_OFFSET           1    /* u8 byte offset of this part */
+#define TTC_TXP_OFS_DATA             2
+#define TTC_TXP_MAX_DATA             22   /* 24 - 2 */
+#define TTC_TXP_F_LAST               0x01
+
+/* v0.9 automatic antenna deployment (TT&C boot procedure, ICD.md section 8).
+ * Runs only while the flash flag says "not deployed" and fewer than
+ * MAX_ATTEMPTS burns were ever made: the RBF plug must be out for DELAY_S
+ * without a break, then BURN_MS burns (stopping early on the deploy switch),
+ * RETRY_S apart. The switch reading "deployed" for 2 s sets the flag, and
+ * TT&C never burns on its own again. DEPLOY_RESET (key = TTC_DEPLOY_RESET_KEY)
+ * clears the flag and the count, and only with the RBF plug IN (bench). */
+#define TTC_AUTODEPLOY_DELAY_S       60
+#define TTC_AUTODEPLOY_BURN_MS       5000
+#define TTC_AUTODEPLOY_RETRY_S       60
+#define TTC_AUTODEPLOY_MAX_ATTEMPTS  3    /* in the satellite's whole life */
+#define TTC_DEPLOYED_CONFIRM_MS      2000
+#define TTC_DEPLOY_DEBOUNCE_MS       50   /* switch must read deployed this long to stop a burn */
+#define TTC_DEPLOY_RESET_KEY         0x52414552 /* "REAR" little-endian */
+
+/* v0.9 radio settings confirm/revert: settings from SET_RADIO are kept only
+ * if a valid ground packet arrives on them within CONFIRM_MS; otherwise TT&C
+ * goes back to the last settings that were confirmed (or the defaults). */
+#define TTC_RADIO_CONFIRM_MS         600000
+
+/* v0.9 emergency priority. ECMD ACKs and EVENT reports wait in their own
+ * queue, sent before beacons and OBC packets. After every packet TT&C stays
+ * in receive for at least LISTEN_GAP_MS before the next non-priority one, and
+ * holds any transmission while the SX1278 is receiving (at most RX_HOLD_MAX_MS),
+ * so the ground can get an emergency command in even during a file burst. */
+#define TTC_PRIO_DEPTH               4
+#define TTC_LISTEN_GAP_MS            150
+#define TTC_RX_HOLD_MAX_MS           1000
+
+/* Radio config layout (SET_RADIO request / GET_RADIO response, 13 bytes).
+ * v0.8: two frequencies. TT&C receives on FREQ_UP and retunes to FREQ_DOWN
+ * for every transmission (the SX1278 is half duplex, so it is never on both).
+ * FREQ_UP must be higher than FREQ_DOWN. */
+#define TTC_RADIO_OFS_FREQ_DOWN_HZ   0    /* u32 satellite TX / ground RX */
 #define TTC_RADIO_OFS_SF             4    /* u8 7..12 */
 #define TTC_RADIO_OFS_BW             5    /* u8 TTC_BW_* */
 #define TTC_RADIO_OFS_CR             6    /* u8 5..8 means 4/5..4/8 */
 #define TTC_RADIO_OFS_POWER_DBM      7    /* i8 2..17 */
 #define TTC_RADIO_OFS_SYNC           8    /* u8 sync word */
-#define TTC_RADIO_LEN                9
+#define TTC_RADIO_OFS_FREQ_UP_HZ     9    /* u32 satellite RX / ground TX, v0.8 */
+#define TTC_RADIO_LEN                13
 
 #define TTC_BW_62K5                  0
 #define TTC_BW_125K                  1
 #define TTC_BW_250K                  2
 #define TTC_BW_500K                  3
 
-#define TTC_FREQ_MIN_HZ              433000000
+#define TTC_FREQ_MIN_HZ              433050000 /* v0.9: bottom of the 433.05-434.79 MHz band */
 #define TTC_FREQ_MAX_HZ              438000000
-#define TTC_FREQ_DEFAULT_HZ          436500000 /* placeholder: use your coordinated frequency */
+/* v0.9: both inside 433.05-434.04 MHz (the part of India's licence-free band
+ * that allows 125 kHz), 500 kHz apart, >= 180 kHz from either edge. */
+#define TTC_FREQ_DOWN_DEFAULT_HZ     433300000 /* downlink (sat TX) */
+#define TTC_FREQ_UP_DEFAULT_HZ       433800000 /* uplink (sat RX), above the downlink */
 #define TTC_SF_DEFAULT               9
 #define TTC_BW_DEFAULT               1
-#define TTC_CR_DEFAULT               5
-#define TTC_POWER_DEFAULT_DBM        17
+#define TTC_CR_DEFAULT               8    /* v0.8: 4/8, strongest FEC */
+#define TTC_POWER_DEFAULT_DBM        10   /* v0.9: 10 mW, the licence-free limit (ERP) */
 #define TTC_SYNC_DEFAULT             0x12
 
 /* TT&C fault_flags bits */
@@ -393,6 +452,8 @@
 #define TTC_FLT_TX_OVERFLOW          0x0010
 #define TTC_FLT_OBC_I2C              0x0020 /* OBC link peripheral was reset */
 #define TTC_FLT_LOCAL_I2C            0x0040
+#define TTC_FLT_RADIO_REVERTED       0x0080 /* v0.9: unconfirmed SET_RADIO undone */
+#define TTC_FLT_NV                   0x0100 /* v0.9: flash flag store write failed */
 
 /* Radio state */
 #define TTC_RS_OFF                   0
@@ -405,6 +466,8 @@
 #define TTC_DF_ARMED                 0x04
 #define TTC_DF_BURNING               0x08
 #define TTC_DF_BURN_DONE             0x10
+#define TTC_DF_DEPLOYED_FLAG         0x20 /* v0.9: flash flag set, no more auto burns */
+#define TTC_DF_AUTO_ACTIVE           0x40 /* v0.9: automatic deployment still to run */
 
 /* Telemetry page 0: radio housekeeping (24 bytes) */
 #define TTC_TLM_PAGE_RADIO           0
@@ -431,7 +494,7 @@
 #define TTC_TLM1_OFS_TX_DROPPED      4    /* u16 */
 #define TTC_TLM1_OFS_BEACON_COUNT    6    /* u16 */
 #define TTC_TLM1_OFS_BURN_COUNT      8    /* u8 */
-#define TTC_TLM1_OFS_RESERVED        9    /* u8 */
+#define TTC_TLM1_OFS_AUTO_ATTEMPTS   9    /* u8 v0.9: automatic burns ever made */
 #define TTC_TLM1_OFS_LAST_BURN_MS    10   /* u16 */
 #define TTC_TLM1_LEN                 12
 

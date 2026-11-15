@@ -536,3 +536,36 @@ def test_standalone_main_with_fake_smbus2(tmp_path, monkeypatch):
     assert [r["tsl2591"]["status"] for r in recs] == ["NOT_READY", "OK"]
     assert all("mag" not in r for r in recs)
     b = P.SMBus2Bus(3); b.reset(); assert SMBus.opened >= 3
+
+
+# ---------------------------------------------------------------- EXIF thumbnail (GL v4 FILE_START variant 1)
+def test_exif_thumbnail_both_byte_orders_and_damage():
+    from .conftest import make_exif_jpeg
+    thumb = b"\xff\xd8" + bytes(range(256)) * 4 + b"\xff\xd9"
+    for endian in "<>":
+        assert P.exif_thumbnail(make_exif_jpeg(thumb, endian)) == thumb
+    good = make_exif_jpeg(thumb)
+    assert P.exif_thumbnail(b"") is None
+    assert P.exif_thumbnail(b"\xff\xd8\xff\xda\x00\x02data\xff\xd9") is None      # no EXIF at all
+    assert P.exif_thumbnail(good[:40]) is None                                     # cut short
+    no_jpeg = make_exif_jpeg(b"not a jpeg at all")
+    assert P.exif_thumbnail(no_jpeg) is None                                       # thumbnail not JPEG
+    bad = bytearray(good)
+    bad[good.index(b"Exif") + 8] ^= 0x55                                           # TIFF magic broken
+    assert P.exif_thumbnail(bytes(bad)) is None
+    for i in range(len(good)):                                                     # any truncation: None or the thumb
+        assert P.exif_thumbnail(good[:i]) in (None, thumb)
+
+
+def test_camera_asks_rpicam_for_the_thumbnail(tmp_path):
+    cfg = P.merge_config({"camera": {"command": "true"}})["camera"]
+    cam = P.PiCamera(cfg, tmp_path, time.monotonic)
+    cam.start()
+    args = cam.proc.args
+    cam.close()
+    assert args[args.index("--thumb") + 1] == "160:120:60"
+    cfg["thumb"] = ""
+    cam = P.PiCamera(cfg, tmp_path, time.monotonic)
+    cam.start()
+    assert "--thumb" not in cam.proc.args
+    cam.close()

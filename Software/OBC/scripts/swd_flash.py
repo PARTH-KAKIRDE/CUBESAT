@@ -17,7 +17,13 @@ Usage (on the Pi, from Software/):
   python3 OBC/scripts/swd_flash.py adcs             flash build/arm/adcs/adcs.elf
   python3 OBC/scripts/swd_flash.py ttc
   python3 OBC/scripts/swd_flash.py path/to/file.elf
-  python3 OBC/scripts/swd_flash.py erase            mass erase (if the chip is stuck)
+  python3 OBC/scripts/swd_flash.py erase            erase the code (sectors 0-6) if the chip is stuck;
+                                                    keeps sector 7, TT&C's flags (deployed, counters)
+  python3 OBC/scripts/swd_flash.py wipe-flags       mass erase INCLUDING sector 7: the TT&C forgets the
+                                                    antenna was deployed and its emergency counter.
+                                                    Bench only; asks for confirmation.
+Flashing an .elf ("program") only erases the sectors the image covers, so it
+never touches sector 7 (the linker script keeps code below 384 KB).
 Needs:  sudo apt install openocd gpiod
 """
 import shutil
@@ -65,6 +71,11 @@ def main() -> int:
     if what == "probe":
         cmds = ["init", "targets", "reset halt", "flash probe 0", "reset run", "shutdown"]
     elif what == "erase":
+        cmds = ["init", "reset halt", "flash erase_sector 0 0 6", "shutdown"]   # not sector 7 (ICD v0.9)
+    elif what == "wipe-flags":
+        if input("Mass erase including TT&C flags (deployed flag, emergency counter)? type WIPE: ") != "WIPE":
+            print("cancelled")
+            return 1
         cmds = ["init", "reset halt", "stm32f4x mass_erase 0", "shutdown"]
     else:
         elf = CODE / "build" / "arm" / what / f"{what}.elf" if what in ("adcs", "ttc", "dummy_slave") else Path(what)

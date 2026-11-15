@@ -111,6 +111,12 @@ class SimLib:
         L.sim_ttc_set_pins.argtypes = [ctypes.c_int, ctypes.c_int]
         L.sim_ttc_burn_total_ms.restype = ctypes.c_uint32
         L.sim_ttc_set_radio_ok.argtypes = [ctypes.c_int]
+        if hasattr(L, "sim_ttc_line"):                 # not in simulators built before ICD v0.9
+            L.sim_ttc_line.argtypes = [ctypes.c_int]
+            L.sim_ttc_line_pulses.argtypes = [ctypes.c_int]
+            L.sim_ttc_line_pulses.restype = ctypes.c_uint32
+            L.sim_ttc_line_ms.argtypes = [ctypes.c_int]
+            L.sim_ttc_line_ms.restype = ctypes.c_uint32
 
     def init(self, seed: int = 1) -> None:
         self.lib.sim_init(seed)
@@ -126,6 +132,16 @@ class SimLib:
         a = (ctypes.c_double * 3)()
         self.lib.sim_adcs_get_rate_dps(a)
         return tuple(a)
+
+    def ttc_line_pulses(self, line: int) -> int:
+        """Times TT&C asserted emergency line TTC_LINE_* (ICD v0.9)."""
+        return self.lib.sim_ttc_line_pulses(line)
+
+    def ttc_line_ms(self, line: int) -> int:
+        return self.lib.sim_ttc_line_ms(line)
+
+    def ttc_resets(self) -> int:
+        return self.lib.sim_ttc_resets()
 
     def uplink(self, pkt: bytes, rssi: int = -100) -> None:
         buf = (ctypes.c_uint8 * len(pkt)).from_buffer_copy(pkt)

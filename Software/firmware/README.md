@@ -1,6 +1,6 @@
-# STM32 firmware: build system, shared STM32 code, TT&C, dummy slave, PC simulation
+# STM32 firmware: build system, shared STM32 code, dummy slave, PC simulation
 
-The ADCS application lives in its own folder, [`../ADCS`](../ADCS/README.md); it is built from here with the shared code below.
+The ADCS and TT&C applications live in their own folders, [`../ADCS`](../ADCS/README.md) and [`../TTC`](../TTC/README.md); both are built from here with the shared code below.
 
 Register-level C on the CMSIS headers (`vendor/cmsis`, Arm/ST Apache-2.0). It doesn't use the HAL or CubeMX, and `build.py` is the whole build system.
 
@@ -18,11 +18,11 @@ Ported from the base repo (`~/Downloads/code/firmware`) on 2026-11-14 and built 
   - `stm32/i2c_slave.c` and `../ICD/slave/icd_link.c`: a second end-of-transfer after a read can no longer re-queue and re-run the previous command.
   - `stm32/i2c_master.c`: per-wait timeout 5 → 2 ms, so failed sensor transactions cannot hold the main loop past the OBC's reply window.
 
-TT&C's own code (`ttc/`) is unchanged and not yet reviewed against its hardware.
+- **TT&C fw 0.4.2 (ICD v0.9):** moved to `../TTC`; see [../TTC/README.md](../TTC/README.md) and the CHANGELOG (automatic deployment, emergency commands, long packets, review fixes).
 
 ```
 ../ADCS/    ADCS application: adcs_app (modes, B-dot, gyro offset, faults, telemetry), bdot, hw_stm32, main
-ttc/         ttc_app (queues, beacons, burn wire), sx1278 (LoRa), hw_stm32, main
+../TTC/     TT&C application: ttc_app (radio, queues, beacons, deploy, emergency), ttc_nv, hmac_sha256, sx1278, hw_stm32, main
 stm32/       startup, linker script, clock/tick/watchdog, I2C3 slave, I2C1 master, SPI1, log
 dummy_slave/ Nucleo-F446RE test slave (deliverable 4)
 host/        PC simulation of the hardware + unit tests + shared library for the OBC tests
@@ -68,4 +68,4 @@ Install one of these:
 - **Clock:** HSI 16 MHz, no PLL. It's enough for everything here and avoids clock-tree bugs.
 - **I2C slave interrupt:** priority 0. It only copies bytes. The main loop must never block for more than about 10 ms, so the Pi's 5 ms + 3 × 5 ms retry window always gets an answer. Slow sensor resets happen only at boot.
 - **Watchdog:** the IWDG is set to 2 s (4 s on TT&C) and kicked once per main-loop pass.
-- **Bench checks:** sensor axes and coil polarity are set in `../ADCS/board_config.h`. Deploy pin polarity is set in `ttc/ttc_app.h`. The bring-up procedure is in [../docs/BRINGUP.md](../docs/BRINGUP.md); flashing from the Pi without a programmer is in [../docs/NO_PROGRAMMER.md](../docs/NO_PROGRAMMER.md).
+- **Bench checks:** sensor axes and coil polarity are set in `../ADCS/board_config.h`. Deploy pin polarity is set in `../TTC/ttc_app.h`. The bring-up procedure is in [../docs/BRINGUP.md](../docs/BRINGUP.md); flashing from the Pi without a programmer is in [../docs/NO_PROGRAMMER.md](../docs/NO_PROGRAMMER.md).

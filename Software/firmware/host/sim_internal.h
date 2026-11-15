@@ -11,5 +11,6 @@ void adcs_sim_physics_step(double dt_s);
 
 void ttc_sim_reset(void);
 void ttc_sim_step(void);
+int ttc_sim_take_reset(void); /* 1 once after ttc_hw_system_reset() */
 
 #endif

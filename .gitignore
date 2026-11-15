@@ -5,6 +5,13 @@ ground_key
 .ground_key
 .gs_ctr
 .gs_seq
+ttc_key
+.ttc_key
+ttc_key.c
+!Software/firmware/host/ttc_key_test.c
+*_ctr
+*_ctr.tmp
+.cubesat/
 RASPBERRY_PI_GUIDE.md
 
 # ---------------------------------------------------------------

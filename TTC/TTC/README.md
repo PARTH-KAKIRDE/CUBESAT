@@ -3,11 +3,13 @@
 Radio (communications) module for the 2U CubeSat, LoRa version, Rev A.
 
 ## Overview
-An STM32F446RET6 (same MCU and footprint as ADCS) drives an RFM98W LoRa module (Semtech SX1278) at 435–438 MHz. It sends telemetry to the ground station (a LilyGO LoRa board running TinyGS), receives commands, and passes data to and from the OBC over I²C (same connector and pins as ADCS) or UART. Power comes from the EPS 3.3 V or 5 V rail (JST-XH, as on ADCS).
+An STM32F446RET6 (same MCU and footprint as ADCS) drives an RFM98W LoRa module (Semtech SX1278) at 433 MHz: downlink 433.300 MHz, uplink 433.800 MHz, 10 dBm (ICD v0.9, inside India's licence-free 433.05–434.04 MHz segment; the firmware accepts 433.05–438 MHz). It sends telemetry to the ground station (prototype: a Raspberry Pi with its own RFM98W), receives commands, and passes data to and from the OBC over I²C (same connector and pins as ADCS) or UART. Power comes from the EPS 3.3 V or 5 V rail (JST-XH, as on ADCS).
 
 The antenna output is either an SMA connector (default) or an LC balun feeding a dipole; fit one of the 0 Ω links R18 or R19.
 
 **Status:** schematic complete. PCB is 85 × 84 mm, 2-layer, **fully routed** (KiCad DRC: 0 violations, 0 unconnected, schematic parity clean). Outline and four 4 mm mounting holes (74 mm × 76 mm pitch, 5.5 mm from the left/right edges and 4 mm from the top/bottom edges) follow the hand-measured drawing and match ADCS and EPS so the boards stack. Design rules are set to JLCPCB standard 2-layer limits (0.127 mm track/space). Not yet checked in 3D for assembly or ordered.
+
+**Before ordering (ICD v0.9):** the schematic's spare-GPIO header J8 (2×13, DNP) has **no footprint on the PCB**. The firmware now drives three emergency lines from it: PC6 → Pi 4B RUN, PC8 → Pi 4B GLOBAL_EN, PC7 → ADCS NRST, each through a 2N7002 (gate 100 k to GND, drain to the target pin, source to GND; high = asserted). Add J8 (or a 1×4 header: 3 lines + GND) and the three MOSFETs, or the TT&C cannot reset a hung Pi or ADCS.
 
 ## Layout
 - **Floorplan by function.** Power is bottom-left at the J1/J7 inputs. The MCU is centre-left beside the J8 header. The RFM98W radio and its antenna chain sit on the right edge at J3 (SMA) and J9 (dipole). I/O protection parts are directly above J2/J5/J6, and the temperature sensor sits between the MCU and the radio.

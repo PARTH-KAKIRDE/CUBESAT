@@ -253,7 +253,10 @@ def test_forwarding_allowlist(cfg, sim_lib):
     # Allowed read-only command goes through.
     out = uplink_and_wait(app, sim, cmd(50, I.GL_TGT_TTC, I.TTC_CMD_GET_RADIO))
     radio = ground.reassemble(acks_for(out, 50))
-    assert struct.unpack_from("<I", radio, I.TTC_RADIO_OFS_FREQ_HZ)[0] == I.TTC_FREQ_DEFAULT_HZ
+    assert len(radio) == I.TTC_RADIO_LEN
+    assert struct.unpack_from("<I", radio, I.TTC_RADIO_OFS_FREQ_DOWN_HZ)[0] == I.TTC_FREQ_DOWN_DEFAULT_HZ
+    assert struct.unpack_from("<I", radio, I.TTC_RADIO_OFS_FREQ_UP_HZ)[0] == I.TTC_FREQ_UP_DEFAULT_HZ
+    assert radio[I.TTC_RADIO_OFS_CR] == I.TTC_CR_DEFAULT == 8
 
 
 def test_ground_get_status_does_not_hide_a_reset(cfg, sim_lib):
@@ -434,3 +437,227 @@ def test_telemetry_carries_eps_state_and_payload(cfg, sim_lib):
     assert rec["eps"]["power_state"] in ("SUN_CHARGING", "SUN_FULL", "SUN_DISCHARGING", "ECLIPSE")
     assert "soc_pct" in rec["eps"] and rec["eps"]["low_battery"] is False
     assert rec["lux"] is not None and rec["lux"] > 0
+
+
+def test_file_downlink_selective_repeat(cfg, sim_lib):
+    """GL v3: an image comes down through the real TT&C firmware, with blocks
+    lost on the first pass and only those sent again."""
+    import random
+    from OBC.comms import arq
+    cfg["payload"] = {"camera": {"period_s": 0}}
+    cfg["obc"]["file_window"] = 16
+    cfg["obc"]["file_block"] = 17                       # v3 size: every block in one QUEUE_TX
+    app, sim = build_sim(cfg, sim=sim_lib)
+    app.start()
+    run(app, 2)
+    sim.downlink()
+    img = bytes(random.Random(7).randrange(256) for _ in range(17 * 50 + 9))   # 51 blocks
+    app.payload.cam.dir.mkdir(parents=True, exist_ok=True)
+    (app.payload.cam.dir / "img_000001.jpg").write_bytes(b"older image")
+    (app.payload.cam.dir / "img_000002.jpg").write_bytes(img)
+
+    # Errors are ACKed too: wrong length, no such image, FILE_ACK without a transfer.
+    out = uplink_and_wait(app, sim, cmd(60, I.GL_TGT_OBC, I.GL_OBC_FILE_START, b"\x00"))
+    assert acks_for(out, 60)[0]["status"] == I.ICD_ST_BAD_LENGTH
+    out = uplink_and_wait(app, sim, cmd(61, I.GL_TGT_OBC, I.GL_OBC_FILE_START, struct.pack("<H", 2)))
+    assert acks_for(out, 61)[0]["status"] == I.ICD_ST_NO_DATA
+    out = uplink_and_wait(app, sim, cmd(62, I.GL_TGT_OBC, I.GL_OBC_FILE_ACK, arq.build_ack_args(1, 0, 0)))
+    assert acks_for(out, 62)[0]["status"] == I.ICD_ST_NO_DATA
+
+    raw = []
+    sim.uplink(cmd(63, I.GL_TGT_OBC, I.GL_OBC_FILE_START, struct.pack("<H", 0)), -95)   # newest
+    for _ in range(4):
+        run(app, 1)
+        raw += sim.downlink()
+    pk = [ground.parse_downlink(p) for p in raw]
+    ack = acks_for(pk, 63)
+    assert ack[0]["status"] == I.ICD_ST_OK
+    info = arq.parse_start_info(bytes.fromhex(ack[0]["data"]))
+    assert info["size"] == len(img) and info["blocks"] == 51 and info["window"] == 16
+    # The ACK goes down before the first block (TT&C queue is FIFO).
+    kinds = [p["type"] for p in pk if p["type"] in ("ACK", "FILE")]
+    assert kinds[0] == "ACK" and kinds.count("FILE") == 16
+
+    rx = arq.FileReceiver(info)
+    lose = {1, 4, 5, 11, 20, 33}                       # first transmission of these is lost
+    first_sent = set()
+    sent = 0
+    for p in raw:
+        if p[I.GL_OFS_TYPE] == I.GL_T_FILE:
+            sent += 1
+            k = arq.parse_block(p)[1]
+            if k in lose and k not in first_sent:
+                first_sent.add(k)
+                continue
+            rx.feed(p)
+    seq = 64
+    for _ in range(30):
+        if rx.done:
+            break
+        # Fresh counter every time: a FILE_ACK is a new request, never a cached retransmission.
+        sim.uplink(cmd(seq, I.GL_TGT_OBC, I.GL_OBC_FILE_ACK, rx.ack_args()), -95)
+        raw = []
+        for _ in range(4):
+            run(app, 1)
+            raw += sim.downlink()
+        a = acks_for([ground.parse_downlink(p) for p in raw], seq)
+        assert a and a[0]["status"] == I.ICD_ST_OK           # every FILE_ACK is ACKed
+        for p in raw:
+            if p[I.GL_OFS_TYPE] == I.GL_T_FILE:
+                sent += 1
+                k = arq.parse_block(p)[1]
+                if k in lose and k not in first_sent:
+                    first_sent.add(k)
+                    continue
+                rx.feed(p)
+        seq += 1
+    assert rx.done and rx.data() == img
+    assert app.xfer is not None                         # sender closes on the final FILE_ACK
+    sim.uplink(cmd(seq, I.GL_TGT_OBC, I.GL_OBC_FILE_ACK, rx.ack_args()), -95)
+    out = []
+    for _ in range(3):
+        run(app, 1)
+        out += downlink(sim)
+    a = acks_for(out, seq)
+    assert a[0]["status"] == I.ICD_ST_OK and bytes.fromhex(a[0]["data"]) == b"\x00"
+    assert app.xfer is None
+    assert sent == 51 + len(lose)                       # only the lost blocks came twice
+    assert rx.duplicates == 0
+
+    # SAFE mode refuses a new transfer (TT&C would not transmit it anyway).
+    app.set_obc_mode(I.ICD_MODE_SAFE, "test")
+    out = uplink_and_wait(app, sim, cmd(seq + 1, I.GL_TGT_OBC, I.GL_OBC_FILE_START, b"\x00\x00"))
+    assert acks_for(out, seq + 1)[0]["status"] == I.GL_ST_REFUSED
+
+
+def test_file_downlink_long_blocks_and_thumbnail(cfg, sim_lib):
+    """GL v4: 200-byte blocks through TT&C QUEUE_TX_PART, and the EXIF thumbnail variant."""
+    import random
+    from OBC.comms import arq
+    from .conftest import make_exif_jpeg
+    cfg["payload"] = {"camera": {"period_s": 0}}
+    app, sim = build_sim(cfg, sim=sim_lib)
+    assert app.cfg["obc"]["file_block"] == 200          # the v4 default
+    app.start()
+    run(app, 2)
+    sim.downlink()
+    rnd = random.Random(3)
+    thumb = b"\xff\xd8" + bytes(rnd.randrange(256) for _ in range(3000)) + b"\xff\xd9"
+    full = make_exif_jpeg(thumb, body=bytes(rnd.randrange(256) for _ in range(6000)))
+    app.payload.cam.dir.mkdir(parents=True, exist_ok=True)
+    (app.payload.cam.dir / "img_000001.jpg").write_bytes(b"\xff\xd8 no exif \xff\xd9")
+    (app.payload.cam.dir / "img_000002.jpg").write_bytes(full)
+
+    out = uplink_and_wait(app, sim, cmd(80, I.GL_TGT_OBC, I.GL_OBC_FILE_START, b"\x00\x00\x07"))
+    assert acks_for(out, 80)[0]["status"] == I.ICD_ST_BAD_PARAM       # unknown variant
+    out = uplink_and_wait(app, sim, cmd(81, I.GL_TGT_OBC, I.GL_OBC_FILE_START, b"\x01\x00\x01"))
+    assert acks_for(out, 81)[0]["status"] == I.ICD_ST_NO_DATA         # older image: no thumbnail
+
+    def fetch(seq, args, want):
+        sim.uplink(cmd(seq, I.GL_TGT_OBC, I.GL_OBC_FILE_START, args), -95)
+        raw = []
+        for _ in range(6):
+            run(app, 1)
+            raw += sim.downlink()
+        ack = acks_for([ground.parse_downlink(p) for p in raw], seq)
+        assert ack[0]["status"] == I.ICD_ST_OK
+        info = arq.parse_start_info(bytes.fromhex(ack[0]["data"]))
+        assert info["block"] == 200 and info["size"] == len(want)
+        rx = arq.FileReceiver(info)
+        seq += 1
+        for _ in range(20):
+            for p in raw:
+                if p[I.GL_OFS_TYPE] == I.GL_T_FILE:
+                    assert len(p) <= I.GL_DOWN_MAX_LEN
+                    rx.feed(p)
+            if rx.done:
+                break
+            sim.uplink(cmd(seq, I.GL_TGT_OBC, I.GL_OBC_FILE_ACK, rx.ack_args()), -95)
+            seq += 1
+            raw = []
+            for _ in range(6):
+                run(app, 1)
+                raw += sim.downlink()
+        assert rx.done and rx.data() == want
+        return seq
+
+    seq = fetch(82, b"\x00\x00\x01", thumb)                # newest image, thumbnail: 16 blocks
+    long_pkts = 200 + I.GL_FILE_OFS_DATA + I.GL_CRC_LEN
+    assert long_pkts > I.GL_MAX_LEN                         # really more than one QUEUE_TX
+    fetch(seq, b"\x00\x00", full)                           # the whole image, old 2-byte args
+
+
+LINE_OBC_RUN, LINE_OBC_GLOBAL_EN, LINE_ADCS_NRST = 0, 1, 2   # TTC_LINE_* in TTC/ttc_hw.h
+
+
+_ecounter = itertools.count(1_700_000_000)   # Unix-time-like, as the ground tool will use (above the floor)
+
+
+def ecmd(seq, target, c, args=b"", counter=None):
+    from .conftest import TTC_TEST_KEY
+    return ground.build_ecmd(seq, target, c, args, key=TTC_TEST_KEY, counter=counter or next(_ecounter))
+
+
+def test_emergency_commands_work_with_the_obc_hung(cfg, sim_lib):
+    """GL v4: with the OBC application not running at all (hung Pi), TT&C
+    still checks, executes and acknowledges emergency commands by itself."""
+    sim = sim_lib
+    sim.init(31)
+    sim.run_ms(40000)                                       # the OBC never talks: master lost
+    sim.downlink()
+
+    def send(pkt):
+        sim.uplink(pkt, -90)
+        sim.run_ms(500)
+        return [ground.parse_downlink(p) for p in sim.downlink()]
+
+    out = send(ecmd(1, I.GL_TGT_TTC, I.GL_E_PING))
+    acks = [p for p in out if p["type"] == "ACK" and p["emergency"]]
+    assert len(acks) == 1 and acks[0]["status"] == I.ICD_ST_OK and acks[0]["target"] == I.GL_TGT_TTC
+    info = ground.parse_eping(bytes.fromhex(acks[0]["data"]))
+    assert info["obc_silent_s"] >= 39 and info["wdt_min"] == 0
+
+    reset = ecmd(2, I.GL_TGT_OBC, I.GL_E_OBC_RESET, struct.pack("<I", I.GL_REBOOT_KEY))
+    out = send(reset)
+    assert [p["status"] for p in out if p["type"] == "ACK"] == [I.ICD_ST_OK]
+    assert sim.ttc_line_pulses(LINE_OBC_RUN) == 1 and sim.ttc_line_ms(LINE_OBC_RUN) >= I.GL_E_OBC_RESET_PULSE_MS - 2
+    out = send(reset)                                       # same packet again: ACK again, no second pulse
+    assert [p["status"] for p in out if p["type"] == "ACK"] == [I.ICD_ST_OK]
+    assert sim.ttc_line_pulses(LINE_OBC_RUN) == 1
+    # Signed with the OBC key instead of the TT&C key: ignored.
+    forged = ground.build_ecmd(3, I.GL_TGT_OBC, I.GL_E_OBC_RESET, struct.pack("<I", I.GL_REBOOT_KEY),
+                               key=b"\x55" * 32, counter=next(_ecounter))
+    assert send(forged) == [] and sim.ttc_line_pulses(LINE_OBC_RUN) == 1
+    out = send(ecmd(4, I.GL_TGT_ADCS, I.GL_E_ADCS_RESET, struct.pack("<I", I.GL_REBOOT_KEY)))
+    ack = [p for p in out if p["type"] == "ACK"][0]
+    assert ack["status"] == I.ICD_ST_OK and sim.ttc_line_pulses(LINE_ADCS_NRST) == 1
+    assert bytes.fromhex(ack["data"]) == bytes([I.GL_EA_REPORT_FOLLOWS])
+    # Execution reports: the RUN pulse and the ADCS reset each came back as an EVENT.
+    sim.run_ms(500)
+    out += [ground.parse_downlink(p) for p in sim.downlink()]
+    ev = [p for p in out if p["type"] == "EVENT"]
+    assert any(e["cmd"] == I.GL_E_ADCS_RESET and e["ecmd_seq"] == 4 and e["source"] == "ecmd"
+               and e["result"] == I.ICD_ST_OK for e in ev), ev
+    out = send(ecmd(5, I.GL_TGT_TTC, I.GL_E_GET_EVENTS))
+    log = ground.parse_events(bytes.fromhex([p for p in out if p["type"] == "ACK"][0]["data"]))
+    assert log[0]["cmd"] == I.GL_E_ADCS_RESET and log[1]["cmd"] == I.GL_E_OBC_RESET
+    assert log[0]["no"] == log[1]["no"] + 1
+
+
+def test_ecmd_never_reaches_the_obc(cfg, sim_lib):
+    """With the OBC running, an ECMD is answered once, by TT&C; the OBC never sees it."""
+    app, sim = build_sim(cfg, sim=sim_lib)
+    app.start()
+    run(app, 2)
+    sim.downlink()
+    out = uplink_and_wait(app, sim, ecmd(5, I.GL_TGT_TTC, I.GL_E_PING))
+    acks = [p for p in out if p["type"] == "ACK"]
+    assert len(acks) == 1 and acks[0]["emergency"]
+    # An ordinary command to the OBC is still answered by the OBC (no emergency flag).
+    out = uplink_and_wait(app, sim, cmd(6, I.GL_TGT_OBC, I.GL_OBC_PING))
+    acks = acks_for(out, 6)
+    assert acks and not acks[0]["emergency"]
+    r = app.ttc.radio()
+    assert "deployed_flag" in r and r["auto_deploy_active"] and not r["deployed_flag"]
+    assert app.ttc.counters()["auto_deploy_attempts"] == 0
+    assert app.ttc.deploy_reset() == I.ICD_ST_OK            # sim default: RBF plug in (bench)

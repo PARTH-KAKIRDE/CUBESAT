@@ -266,7 +266,26 @@ class TtcClient(SlaveClient):
         return r.payload
 
     def queue_tx(self, data: bytes) -> int:
-        return self.link.transact(I.TTC_CMD_QUEUE_TX, data).status
+        """Queue one downlink packet. Up to 24 bytes in one QUEUE_TX; longer ones
+        (FILE blocks, up to TTC_TX_MAX_LEN) in QUEUE_TX_PART parts (ICD v0.9).
+        Returns the status of the last transaction; anything but OK means the
+        packet was not queued (a lost part makes the next try start again)."""
+        if len(data) <= I.ICD_MAX_PAYLOAD:
+            return self.link.transact(I.TTC_CMD_QUEUE_TX, data).status
+        if len(data) > I.TTC_TX_MAX_LEN:
+            raise ValueError(f"downlink packet too long ({len(data)} > {I.TTC_TX_MAX_LEN})")
+        step = I.TTC_TXP_MAX_DATA
+        for off in range(0, len(data), step):
+            last = off + step >= len(data)
+            part = bytes([I.TTC_TXP_F_LAST if last else 0, off]) + data[off:off + step]
+            st = self.link.transact(I.TTC_CMD_QUEUE_TX_PART, part).status
+            if st != I.ICD_ST_OK:
+                return st
+        return st
+
+    def deploy_reset(self) -> int:
+        """Bench only: clear the antenna-deployed flag (RBF plug must be IN)."""
+        return self.link.transact(I.TTC_CMD_DEPLOY_RESET, struct.pack("<I", I.TTC_DEPLOY_RESET_KEY)).status
 
     def set_beacon(self, data: bytes) -> int:
         return self.link.transact(I.TTC_CMD_SET_BEACON, data).status
@@ -274,14 +293,19 @@ class TtcClient(SlaveClient):
     def set_beacon_period(self, seconds: int) -> int:
         return self.link.transact(I.TTC_CMD_SET_BEACON_PERIOD, struct.pack("<H", seconds)).status
 
-    def set_radio(self, freq_hz: int, sf: int, bw: int, cr: int, power_dbm: int, sync: int) -> int:
-        return self.link.transact(I.TTC_CMD_SET_RADIO,
-                                  struct.pack("<IBBBbB", freq_hz, sf, bw, cr, power_dbm, sync)).status
+    # ICD v0.8 layout (13 bytes): freq_down u32, sf, bw, cr, power i8, sync, freq_up u32.
+    RADIO_FMT = "<IBBBbBI"
+
+    def set_radio(self, freq_down_hz: int, freq_up_hz: int, sf: int, bw: int, cr: int,
+                  power_dbm: int, sync: int) -> int:
+        return self.link.transact(I.TTC_CMD_SET_RADIO, struct.pack(
+            self.RADIO_FMT, freq_down_hz, sf, bw, cr, power_dbm, sync, freq_up_hz)).status
 
     def get_radio(self) -> dict:
         p = self.link.call(I.TTC_CMD_GET_RADIO)
-        f, sf, bw, cr, pw, sync = struct.unpack("<IBBBbB", p[: I.TTC_RADIO_LEN])
-        return {"freq_hz": f, "sf": sf, "bw": bw, "cr": cr, "power_dbm": pw, "sync": sync}
+        fd, sf, bw, cr, pw, sync, fu = struct.unpack(self.RADIO_FMT, p[: I.TTC_RADIO_LEN])
+        return {"freq_down_hz": fd, "freq_up_hz": fu, "sf": sf, "bw": bw, "cr": cr,
+                "power_dbm": pw, "sync": sync}
 
     def burn_arm(self) -> int:
         return self.link.transact(I.TTC_CMD_BURN_ARM, struct.pack("<I", I.TTC_BURN_ARM_KEY)).status
@@ -299,6 +323,7 @@ class TtcClient(SlaveClient):
             "deploy_sw": bool(df & I.TTC_DF_DEPLOY_SW), "rbf_in": bool(df & I.TTC_DF_RBF_IN),
             "burn_armed": bool(df & I.TTC_DF_ARMED), "burning": bool(df & I.TTC_DF_BURNING),
             "burn_done": bool(df & I.TTC_DF_BURN_DONE),
+            "deployed_flag": bool(df & I.TTC_DF_DEPLOYED_FLAG), "auto_deploy_active": bool(df & I.TTC_DF_AUTO_ACTIVE),
             "last_rssi_dbm": i16(p, I.TTC_TLM0_OFS_LAST_RSSI),
             "last_snr_db": struct.unpack_from("<b", p, I.TTC_TLM0_OFS_LAST_SNR)[0] / 4.0,
             "rx_count": u16(p, I.TTC_TLM0_OFS_RX_COUNT), "tx_count": u16(p, I.TTC_TLM0_OFS_TX_COUNT),
@@ -314,4 +339,5 @@ class TtcClient(SlaveClient):
             "tx_timeouts": u16(p, I.TTC_TLM1_OFS_TX_TIMEOUTS), "rx_dropped": u16(p, I.TTC_TLM1_OFS_RX_DROPPED),
             "tx_dropped": u16(p, I.TTC_TLM1_OFS_TX_DROPPED), "beacon_count": u16(p, I.TTC_TLM1_OFS_BEACON_COUNT),
             "burn_count": p[I.TTC_TLM1_OFS_BURN_COUNT], "last_burn_ms": u16(p, I.TTC_TLM1_OFS_LAST_BURN_MS),
+            "auto_deploy_attempts": p[I.TTC_TLM1_OFS_AUTO_ATTEMPTS],
         }

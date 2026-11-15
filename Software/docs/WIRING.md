@@ -65,7 +65,7 @@ These are the same STM32 pins as on ADCS and TT&C, so the same driver is tested.
 
 ## TT&C mission header (J2): burn wire
 
-| J2 pin | Signal | Firmware assumption (`firmware/ttc/ttc_app.h`) |
+| J2 pin | Signal | Firmware assumption (`TTC/ttc_app.h`) |
 |---|---|---|
 | 1 | DEPLOY_SW (PC0, 10k pull-up) | High = antenna released (switch open) |
 | 2 | RBF_IN (PC1, 10k pull-up) | High = remove-before-flight pin **out** (burn allowed) |

@@ -67,6 +67,9 @@ beacon_update_s = 10
 allow_reboot = false
 adcs_auto_nominal = true  # command ADCS NOMINAL once it reports DETUMBLED
 max_ground_packets_per_tick = 4
+file_window = 16          # file downlink: blocks per burst (1..32), Selective Repeat ARQ
+file_timeout_s = 1800     # drop a file transfer after this long without a FILE_ACK
+file_block = 200          # bytes per FILE block (1..248, GL v4); 17 = old 24-byte packets
 
 [adcs]
 # Re-sent at start-up and every time ADCS reports RESET_OCCURRED.
@@ -98,7 +101,8 @@ beacon_period_s = 30
 
 [ground]
 # Secret key that authenticates ground commands (ICD.md section 11).
-# Create it on the ground PC with the ground tool's keygen, copy the file here,
-# then: chmod 600. Never commit it. Without it the OBC rejects every ground
+# Create it on the ground PC with OBC/scripts/keygen.py (~/.cubesat/ground_key),
+# copy the file here, then: chmod 600. Never commit it. (The other key it makes,
+# ttc_key, is for the TT&C firmware build only, never the Pi.) Without it the OBC rejects every ground
 # command (beacons still go out).
 key_file = "/home/pi/.cubesat/ground_key"

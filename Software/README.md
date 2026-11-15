@@ -4,10 +4,11 @@ Flight software for the OBC (Raspberry Pi 4B) and the two STM32F446 boards (ADCS
 
 ```
 Software/
-├── ICD/        interface control document v0.7: headers (source of truth), Python master, slave link layer
+├── ICD/        interface control document v0.9: headers (source of truth), Python master, slave link layer
 ├── OBC/        OBC flight software (Python package): main loop, EPS, payload, links to ADCS / TT&C / ground
 ├── ADCS/       ADCS firmware (STM32F446): detumbling, sun direction / eclipse, sensors, coils, gyro offset
-├── firmware/   build system, shared STM32 code, TT&C, Nucleo dummy slave, PC simulation and firmware tests
+├── TTC/        TT&C firmware (STM32F446): LoRa radio, beacons, antenna deployment, emergency commands
+├── firmware/   build system, shared STM32 code, Nucleo dummy slave, PC simulation and firmware tests
 ├── docs/       Pi setup, wiring, bring-up checklists
 └── build/      firmware build output (git-ignored, created by firmware/build.py)
 ```
@@ -17,6 +18,7 @@ Software/
 | `ICD/` | [ICD/ICD.md](ICD/ICD.md) (the interface), [ICD/README.md](ICD/README.md) (files, rules) |
 | `OBC/` | [OBC/README.md](OBC/README.md) |
 | `ADCS/` | [ADCS/README.md](ADCS/README.md) |
+| `TTC/` | [TTC/README.md](TTC/README.md) |
 | `firmware/` | [firmware/README.md](firmware/README.md) |
 | Changes | [CHANGELOG.md](CHANGELOG.md) |
 | `docs/` | [RPI_SETUP.md](docs/RPI_SETUP.md), [WIRING.md](docs/WIRING.md), [BRINGUP.md](docs/BRINGUP.md), [NO_PROGRAMMER.md](docs/NO_PROGRAMMER.md) |
@@ -28,8 +30,8 @@ Software/
 Needs `gcc` and Python 3.11+ with `pytest`.
 
 ```
-python3 firmware/build.py test                      # firmware unit tests: 1354 checks
-python3 firmware/build.py check                     # compile-check all STM32 files: 43 files
+python3 firmware/build.py test                      # firmware unit tests: 1616 checks
+python3 firmware/build.py check                     # compile-check all STM32 files: 47 files
 python3 firmware/build.py sim                       # build/host/libcubesat_sim.so (real firmware logic, simulated hardware)
 python3 -B -m pytest -q OBC/tests                   # 114 OBC tests (32 of them need the sim library)
 python3 -B -m pytest -q ICD/tests                   # 52 ICD tests
@@ -48,5 +50,4 @@ On a PC the simulated run logs two expected errors, no ground key (`/home/pi/.cu
 
 ## Not here yet
 
-- **Ground station:** the ground tool (`gs_tool.py`: `keygen`, `listen`, `cmd …`) and the LilyGO radio bridge are still in the base repo (`~/Downloads/code/ground`). That tool predates ICD v0.4, so it cannot send `GL_EPS_GET_STATE`.
-- **ARM builds** of the ported firmware have not been run yet (no ARM compiler on the development PC).
+- **Ground station** for the prototype (Raspberry Pi + RFM98W, laptop over the network): next. The old tool and LilyGO bridge in the base repo (`~/Downloads/code/ground`) predate ICD v0.4 and use the old 436.5 MHz. Keys are already made by `OBC/scripts/keygen.py`; `OBC/comms/ground.py` and `arq.py` hold the packet, counter and file-download code it will use.

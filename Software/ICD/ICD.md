@@ -1,6 +1,6 @@
-# Inter-Subsystem ICD v0.7: OBC ↔ ADCS / TT&C I2C link, and the ground link
+# Inter-Subsystem ICD v0.9: OBC ↔ ADCS / TT&C I2C link, and the ground link
 
-**Status:** v0.7, 2026-11-14, owner Parth. v0.7 fits a sun diode on every face, adds gyro tracking of the Sun (dead-diode detection, HIDDEN instead of a false eclipse), the SUN_DIODE fault, SET_SUN_DISABLED 0x28 and page-4 dead_faces. v0.6 added the sun sensors' processed output: ADCS works out the Sun direction and sunlit/eclipse from its BPW34 diodes (5 faces, none on nadir) and reports them on telemetry page 4; SET_SUN_CONFIG 0x27 sets the light thresholds (sections 6, 7). v0.5 added the ADCS gyro zero-rate offset: SET_GYRO_OFFSET 0x26 (section 6), telemetry page 3 (section 7), automatic measurement at boot (section 8); page 0 gyro is now reported with the offset removed. v0.4 (2026-11-12) added the EPS GET_STATE ground command (section 11) and the INA226 #2 address, commented out. Earlier text edit (2026-11-12): the camera is a Pi camera on CSI, not USB; VEML6075 entries added commented out. Merges the v0.1 draft into v0.2 (what came from where: `README.md`).
+**Status:** v0.9, 2026-11-15, owner Parth. v0.9 moves the TT&C defaults into India's licence-free band (433.3 MHz down, 433.8 MHz up, 10 dBm), adds automatic antenna deployment at boot with a flash flag, emergency commands that TT&C executes without the OBC (GL_T_ECMD, GL_VERSION 4), long FILE packets (QUEUE_TX_PART 0x48, 200-byte blocks, EXIF thumbnails), DEPLOY_RESET 0x49 (bench), and a confirm/revert timer for SET_RADIO (sections 6, 7, 8, 11). v0.8 splits the TT&C radio into a downlink (433.0 MHz) and a higher uplink (433.5 MHz) frequency, makes LoRa CR 4/8 the default, lets ACK/TLM go down in SAFE, and adds Selective Repeat file downlink (GL_VERSION 3; sections 6, 8, 11). v0.7 fits a sun diode on every face, adds gyro tracking of the Sun (dead-diode detection, HIDDEN instead of a false eclipse), the SUN_DIODE fault, SET_SUN_DISABLED 0x28 and page-4 dead_faces. v0.6 added the sun sensors' processed output: ADCS works out the Sun direction and sunlit/eclipse from its BPW34 diodes (5 faces, none on nadir) and reports them on telemetry page 4; SET_SUN_CONFIG 0x27 sets the light thresholds (sections 6, 7). v0.5 added the ADCS gyro zero-rate offset: SET_GYRO_OFFSET 0x26 (section 6), telemetry page 3 (section 7), automatic measurement at boot (section 8); page 0 gyro is now reported with the offset removed. v0.4 (2026-11-12) added the EPS GET_STATE ground command (section 11) and the INA226 #2 address, commented out. Earlier text edit (2026-11-12): the camera is a Pi camera on CSI, not USB; VEML6075 entries added commented out. Merges the v0.1 draft into v0.2 (what came from where: `README.md`).
 The single source of truth is [`cubesat_icd.h`](cubesat_icd.h) (I2C link) and [`ground_link.h`](ground_link.h) (radio link). This document explains them; **if they disagree, the header wins** and this document is fixed. Changes go through Parth and bump `ICD_VERSION_MINOR` (compatible) or `ICD_VERSION_MAJOR` (breaking).
 **TBD** = filled in by the named owner before freeze. **Unverified** = written down, not yet measured on the bench.
 
@@ -151,14 +151,16 @@ Command ranges: ADCS **0x20–0x3F**, TT&C **0x40–0x5F** (`ICD_CMD_*_FIRST/LAS
 | ID | Name | Request / response | Notes |
 |---|---|---|---|
 | 0x40 | GET_RX | resp: one ground packet ≤ 24 bytes | `NO_DATA` if the queue is empty. Queue depth 8. |
-| 0x41 | QUEUE_TX | req: 1–24 bytes | `QUEUE_FULL` if full. `INVALID_MODE` in SAFE. |
+| 0x41 | QUEUE_TX | req: 1–24 bytes | `QUEUE_FULL` if full. In SAFE only ACK and TLM packets are taken (v0.8); anything else gets `INVALID_MODE`. |
+| 0x48 | QUEUE_TX_PART | flags u8 (bit 0 LAST), offset u8, data 1–22 | v0.9. Builds one downlink packet of up to 255 bytes. Offset 0 starts a new packet; each part must start where the last ended (else `BAD_PARAM`, packet dropped); over 255 bytes `BAD_LENGTH`. The LAST part queues it (`QUEUE_FULL`: start again). Refused in SAFE. TX queue: 8 slots of 255 bytes; RX queue: 8 of 24 (each queue has its own size since v0.9). |
 | 0x42 | SET_BEACON | req: 0–24 bytes | The OBC beacon. TT&C sends it while it is fresh and the OBC is alive, and its own beacon otherwise. |
 | 0x43 | SET_BEACON_PERIOD | period_s u16 | 0 = off; otherwise ≥ 10 s. SAFE forces at least 60 s. |
-| 0x44 / 0x45 | SET_RADIO / GET_RADIO | freq u32, sf u8, bw u8, cr u8, power i8, sync u8 (9 B) | 433–438 MHz, SF7–12, bw code 0–3 (62.5/125/250/500 kHz), CR 5–8 (4/5..4/8), 2–17 dBm. Applied when the radio is idle. 436.5 MHz is a **placeholder**: use the coordinated frequency. |
+| 0x44 / 0x45 | SET_RADIO / GET_RADIO | freq_down u32, sf u8, bw u8, cr u8, power i8, sync u8, freq_up u32 (13 B, v0.8) | Both 433.05–438 MHz and **freq_up > freq_down**, SF7–12, bw code 0–3 (62.5/125/250/500 kHz), CR 5–8 (4/5..4/8), 2–17 dBm. Applied when the radio is idle. Defaults (v0.9): down **433.300 MHz**, up **433.800 MHz**, SF9, 125 kHz, **CR 4/8**, **10 dBm**, sync 0x12. **Confirm or revert (v0.9):** new settings are kept only if a valid ground packet arrives on them within 10 min; otherwise TT&C goes back to the last confirmed settings and raises RADIO_REVERTED (0x0080). TT&C listens on freq_up and retunes to freq_down for each packet it sends (half duplex: never both). The old 9-byte layout gets `BAD_LENGTH`. |
 | 0x46 | BURN_ARM | key u32 = 0x4E525542 ("BURN") | Arms for 10 s. |
-| 0x47 | BURN_FIRE | duration_ms u16 (≤ 8000) | Needs ARM and the RBF plug removed. Stops at the deadline or as soon as DEPLOY_SW reports deployed. |
+| 0x47 | BURN_FIRE | duration_ms u16 (≤ 8000) | Needs ARM and the RBF plug removed. `INVALID_MODE` while any burn (e.g. the automatic one) is running (v0.9). Stops at the deadline, when DEPLOY_SW has read deployed for 50 ms (debounced against burn-current noise), or if the RBF plug goes back in (v0.9). |
+| 0x49 | DEPLOY_RESET | key u32 = 0x52414552 ("REAR") | v0.9, bench only: clears the antenna-deployed flag and the automatic burn count in flash. Only with the RBF plug **in** (else `INVALID_MODE`). Not forwarded from the ground. |
 
-**Ground command path:** TT&C receives a packet (it only queues ours: SAT_ID 0xC5 and a valid CRC). The Pi reads it with GET_RX, checks it (section 11), and forwards allowed commands to ADCS or TT&C. TT&C never talks to ADCS.
+**Ground command path:** TT&C receives a packet (it only queues ours: SAT_ID 0xC5 and a valid CRC). The Pi reads it with GET_RX, checks it (section 11), and forwards allowed commands to ADCS or TT&C. TT&C never talks to ADCS over I2C; the only exception to "the OBC decides" is the emergency commands (section 11), which TT&C checks and executes itself, and which can pulse ADCS NRST and the Pi RUN / GLOBAL_EN lines.
 
 ## 7. Telemetry (scaled integers, serialised field by field)
 
@@ -206,7 +208,7 @@ ADCS switches the coils off around each magnetometer sample, so `mag_age_ms` is 
 | 4 | radio_state | u8: off / rx / tx |
 | 5 | rx_queue | u8, packets waiting for the OBC |
 | 6 | tx_queue | u8 |
-| 7 | deploy_flags | u8: DEPLOY_SW, RBF_IN (raw pin levels), ARMED, BURNING, BURN_DONE |
+| 7 | deploy_flags | u8: DEPLOY_SW, RBF_IN (raw pin levels), ARMED, BURNING, BURN_DONE, DEPLOYED_FLAG 0x20 and AUTO_ACTIVE 0x40 (v0.9) |
 | 8 | last_rssi | i16, dBm |
 | 10 | last_snr | i8, 0.25 dB |
 | 11 | mode_reason | u8 |
@@ -217,7 +219,7 @@ ADCS switches the coils off around each magnetometer sample, so `mag_age_ms` is 
 | 20 | beacon_period | u16, s |
 | 22 | obc_i2c_resets | u16 |
 
-**TT&C page 1, counters (12 bytes):** tx_timeouts, rx_dropped, tx_dropped, beacon_count (u16 each), burn_count u8, reserved u8, last_burn_ms u16.
+**TT&C page 1, counters (12 bytes):** tx_timeouts, rx_dropped, tx_dropped, beacon_count (u16 each), burn_count u8, auto_attempts u8 (v0.9: automatic burns ever made, from flash; was reserved), last_burn_ms u16.
 
 **Dummy slave page 0 (24 bytes, link tests only):** uptime_ms, frames_ok, crc_errors, len_errors, overwritten (u32 each), bus_resets u16, reads (low 16 bits) u16. The dummy reports fw 0.1.0, which is how test tools tell it apart from TT&C (whose page 0 is also 24 bytes).
 
@@ -266,8 +268,8 @@ BOOT = 0 · SAFE = 1 · DETUMBLE = 2 · NOMINAL = 3
 
 | Mode | ADCS | TT&C |
 |---|---|---|
-| BOOT | Self-test. Enters **DETUMBLE by itself**, without waiting for the Pi, or SAFE if the magnetometer is missing. Starts the 5 s gyro offset measurement (page 3). | Initialises the radio. Goes to NOMINAL, or SAFE if the radio failed. |
-| SAFE | DRV8833s asleep (nSLEEP low). Sensors still sampled, telemetry still served. If it entered SAFE on a fault, the faults that stop B-dot (magnetometer, coil drivers) have been gone for 30 s and the Pi is silent, it returns to DETUMBLE by itself; a dead gyro or sun-sensor ADC does not block this (v0.5). If the fault returns within 10 min of such a restart, the wait doubles each time (30 s … 32 min), and resets after 10 clean minutes or any commanded mode change. | RX on. Beacon at least every 60 s. QUEUE_TX and BURN refused. Returns to NOMINAL by itself when the radio recovers. |
+| BOOT | Self-test. Enters **DETUMBLE by itself**, without waiting for the Pi, or SAFE if the magnetometer is missing. Starts the 5 s gyro offset measurement (page 3). | Loads the flash flags, initialises the radio, goes to NOMINAL (or SAFE if the radio failed). Then the **deploy check** (v0.9): if the flash flag says not deployed and fewer than 3 automatic burns were ever made, it waits until the RBF plug has been out for 60 s without a break, burns 5 s (stopping early on DEPLOY_SW), and tries again 60 s later. DEPLOY_SW reading deployed for 2 s sets the flag, so later boots never burn on their own. Each attempt is counted in flash before the burn. |
+| SAFE | DRV8833s asleep (nSLEEP low). Sensors still sampled, telemetry still served. If it entered SAFE on a fault, the faults that stop B-dot (magnetometer, coil drivers) have been gone for 30 s and the Pi is silent, it returns to DETUMBLE by itself; a dead gyro or sun-sensor ADC does not block this (v0.5). If the fault returns within 10 min of such a restart, the wait doubles each time (30 s … 32 min), and resets after 10 clean minutes or any commanded mode change. | RX on. Beacon at least every 60 s. OBC burn commands refused. QUEUE_TX takes ACK and TLM only (v0.8), so commands sent in SAFE are still acknowledged. Returns to NOMINAL by itself when the radio recovers. A **commanded** SAFE (OBC, low battery) also holds automatic deployment and E_BURN; a SAFE caused by a radio fault does not. Emergency commands work in every mode. |
 | DETUMBLE | B-dot loop every period: coils off → settle → magnetometer sample → dB/dt → coils on. SAFE if the magnetometer fails 3 times or a driver fault lasts 3 cycles. Refused with `HW_FAULT` if the magnetometer is down. | Same as NOMINAL. |
 | NOMINAL | Coils off (pointing law TBD). MTQ_MANUAL allowed. The Pi promotes ADCS here once it reports DETUMBLED. Any commanded mode change switches the coils off at once (v0.5; before, the old duty stayed on until the end of the control cycle). | RX, beacons, Pi downlink, burn wire. |
 
@@ -286,9 +288,27 @@ BOOT = 0 · SAFE = 1 · DETUMBLE = 2 · NOMINAL = 3
 - **TT&C:** SWD on J4 (Tag-Connect TC2030); v0.1 said it had none. It also logs on USART1 at J6 (pin 2 = TX out, pin 1 = RX in, pin 3 = GND), 115200 8N1. The log must stay non-blocking (DMA or ring buffer) and covers boot reason, mode changes, every rejected frame with its status, and bus resets.
 - Without a programmer, the Pi can flash both STM32s by SWD bit-bang and read the ADCS SWO log on its UART (see `../docs/NO_PROGRAMMER.md`).
 
-## 11. Ground link (`ground_link.h`, GL_VERSION 2)
+## 11. Ground link (`ground_link.h`, GL_VERSION 3)
 
-Every packet: `SAT_ID(1) | TYPE(1) | SEQ(1) | body | CRC16(2)`, at most 24 bytes. The CRC is the same CRC-16 as on I2C, low byte first. Long answers go down as an ACK plus TLM parts; nothing is chunked on the uplink.
+**Who does what.** TT&C (STM32) owns the radio: it schedules and sends every beacon, checks every uplink packet's satellite ID, length and CRC, and queues the good ones. The OBC (Pi) collects all telemetry, builds the OBC beacon and every ACK/TLM/FILE packet, checks the MAC and counter of each command and executes it (or forwards it). The OBC key never leaves the Pi. The one exception (v0.9) is **emergency commands** (below): TT&C checks those with its own key and executes them itself, so they work with the Pi hung.
+
+**Framing, outermost first.** No bit stuffing anywhere: LoRa delimits frames itself, so no byte value is reserved.
+
+```
+LoRa PHY   preamble (8 + 4.25 sym) | sync word 0x12 | explicit header (length, CR, CRC on; own CRC) | payload | CRC16 (SX1278)
+payload    SAT_ID 0xC5 | TYPE | SEQ | body | CRC16 (CCITT-FALSE, low byte first)          <= 24 bytes (FILE: <= 255, v0.9)
+```
+
+Protection: LoRa FEC (CR 4/8 default: every 4 data bits sent as 8) and interleaving; the LoRa CRC; our CRC16 (also covers the trip through the TT&C queues); the HMAC on commands; ACKs and Selective Repeat (below). The explicit header carries the coding rate, so a receiver decodes any CR without being told.
+
+**Frequencies (v0.9).** Uplink 433.800 MHz, downlink 433.300 MHz (uplink above downlink). India's licence-free rules (2022, 433.05–434.79 MHz, 10 mW ERP, 10 % duty cycle; only 433.05–434.04 MHz allows a 125 kHz channel) put both channels inside 433.05–434.04 with ≥ 180 kHz to either edge, enough for crystal error (±20 ppm ≈ ±9 kHz) and Doppler (±11 kHz). v0.8's 433.000 MHz reached down to 432.94 MHz, outside the band. Default power 10 dBm (10 mW; keep antenna gain ≤ 0 dBd for 10 mW ERP). The SX1278 is half duplex, so TT&C listens on the uplink and retunes to the downlink for every packet it sends, then back. The ground station mirrors it: transmit on 433.800, receive on 433.300. Doppler at 433 MHz is at most about ±10 kHz in LEO, inside LoRa's offset tolerance at 125 kHz and SF9, so no Doppler correction is needed.
+
+Airtime at the defaults (SF9, 125 kHz, CR 4/8): 280 ms for a 24-byte packet, 247 ms for the TT&C beacon (CR 4/5: 206 ms).
+
+**Acknowledgements.** Every authenticated command gets exactly one ACK (status + up to 15 bytes), plus TLM parts for longer answers, in every mode (TT&C passes ACK/TLM in SAFE since v0.8). Every I2C transaction has a status reply (section 3). Not acknowledged: beacons (broadcast), single FILE blocks (acknowledged in groups by FILE_ACK), and packets dropped for a bad CRC, MAC or counter (silent on purpose: noise and forgeries get no reply).
+
+
+Every packet: `SAT_ID(1) | TYPE(1) | SEQ(1) | body | CRC16(2)`, at most 24 bytes (only FILE packets may be up to 255, v0.9). The CRC is the same CRC-16 as on I2C, low byte first. Long answers go down as an ACK plus TLM parts; nothing is chunked on the uplink.
 
 **Command packet (ground → satellite):**
 
@@ -300,9 +320,52 @@ SAT_ID | TYPE=0x01 | SEQ | TARGET | CMD | LEN | ARGS (0..8) | COUNTER u32 | MAC 
 - **COUNTER** must be higher than the last one the OBC accepted. The OBC saves it before executing, so a recorded command cannot be replayed, even after an OBC restart. The ground tool uses `max(last + 1, unix time)`, so losing its counter file does not lock it out, as long as the PC clock is right.
 - **Retransmission** (same packet, because an ACK was lost) is answered from the OBC's ACK cache and not executed again.
 - **Rejected silently (no ACK):** bad CRC, bad MAC, an old unauthenticated (v1) packet, or an old counter. The OBC logs each one.
-- **Key:** 32 random bytes as hex text, made with the ground tool's `keygen`. The same file goes on the Pi (`chmod 600`). It is never committed. Without a key file the OBC rejects every ground command (beacons still go out).
+- **Key:** 32 random bytes as hex text, made with `OBC/scripts/keygen.py` together with the separate TT&C emergency key (which goes into the TT&C firmware, never the Pi). The OBC key goes on the Pi (`chmod 600`). Neither is ever committed (the repo is public; `.gitignore` lists both). Without a key file the OBC rejects every ground command (beacons still go out).
 - ARGS is limited to 8 bytes (24 − 6 header − 4 counter − 4 MAC − 2 CRC). The largest allowed command, MTQ_MANUAL, is exactly 8.
 - Downlink packets (ACK, TLM, beacons) are not authenticated; their CRC only protects integrity.
+
+**Emergency commands (GL_T_ECMD 0x05, v0.9).** Same layout as a command (`SAT_ID | 0x05 | SEQ | TARGET | CMD | LEN | ARGS | COUNTER | MAC | CRC16`), signed with a **separate TT&C key** (`TTC_KEY_FILE` at firmware build time; the host tests use bytes 0..31). TT&C checks the MAC and the counter itself, keeps the counter in flash (written before acting, so a reboot never reopens a replay), answers a retransmission from its cached ACK, and sends the ACK itself, ahead of everything else, with `TARGET | 0x80` (GL_TGT_EMERGENCY). Bad MAC, old counter or bad length: no answer. ECMDs never reach the OBC; because TYPE is inside the MAC, a CMD can never be replayed as an ECMD or the other way round. A firmware built without a key ignores every ECMD.
+
+| Target | Cmd | Args | Does |
+|---|---|---|---|
+| TT&C 2 | E_PING 0x01 | — | 15-byte status (`GL_EP_*`): uptime, mode, faults, seconds since the OBC last talked, deploy flags, auto attempts, watchdog setting/actions, silence left |
+| TT&C | E_TTC_RESET 0x02 | key "BOOT" | Reboots TT&C after the ACK has gone out |
+| TT&C | E_RADIO_DEFAULTS 0x03 | — | Back to the default radio settings, after the ACK (sent on the old ones) |
+| TT&C | E_BEACON_PERIOD 0x04 | period_s u16 | As SET_BEACON_PERIOD |
+| TT&C | E_TX_SILENCE 0x05 | minutes u16 (0 = end, ≤ 1440) | Stops beacons and OBC packets; only ECMD ACKs go out |
+| TT&C | E_BURN 0x10 | duration_ms u16 | Burn wire in any mode except commanded SAFE; RBF must be out |
+| OBC 0 | E_OBC_RESET 0x01 | key "BOOT" | Pulls the Pi 4B RUN pin low for 200 ms |
+| OBC | E_OBC_POWER_CYCLE 0x02 | key, off_s u8 (1–60) | Holds the Pi GLOBAL_EN low (PMIC off) for off_s |
+| OBC | E_OBC_WATCHDOG 0x03 | minutes u16 (0 = off, 5–1440) | Kept in flash. If the OBC is silent that long: RUN reset; after another period: 10 s power cycle; at most 3 per outage. **Off by default** (bench work with the OBC stopped) |
+| ADCS 1 | E_ADCS_RESET 0x01 | key "BOOT" | Pulls ADCS NRST low for 20 ms |
+| EPS 3 | — | — | `UNKNOWN_CMD`: the EPS has no processor and no TT&C line; power-cycling the Pi is the EPS-level recovery |
+
+| TT&C | E_GET_EVENTS 0x06 | — | The last 3 events, newest first: no u16, target, cmd, result (15 B) |
+
+The lines are PC6 (Pi RUN), PC8 (Pi GLOBAL_EN), PC7 (ADCS NRST), each through a 2N7002 (high = asserted), on the spare-GPIO header J8 (section 13, issue 6).
+
+**Priority.** Emergency traffic goes first at every step:
+- **Uplink:** an ECMD is checked and executed in the radio task the moment it arrives. It never waits in the 8-packet queue for the OBC.
+- **Downlink:** ECMD ACKs and EVENTs have their own 4-packet queue, sent before beacons, OBC ACKs and FILE blocks. Radio silence does not stop them. If that queue is full, the oldest waiting packet makes room for a new ACK.
+- **Getting heard:** the radio is half duplex. Before v0.9 TT&C started the next queued packet the instant the last one ended, so during a file burst it could not hear the ground at all. Now it stays in receive for at least 150 ms (`TTC_LISTEN_GAP_MS`) between non-priority packets. It also never starts a transmission while the SX1278 reports a packet coming in, for at most 1 s so noise cannot block it.
+- **What the ground does:** repeat the ECMD every ~100 ms until its ACK comes back. In the simulation, with 8 long FILE packets queued, the ACK came back after the first one (without the gap: after all 8).
+- **Cost:** about 8 % of file throughput.
+
+**Execution reports (GL_T_EVENT 0x06, 18 bytes).** The ACK says the command was accepted. For an action that finishes later, the ACK carries one data byte, `GL_EA_REPORT_FOLLOWS`, and an EVENT reports how it ended:
+
+| Action | EVENT cmd | Result / detail |
+|---|---|---|
+| E_OBC_RESET, E_OBC_POWER_CYCLE, E_ADCS_RESET | the same cmd | OK when the line is released |
+| after an OBC reset or power cycle | OBC_BACK 0x80, or OBC_NOT_BACK 0x81 | detail = s until the Pi talked again; NOT_BACK after 300 s, result COMM_FAULT |
+| E_BURN, automatic deployment burn | E_BURN | OK (deadline or antenna open), HW_FAULT (RBF back in), INVALID_MODE (commanded SAFE); detail = ms burned |
+| E_RADIO_DEFAULTS, automatic revert | E_RADIO_DEFAULTS / RADIO_REVERTED 0x83 | sent **on the new settings**, where the ground now listens |
+| E_TTC_RESET | E_TTC_RESET | sent after the reboot (pending flag in flash), with the ECMD's SEQ |
+| E_TX_SILENCE running out | SILENCE_END 0x84 | — |
+| Deployed flag set | DEPLOYED 0x82 | detail = deploy flags |
+| Any other boot | BOOT 0x85 | — |
+| Watchdog actions | E_OBC_RESET / E_OBC_POWER_CYCLE, source AUTO | then OBC_BACK / NOT_BACK |
+
+Each EVENT carries the source (ecmd / auto), the ECMD's SEQ (0 if autonomous), an event number (gaps show a missed one) and the TT&C uptime. EVENTs are not acknowledged; E_GET_EVENTS reads the last three back. Commands that act at once (PING, BEACON_PERIOD, TX_SILENCE, OBC_WATCHDOG, GET_EVENTS) are complete when their ACK says OK.
 
 **What the OBC forwards to the slaves.** Only these commands are passed on; anything else gets `GL_ST_REFUSED (0x82)`:
 
@@ -354,6 +417,29 @@ How the OBC fills it (the EPS has no MCU; the INA226 on J11 sees only the load):
 
 **Beacons:** the OBC beacon (type 0x10, 22 bytes, `GL_BO_*`) is built by the OBC and sent by TT&C; TT&C's own beacon (type 0x11, 20 bytes, `GL_BT_*`) goes out when the OBC is silent.
 
+**File downlink, Selective Repeat ARQ (GL_VERSION 3).** For bulk data (Pi camera images). Commands keep one ACK per command.
+
+| Cmd (target OBC) | Args | ACK data |
+|---|---|---|
+| FILE_START 0x20 | image u16 (0 = newest) [, variant u8: 0 full, 1 EXIF thumbnail (v0.9)] | xfer u8, size u32, blocks u16, crc32 u32, window u8, block_len u8 (`GL_FS_*`, 13 B since v0.9) |
+| FILE_ACK 0x21 | xfer u8, base u16, bitmap u32 (`GL_FA_*`, 7 B) | blocks now being sent, u8 (0 = transfer complete and closed) |
+| FILE_ABORT 0x22 | xfer u8 | — |
+
+```
+FILE packet:  SAT_ID | TYPE=0x04 | SEQ=xfer | BLOCK u16 | DATA (1..B) | CRC16      block k = bytes Bk .. Bk+B-1
+```
+
+1. FILE_START: the OBC answers with the size, block count and CRC-32, then sends blocks 0..W−1 (W = `file_window` in obc.toml, default 16, at most 32).
+2. When the burst has ended (the satellite cannot hear the ground while it transmits), the ground sends FILE_ACK: `base` = the first block it is missing, bit i of `bitmap` = it has block base+i.
+3. The OBC slides its window to `base` and sends every block in [base, base+W) that is not marked. Only lost blocks are sent again: that is what makes it Selective Repeat rather than Go-Back-N, which would resend the whole window after every loss.
+4. Repeat until FILE_ACK has base = blocks; that ACK has data 0 and closes the transfer. The ground checks the CRC-32.
+
+- **Timers live on the ground.** If nothing arrives (a lost FILE_ACK or a lost burst), the ground sends FILE_ACK again. Each FILE_ACK is a new request with a fresh counter, so the OBC acts on it instead of answering from its ACK cache.
+- One transfer at a time; a new FILE_START replaces it. Dropped after `file_timeout_s` (default 1800 s) without a FILE_ACK. Refused (`REFUSED`) in SAFE or on low battery.
+- Errors are acknowledged too: `BAD_LENGTH`, `NO_DATA` (no such image / no transfer), `BAD_PARAM` (wrong xfer, empty file, or over 65535 blocks = 1.1 MB).
+- **Block size (v0.9):** B = `file_block` (default 200, 1–248), announced in the FILE_START answer. Packets over 24 bytes go to TT&C with QUEUE_TX_PART. v0.8 used B = 17 (one QUEUE_TX); each LoRa packet has ~12 symbols of fixed preamble and header, so small blocks wasted most of the airtime.
+- **Throughput** (SF9/125 kHz/CR 4/8, W = 16, ~3 s turnaround per round, 150 ms listen gap): B = 17 ≈ 32 B/s, B = 200 ≈ 100 B/s, B = 248 ≈ 107 B/s. A 50 kB image: ~23 min → ~8 min. The EXIF thumbnail (rpicam `--thumb 160:120:60`, ~3–5 kB) comes down in under a minute. On the bench, SF7/CR 4/5 would give ~400 B/s. The 10 % duty-cycle limit of the licence-free band caps the long-run average at a tenth of these numbers.
+
 ## 12. Verification
 
 | Item | Status (2026-11-14) |
@@ -365,14 +451,23 @@ How the OBC fills it (the EPS has no MCU; the INA226 on J11 sees only the load):
 | Gyro offset (v0.5): measured when still, rejected when tumbling, not spoiled by a SET_MAG_OFFSET in the window, SET_GYRO_OFFSET limits; OBC saves and re-sends it | Passing on PC (firmware host tests, `OBC/tests/test_gyro_offset.py`) |
 | Sun direction and eclipse over a 324-point grid: six faces ≤ 1.2°, never dark in sunlight; albedo 0.3 × full from below: ≤ 0.3°; the albedo threshold keeps a shadowed satellite dark. A diode dying in orbit: found in 12 s, then HIDDEN instead of eclipse, tracked ≤ 4.2°; a wrong tracker never condemns a good diode; the 5-face build still passes. EPS: HIDDEN is not eclipse | Passing on PC (firmware host tests in both builds, `OBC/tests/test_sun.py`) |
 | Link tests (a) bad frames, (b) unplug, (c) 10,000 PINGs, against the firmware simulation | 15/15 on PC (`python/test_link.py --sim-lib`) |
+| v0.9 TT&C: SHA-256/HMAC against FIPS 180-4 / RFC 4231 vectors; flash journal (torn record, compaction, write failure); automatic deployment (delay, retry, flag across reboots, 3-burn lifetime cap, brown-out mid-burn, commanded SAFE, RBF re-inserted, DEPLOY_RESET rules); every emergency command, replay/forgery/retransmission, reboot keeps the counter, watchdog escalation; radio revert; QUEUE_TX_PART; LoRa airtime vs the Semtech formula; Python-signed ECMD accepted by the C firmware with the OBC not running; 200-byte FILE blocks and the EXIF thumbnail end to end | Passing on PC (firmware host tests, `OBC/tests`) |
 | Same link tests on the Pi against the Nucleo dummy slave and the real boards | **To run** (no ST-LINK or Nucleo yet; boards flashed from the Pi by SWD bit-bang) |
 
 ## 13. Open issues
 
-1. **SAFE-mode downlink:** in SAFE, TT&C refuses QUEUE_TX, so the OBC's ACKs and downlink cannot go out; only beacons do. Commands sent in SAFE still run, but the ground sees no ACK. Fixing it needs a TT&C firmware change (owner: TT&C).
+1. ~~SAFE-mode downlink~~: resolved in v0.8 (TT&C passes ACK and TLM in SAFE).
 2. **Coil current limit:** the 1 Ω AISEN resistors cap each coil at about 200 mA. Confirm this suits the coil design; the detumble simulation does not model the cap (owner: ADCS).
-3. **Unverified bench values:** axis map and coil polarity, deploy pin polarity, INA226 shunt value (many modules use 0.1 Ω, not 0.01 Ω), and the LoRa frequency.
+3. **Unverified bench values:** axis map and coil polarity, **deploy pin polarity** (now critical: automatic deployment trusts DEPLOY_SW; a wrong polarity either sets the flag at once or burns 3 times), INA226 shunt value (many modules use 0.1 Ω, not 0.01 Ω). Frequencies moved inside 433.05–434.04 MHz in v0.9; still to check: antenna gain vs 10 mW ERP, the 10 % duty cycle during file downlink, and that a licence-free *ground* rule does not cover a satellite in orbit (that needs a WPC/IN-SPACe filing, normally in the amateur 435–438 MHz band) (owner: TT&C).
 4. **Sun sensor faces:** which face each SS1..SS6 index is (placeholder in `ADCS/board_config.h`: SS1..SS6 = +X, −X, +Y, −Y, +Z, −Z), plus `full` (within ~10 %) and `lit` (above the albedo glow) measured in sunlight (owner: ADCS).
 5. **uptime_ms wrap** at 49.7 days (ADCS and TT&C page 0, and `uptime_s` derived from it). Acceptable for the EM as long as the Pi handles the wrap; a flight unit should use a wider clock.
+6. **Emergency lines have no connector yet (v0.9):** the schematic has a spare-GPIO header J8 (2×13, DNP) but the routed PCB has **no J8 footprint**, so PC6/PC7/PC8 only reach the MCU pins. Add J8 (or a 1×4 header) with three 2N7002 stages before ordering the PCB, wired to Pi 4B RUN, Pi 4B GLOBAL_EN and ADCS NRST. Check on the bench that releasing GLOBAL_EN restarts the Pi (owner: TT&C).
+7. ~~Full-chip erase wipes TT&C's flags~~: mitigated in v0.9.
+   - **Tools:** `program` only erases the sectors the image covers, and the linker script keeps code below sector 7. `swd_flash.py erase` now erases sectors 0–6 only. A full wipe needs `swd_flash.py wipe-flags` and typing WIPE. Avoid "full chip erase" in STM32CubeProgrammer.
+   - **If it happens anyway:**
+     - TT&C boots with a blank store and sends EVENT NV_BLANK (0x86), so the ground knows.
+     - A deployed antenna is found again from DEPLOY_SW in 2 s, long before any burn could start.
+     - Every build embeds its build time as the lowest emergency counter accepted (`ttc_ecmd_ctr_floor`). The ground's counters are Unix time, so any command recorded before that build is still refused.
+   - **What is still lost:** the burn count (a stowed antenna gets up to 3 more automatic burns), and replay protection for commands recorded after the build but before the wipe.
 
 **Resolved since v0.1:** EPS address check (only the INA226 is on I2C); bus split (sensors on i2c-3); BUSY no longer means "queue full" (QUEUE_FULL 0x09); RESET_OCCURRED loss on a lost reply (recovery read + uptime rule); gyro range (±500 °/s); TT&C pins, modes and telemetry pages (filled in); ADCS commands (0x20–0x27 defined); sun direction and eclipse from the sun sensors (v0.6), on all six faces with gyro tracking and dead-diode detection (v0.7); gyro zero-rate offset (v0.5: measured at boot, page 3, SET_GYRO_OFFSET).

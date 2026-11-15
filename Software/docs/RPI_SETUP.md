@@ -66,7 +66,13 @@ Then:
 
 ## 5. Run the OBC
 
-**Ground-command key (once).** The OBC ignores every ground command until it has the key. Beacons still go out without it. Generate the key on the ground PC with the ground tool's `keygen` (the ground tool is still in the base repo, see [the Software README](../README.md)), then copy it to the Pi:
+**Keys (once).** There are two keys, made together on the ground PC with `python3 OBC/scripts/keygen.py`. They land in `~/.cubesat/`, outside the repo, mode 600; the script refuses to write inside the repo because it is public.
+
+- `ground_key` signs OBC commands. Copy it to the Pi (below). The OBC ignores every ground command until it has it; beacons still go out without it.
+- `ttc_key` signs TT&C emergency commands. It **never goes to the Pi**: it is built into the TT&C firmware. `firmware/build.py arm ttc` picks up `~/.cubesat/ttc_key` by itself, or set `TTC_KEY_FILE`. The build refuses the public test key and refuses a TT&C key equal to `ground_key`. Without a key, the TT&C ignores every emergency command.
+- The ground station keeps both keys, plus one counter file per key (`OBC/comms/ground.py` `CounterStore`: Unix time or more, saved before use). Keep the PC clock right.
+
+Copy the OBC key to the Pi:
 
 ```bash
 # on the Pi, after copying the key file to /tmp/ground_key:

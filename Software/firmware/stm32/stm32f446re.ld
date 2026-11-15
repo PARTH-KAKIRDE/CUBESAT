@@ -1,9 +1,11 @@
-/* Linker script for STM32F446RE: 512 KB flash, 128 KB SRAM. */
+/* Linker script for STM32F446RE: 512 KB flash, 128 KB SRAM.
+ * Code uses the first 384 KB only: sector 7 (0x08060000, the last 128 KB) is
+ * TT&C's flag store (firmware/ttc/ttc_nv.c) and must never hold code. */
 ENTRY(Reset_Handler)
 
 MEMORY
 {
-  FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
+  FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 384K
   RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
 }
 

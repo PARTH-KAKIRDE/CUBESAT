@@ -3,12 +3,19 @@
 CMD packets carry a counter and a MAC (GL_VERSION 2):
   SAT_ID | TYPE | SEQ | TARGET | CMD | LEN | ARGS | COUNTER u32 | MAC(4) | CRC16
 MAC = HMAC-SHA256(key, SAT_ID .. COUNTER)[:4].
+
+ECMD packets (GL_VERSION 4) are the same with TYPE = GL_T_ECMD and the TT&C
+emergency key. TT&C checks and executes them itself (no OBC) and answers with
+an ACK whose TARGET has GL_TGT_EMERGENCY set.
 """
 from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
+import os
 import struct
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
@@ -23,16 +30,16 @@ class PacketError(Exception):
     pass
 
 
-def _seal(body: bytes) -> bytes:
+def _seal(body: bytes, max_len: int = I.GL_MAX_LEN) -> bytes:
     c = crc16(body)
     pkt = body + bytes([c & 0xFF, c >> 8])
-    if len(pkt) > I.GL_MAX_LEN:
+    if len(pkt) > max_len:
         raise PacketError(f"packet too long ({len(pkt)})")
     return pkt
 
 
-def check(pkt: bytes) -> bool:
-    if not I.GL_HDR_LEN + I.GL_CRC_LEN <= len(pkt) <= I.GL_MAX_LEN:
+def check(pkt: bytes, max_len: int = I.GL_MAX_LEN) -> bool:
+    if not I.GL_HDR_LEN + I.GL_CRC_LEN <= len(pkt) <= max_len:
         return False
     if pkt[I.GL_OFS_SAT] != I.GL_SAT_ID:
         return False
@@ -50,27 +57,100 @@ class Command:
 
 
 def load_key(path: str | Path) -> bytes:
-    """Key file: hex text (as written by `gs_tool.py keygen`)."""
+    """Key file: hex text (as written by OBC/scripts/keygen.py). A file others
+    can read still works (a missing uplink is worse) but is logged loudly."""
     try:
         key = bytes.fromhex(Path(path).read_text().strip())
     except ValueError as e:
         raise PacketError(f"key file {path} is not hex") from e
     if len(key) < MIN_KEY_BYTES:
         raise PacketError(f"key file {path}: key shorter than {MIN_KEY_BYTES} bytes")
+    if os.name == "posix" and Path(path).stat().st_mode & 0o077:
+        logging.getLogger(__name__).warning("key file %s can be read by other users: chmod 600 it", path)
     return key
+
+
+class CounterStore:
+    """Ground-side command counter for one key (GL_VERSION 2 rule: every new
+    command needs a higher counter than the last one the satellite accepted).
+
+    next() = max(last + 1, Unix time), and the value is on disk (written,
+    fsynced, renamed) BEFORE it is returned, so a crash can never make the
+    ground reuse a counter. Unix time means a lost counter file does not lock
+    the ground out, and it stays above the TT&C build-time floor
+    (ttc_ecmd_ctr_floor) - provided the PC clock is right. Keep one file per
+    key: the OBC and TT&C counters are independent."""
+
+    def __init__(self, path: str | Path, clock=time.time):
+        self.path, self.clock = Path(path), clock
+
+    def last(self) -> int:
+        try:
+            return int(self.path.read_text().strip() or 0)
+        except FileNotFoundError:
+            return 0
+        except ValueError as e:
+            raise PacketError(f"counter file {self.path} is damaged: fix or delete it") from e
+
+    def next(self) -> int:
+        n = max(self.last() + 1, int(self.clock()))
+        if n >= 2**32:
+            raise PacketError("counter exhausted (u32)")
+        tmp = self.path.with_name(self.path.name + ".tmp")
+        with open(tmp, "w") as f:
+            f.write(f"{n}\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, self.path)
+        return n
 
 
 def _mac(key: bytes, data: bytes) -> bytes:
     return hmac.new(key, data, hashlib.sha256).digest()[: I.GL_AUTH_MAC_LEN]
 
 
-def build_cmd(seq: int, target: int, cmd: int, args: bytes = b"", *, key: bytes, counter: int) -> bytes:
+def build_cmd(seq: int, target: int, cmd: int, args: bytes = b"", *, key: bytes, counter: int,
+              ptype: int = I.GL_T_CMD) -> bytes:
+    if ptype not in (I.GL_T_CMD, I.GL_T_ECMD):
+        raise PacketError("not a command type")
     if len(args) > I.GL_CMD_MAX_ARGS:
         raise PacketError(f"too many args ({len(args)} > {I.GL_CMD_MAX_ARGS})")
     if not 0 < counter < 2**32:
         raise PacketError("counter out of range")
-    body = bytes([I.GL_SAT_ID, I.GL_T_CMD, seq & 0xFF, target, cmd, len(args)]) + args + struct.pack("<I", counter)
+    body = bytes([I.GL_SAT_ID, ptype, seq & 0xFF, target, cmd, len(args)]) + args + struct.pack("<I", counter)
     return _seal(body + _mac(key, body))
+
+
+def build_ecmd(seq: int, target: int, cmd: int, args: bytes = b"", *, key: bytes, counter: int) -> bytes:
+    """Emergency command for TT&C (GL_T_ECMD), signed with the TT&C emergency key."""
+    return build_cmd(seq, target, cmd, args, key=key, counter=counter, ptype=I.GL_T_ECMD)
+
+
+def parse_events(data: bytes) -> list:
+    """GL_E_GET_EVENTS answer: the last events, newest first (empty slots left out)."""
+    if len(data) != I.GL_EVL_COUNT * I.GL_EVL_ENTRY_LEN:
+        raise PacketError("bad E_GET_EVENTS length")
+    out = []
+    for i in range(I.GL_EVL_COUNT):
+        no, tgt, cmd, res = struct.unpack_from("<HBBB", data, i * I.GL_EVL_ENTRY_LEN)
+        if no:
+            out.append({"no": no, "target": tgt, "cmd": cmd, "result": res})
+    return out
+
+
+def parse_eping(data: bytes) -> dict:
+    """GL_E_PING answer (GL_EP_* layout)."""
+    if len(data) != I.GL_EP_LEN:
+        raise PacketError("bad E_PING length")
+    return {"uptime_s": struct.unpack_from("<I", data, I.GL_EP_OFS_UPTIME_S)[0],
+            "mode": data[I.GL_EP_OFS_MODE],
+            "faults": struct.unpack_from("<H", data, I.GL_EP_OFS_FAULTS)[0],
+            "obc_silent_s": struct.unpack_from("<H", data, I.GL_EP_OFS_OBC_SILENT_S)[0],
+            "deploy_flags": data[I.GL_EP_OFS_DEPLOY_FLAGS],
+            "auto_attempts": data[I.GL_EP_OFS_AUTO_ATTEMPTS],
+            "wdt_min": struct.unpack_from("<H", data, I.GL_EP_OFS_WDT_MIN)[0],
+            "wdt_actions": data[I.GL_EP_OFS_WDT_ACTIONS],
+            "silence_min": data[I.GL_EP_OFS_SILENCE_MIN]}
 
 
 def parse_cmd(pkt: bytes, key: bytes) -> Command:
@@ -114,18 +194,32 @@ class Ack:
 
 
 def parse_downlink(pkt: bytes) -> dict:
-    """Decode any satellite->ground packet into a dict (for the ground tool)."""
-    if not check(pkt):
+    """Decode any satellite->ground packet into a dict (for the ground tool).
+    Only FILE packets may be longer than GL_MAX_LEN (GL_VERSION 4)."""
+    long_file = len(pkt) > I.GL_OFS_TYPE and pkt[I.GL_OFS_TYPE] == I.GL_T_FILE
+    if not check(pkt, I.GL_DOWN_MAX_LEN if long_file else I.GL_MAX_LEN):
         raise PacketError("bad packet")
     t, seq = pkt[I.GL_OFS_TYPE], pkt[I.GL_OFS_SEQ]
     if t == I.GL_T_ACK:
         n = pkt[I.GL_ACK_OFS_LEN]
         d = pkt[I.GL_ACK_OFS_DATA:-2]
-        return {"type": "ACK", "seq": seq, "target": pkt[I.GL_ACK_OFS_TARGET], "cmd": pkt[I.GL_ACK_OFS_CMD],
+        tgt = pkt[I.GL_ACK_OFS_TARGET]
+        return {"type": "ACK", "seq": seq, "target": tgt & ~I.GL_TGT_EMERGENCY & 0xFF,
+                "emergency": bool(tgt & I.GL_TGT_EMERGENCY), "cmd": pkt[I.GL_ACK_OFS_CMD],
                 "status": pkt[I.GL_ACK_OFS_STATUS], "total_len": n, "data": d.hex()}
     if t == I.GL_T_TLM:
         return {"type": "TLM", "seq": seq, "target": pkt[I.GL_TLM_OFS_TARGET], "cmd": pkt[I.GL_TLM_OFS_CMD],
                 "offset": pkt[I.GL_TLM_OFS_OFFSET], "data": pkt[I.GL_TLM_OFS_DATA:-2].hex()}
+    if t == I.GL_T_FILE and len(pkt) > I.GL_FILE_OFS_DATA + I.GL_CRC_LEN:
+        return {"type": "FILE", "xfer": seq, "block": struct.unpack_from("<H", pkt, I.GL_FILE_OFS_BLOCK)[0],
+                "data": pkt[I.GL_FILE_OFS_DATA:-2].hex()}
+    if t == I.GL_T_EVENT and len(pkt) == I.GL_EV_LEN:
+        return {"type": "EVENT", "seq": seq, "no": struct.unpack_from("<H", pkt, I.GL_EV_OFS_NO)[0],
+                "source": {I.GL_EVS_ECMD: "ecmd", I.GL_EVS_AUTO: "auto"}.get(pkt[I.GL_EV_OFS_SOURCE], "?"),
+                "target": pkt[I.GL_EV_OFS_TARGET], "cmd": pkt[I.GL_EV_OFS_CMD],
+                "result": pkt[I.GL_EV_OFS_RESULT], "ecmd_seq": pkt[I.GL_EV_OFS_ECMD_SEQ],
+                "detail": struct.unpack_from("<H", pkt, I.GL_EV_OFS_DETAIL)[0],
+                "uptime_s": struct.unpack_from("<I", pkt, I.GL_EV_OFS_UPTIME_S)[0]}
     if t == I.GL_T_BEACON_OBC and len(pkt) == I.GL_BO_LEN:
         return {"type": "BEACON_OBC", "seq": seq,
                 "uptime_s": struct.unpack_from("<I", pkt, I.GL_BO_OFS_UPTIME_S)[0],
